@@ -79,7 +79,7 @@ alwaysApply: false
 - [путь к примеру]
 
 **Ограничения проекта:**
-- [из AGENTS.md или code style]
+- [из code style проекта]
 
 ### CONSTRAINTS (Ограничения):
 - ❌ НЕ менять: [файлы/API/логику]
@@ -103,7 +103,6 @@ alwaysApply: false
 
 | Источник | Что добавить |
 |----------|--------------|
-| `AGENTS.md` | Структура проекта, команды, code style |
 | `protocol-development.mdc` | JTBD Analysis, Duplicate Check |
 | `_base-forbidden.mdc` | Критические запреты |
 | `standard-agent-quality.mdc` | Метрики успеха |
@@ -139,7 +138,7 @@ alwaysApply: false
 **CONTEXT:**
 - Файлы: [список @файлов]
 - Примеры: [ссылки на похожий код]
-- Style: [code style из AGENTS.md]
+- Style: [code style проекта]
 
 **CONSTRAINTS:**
 - [ограничение 1]
@@ -304,5 +303,5 @@ alwaysApply: false
 
 **Версия:** 1.0
 **Создано:** 2026-01-08
-**Связанные модули:** `core-master.mdc`, `AGENTS.md`, `standard-agent-quality.mdc`
+**Связанные модули:** `core-master.mdc`, `standard-agent-quality.mdc`
 
