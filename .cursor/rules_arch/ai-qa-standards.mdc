@@ -1,0 +1,170 @@
+---
+description: Quality Assurance standards for AI agent work verification
+alwaysApply: false
+---
+# 🛡️ AI QA STANDARDS
+
+## 1. Quality Gates
+
+### Gate 1: Pre-Implementation
+- [ ] Task clearly understood
+- [ ] Expected output defined
+- [ ] Test cases written
+- [ ] Dependencies identified
+- [ ] Risks assessed
+
+### Gate 2: Implementation
+- [ ] Code follows project standards
+- [ ] No duplicate code created
+- [ ] Error handling implemented
+- [ ] Logging added where needed
+
+### Gate 3: Post-Implementation
+- [ ] All test cases pass
+- [ ] No linter errors
+- [ ] Output matches expectation
+- [ ] Artifacts verified
+- [ ] Documentation updated
+
+## 2. Verification Layers
+
+```
+Layer 1: Syntax Check
+├── Code compiles
+├── No syntax errors
+└── Imports resolve
+
+Layer 2: Logic Check
+├── Functions return expected values
+├── Edge cases handled
+└── Error paths work
+
+Layer 3: Integration Check
+├── Components work together
+├── API endpoints respond
+└── Data flows correctly
+
+Layer 4: Output Check
+├── Expected output achieved
+├── User can use result as-is
+└── No manual steps needed
+```
+
+## 3. Evidence Requirements
+
+**Every claim must have evidence:**
+
+| Claim | Required Evidence |
+|-------|-------------------|
+| "File created" | Show file path + content sample |
+| "Test passes" | Show test execution output |
+| "Error fixed" | Show before/after + no error |
+| "API works" | Show request/response |
+| "Data correct" | Show actual data samples |
+
+## 4. Confidence Calibration
+
+```
+Base: 100%
+
+Deductions:
+- Code not tested on real data: -50%
+- Artifacts not opened/verified: -40%
+- No independent cross-check: -30%
+- Assumptions not validated: -25%
+- Edge cases not tested: -20%
+- No error handling: -15%
+
+Example:
+Base: 100%
+- Code written but not tested: -50%
+- Didn't open output file: -40%
+Final: 10% → DO NOT CLAIM SUCCESS
+```
+
+## 5. Test Case Template
+
+```markdown
+## Test Case: [Name]
+
+**Preconditions:**
+- [Setup required]
+
+**Input:**
+- [Input data]
+
+**Steps:**
+1. [Step 1]
+2. [Step 2]
+
+**Expected Result:**
+- [What should happen]
+
+**Actual Result:**
+- [What actually happened]
+
+**Status:** ✅ PASS / ❌ FAIL
+
+**Evidence:**
+[Screenshot/output/log]
+```
+
+## 6. Defect Categories
+
+| Severity | Description | Action |
+|----------|-------------|--------|
+| Critical | Blocks functionality | Fix immediately |
+| High | Major feature broken | Fix before completion |
+| Medium | Feature works with issues | Fix or document |
+| Low | Cosmetic/minor | Document for later |
+
+## 7. QA Checklist Before "Done"
+
+```markdown
+## ✅ FINAL QA CHECKLIST
+
+### Code Quality:
+- [ ] No linter errors (0 errors in Problems)
+- [ ] No TypeScript errors
+- [ ] No console errors
+- [ ] No deprecation warnings
+
+### Functionality:
+- [ ] All requirements implemented
+- [ ] All test cases pass
+- [ ] Edge cases handled
+- [ ] Error messages helpful
+
+### Output:
+- [ ] Output matches expectation
+- [ ] User can use as-is
+- [ ] No manual steps needed
+- [ ] Documentation clear
+
+### Verification:
+- [ ] Each artifact opened and checked
+- [ ] Independent cross-check performed
+- [ ] Before/after comparison done
+- [ ] Evidence documented
+
+### Confidence:
+- [ ] Confidence > 80% after calibration
+- [ ] All deductions justified
+- [ ] Risks documented
+```
+
+## 8. Forbidden Claims Without Evidence
+
+❌ **NEVER say:**
+- "Successfully completed" → without showing output
+- "Test passed" → without showing test result
+- "Error fixed" → without showing no error
+- "Works correctly" → without demonstration
+- "All done" → without checklist completion
+
+✅ **ALWAYS provide:**
+- Actual command output
+- File content samples
+- Test execution results
+- Before/after comparison
+- Evidence screenshots/logs

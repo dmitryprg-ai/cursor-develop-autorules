@@ -1,0 +1,45 @@
+---
+description: "[DEPRECATED] Функциональность перенесена в _base-challenge.mdc и _base-confidence.mdc"
+alwaysApply: false
+---
+# ⚠️ DEPRECATED — USE NEW MODULAR STRUCTURE
+
+> **Этот файл устарел. Используйте:**
+> - `_base-challenge.mdc` — протокол challenge
+> - `_base-confidence.mdc` — калибровка уверенности
+> - `_base-forbidden.mdc` — запрещённые действия
+
+---
+# OLD CONTENT BELOW (for reference)
+Use the todo_tool to break down tasks into sub-tasks.
+
+0. 
+Result as is give output & outcome
+If you wrote code, don't write in chat that the work was successfully completed, write carefully that you may have correctly completed the work, but haven't run the code yet, haven't researched on real data and probably haven't considered everything, haven't derived everything and don't see everything. Write in chat ideas on how you can verify that the task is really done and the user can use the result-output as is without additional actions and get the outcome.
+
+Honestly write, can I as a user get output and outcome without additional actions? or do you need to finish something, check, open, run, confirm on real data?
+
+
+1. Attribution Rule
+If a conclusion is made about object X → ask: is this a property of X or a property of the context in which X was encountered?
+
+2. Counter-Evidence Rule
+If a hypothesis seems obvious → generate at least one example where it breaks. Question whether you actually opened and read the artifacts you created?
+
+3. Missing Data Rule
+If you haven't seen the source data or couldn't find it or your work output doesn't exist or you haven't read it: "their absence doesn't mean they don't exist."
+
+4. Alternatives Rule
+If confirmation is found → add at least one alternative hypothesis and write an algorithm for testing the 0th hypothesis and the alternative. Apply this testing algorithm and write evidence to chat. Open the results
+
+5. Noise Rule
+If a pattern is rare and bright → mark it as "possibly noise."
+
+6. Long Context Rule
+If a conclusion is made based on the last tokens → check the beginning of the sequence.
+
+7. Ignorance Rule
+If there's no data → don't make a negative conclusion. Note: "I don't know."
+
+**ОБЯЗАТЕЛЬНО:** После каждого вывода указывай уверенность по шаблону:
+**Уверенность: [до калибровки]% → [после калибровки]% — [причина корректировки]**

@@ -1,0 +1,329 @@
+---
+description: Test-Driven Development стандарт для AI coding assistant
+alwaysApply: false
+---
+# 🧪 STANDARD: TEST-DRIVEN DEVELOPMENT
+
+> **Базовые модули:** `_base-confidence.mdc`
+> **Используется в:** `protocol-development.mdc`, `protocol-refactoring.mdc`
+
+---
+
+## Core Principle: RED → GREEN → REFACTOR
+
+```
+1. RED:    Напиши failing test FIRST
+2. GREEN:  Напиши MINIMAL код чтобы тест прошёл
+3. REFACTOR: Улучши код, сохраняя тесты зелёными
+4. REPEAT: Для каждой новой фичи/fix
+```
+
+---
+
+## 1. TDD WORKFLOW
+
+### Step 1: Understand Requirement
+
+```markdown
+## 📋 REQUIREMENT ANALYSIS
+
+### What needs to be done:
+[Чёткое описание требования]
+
+### Expected behavior:
+- When [input/action], then [expected output/result]
+- When [edge case], then [expected handling]
+- When [error case], then [expected error message]
+
+### Acceptance criteria:
+1. [Criterion 1]
+2. [Criterion 2]
+3. [Criterion 3]
+```
+
+### Step 2: Write Tests BEFORE Code
+
+```markdown
+## 🧪 TEST CASES (Write BEFORE implementation)
+
+### Test Case 1: Happy Path
+- **Input:** [input data]
+- **Action:** [what to do]
+- **Expected:** [expected result]
+- **Status:** ⏳ Not implemented yet
+
+### Test Case 2: Edge Case
+- **Input:** [edge case data]
+- **Action:** [what to do]
+- **Expected:** [expected handling]
+- **Status:** ⏳ Not implemented yet
+
+### Test Case 3: Error Case
+- **Input:** [invalid/error data]
+- **Action:** [what to do]
+- **Expected:** [error message/handling]
+- **Status:** ⏳ Not implemented yet
+```
+
+### Step 3: Run Tests (Should FAIL)
+
+```markdown
+## 🔴 RED PHASE
+
+Running tests before implementation...
+
+Test 1: ❌ FAIL (expected - no implementation yet)
+Test 2: ❌ FAIL (expected - no implementation yet)
+Test 3: ❌ FAIL (expected - no implementation yet)
+
+✅ All tests fail as expected. Ready to implement.
+```
+
+### Step 4: Write Minimal Code
+
+```markdown
+## 🟢 GREEN PHASE
+
+Writing MINIMAL code to pass tests...
+
+Implementation:
+[code]
+
+Running tests...
+
+Test 1: ✅ PASS
+Test 2: ✅ PASS
+Test 3: ✅ PASS
+
+✅ All tests pass. Ready to refactor.
+```
+
+### Step 5: Refactor
+
+```markdown
+## 🔵 REFACTOR PHASE
+
+Improvements:
+- [Improvement 1]
+- [Improvement 2]
+
+Running tests after refactor...
+
+Test 1: ✅ PASS
+Test 2: ✅ PASS
+Test 3: ✅ PASS
+
+✅ All tests still pass. Refactor complete.
+```
+
+---
+
+## 2. TDD CHECKLIST
+
+### Before Writing ANY Code:
+- [ ] Requirement clearly understood
+- [ ] Test cases written (minimum 3)
+- [ ] Happy path test defined
+- [ ] Edge case test defined
+- [ ] Error case test defined
+- [ ] Expected outputs documented
+
+### During Implementation:
+- [ ] Tests fail initially (RED phase confirmed)
+- [ ] Writing MINIMAL code only
+- [ ] No extra features added
+- [ ] Each test passes after implementation
+
+### After Implementation:
+- [ ] All tests pass (GREEN phase)
+- [ ] Code refactored if needed
+- [ ] Tests still pass after refactor
+- [ ] Test results documented in chat
+
+---
+
+## 3. TEST TYPES
+
+### Unit Tests (Function Level)
+```typescript
+describe('calculateTotal', () => {
+  it('should return sum of items', () => {
+    expect(calculateTotal([10, 20, 30])).toBe(60);
+  });
+  
+  it('should return 0 for empty array', () => {
+    expect(calculateTotal([])).toBe(0);
+  });
+  
+  it('should handle negative numbers', () => {
+    expect(calculateTotal([10, -5])).toBe(5);
+  });
+});
+```
+
+### Integration Tests (API Level)
+```typescript
+describe('GET /api/deals', () => {
+  it('should return deals for valid month', async () => {
+    const res = await fetch('/api/deals?month=2025-12');
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.deals).toBeInstanceOf(Array);
+  });
+  
+  it('should return 400 for invalid month', async () => {
+    const res = await fetch('/api/deals?month=invalid');
+    expect(res.status).toBe(400);
+  });
+});
+```
+
+---
+
+## 4. TDD FOR BUG FIXES
+
+### Step 1: Write Test That Reproduces Bug
+
+```markdown
+## 🐛 BUG: [Description]
+
+### Reproduction Test:
+```typescript
+it('should NOT show increased sum when filtering products', () => {
+  const allData = await fetchDeals({ filter: 'all' });
+  const productsData = await fetchDeals({ filter: 'products' });
+  
+  expect(productsData.totalSum).toBeLessThanOrEqual(allData.totalSum);
+});
+```
+
+### Current Result: ❌ FAIL (bug confirmed)
+```
+
+### Step 2: Fix and Verify
+
+```markdown
+### After Fix:
+```typescript
+// Same test now passes
+expect(productsData.totalSum).toBeLessThanOrEqual(allData.totalSum);
+// Result: ✅ PASS
+```
+
+### Bug Status: ✅ FIXED
+```
+
+---
+
+## 5. ANTI-PATTERNS (AVOID)
+
+### ❌ Writing Tests AFTER Code
+```
+WRONG: Write code → Write tests → Hope they pass
+RIGHT: Write tests → Run (fail) → Write code → Run (pass)
+```
+
+### ❌ Testing Implementation Instead of Behavior
+```typescript
+// WRONG
+it('should call database.query()', () => { ... });
+
+// RIGHT
+it('should return user by ID', () => {
+  const user = await getUser(123);
+  expect(user.id).toBe(123);
+});
+```
+
+### ❌ Writing Too Many Tests at Once
+```
+WRONG: Write 20 tests → Implement everything
+RIGHT: Write 1-3 tests → Implement → Repeat
+```
+
+### ❌ Skipping RED Phase
+```
+WRONG: Assume test would fail, skip to implementation
+RIGHT: Actually RUN the test, see it fail, THEN implement
+```
+
+---
+
+## 6. TDD REPORT TEMPLATE
+
+```markdown
+## 🧪 TDD EXECUTION REPORT
+
+### Feature: [Name]
+### Date: [Date]
+
+### Tests Written (Before Implementation):
+| # | Test Name | Expected | Status |
+|---|-----------|----------|--------|
+| 1 | [test 1] | [expected] | ⏳ |
+| 2 | [test 2] | [expected] | ⏳ |
+| 3 | [test 3] | [expected] | ⏳ |
+
+### RED Phase:
+- Test 1: ❌ FAIL ✅ (expected)
+- Test 2: ❌ FAIL ✅ (expected)
+- Test 3: ❌ FAIL ✅ (expected)
+
+### Implementation:
+[Brief description of code written]
+
+### GREEN Phase:
+- Test 1: ✅ PASS
+- Test 2: ✅ PASS
+- Test 3: ✅ PASS
+
+### REFACTOR Phase:
+- [Changes made]
+- All tests: ✅ PASS
+
+### Summary:
+- Tests written: 3
+- Tests passing: 3
+- Coverage: [areas covered]
+- Confidence: [X]%
+```
+
+---
+
+## 7. GOLDEN RULES
+
+```
+1. Never write code without a failing test first
+2. Write the simplest code to pass the test
+3. Refactor only when tests are green
+4. One test at a time
+5. Test behavior, not implementation
+```
+
+### Test Pyramid:
+```
+        /\
+       /  \  E2E Tests (few)
+      /----\
+     /      \  Integration Tests (some)
+    /--------\
+   /          \  Unit Tests (many)
+  /------------\
+```
+
+---
+
+## 8. CONFIDENCE CALIBRATION
+
+```
+Base: 100%
+- No tests written: -60%
+- Tests written but not run: -40%
+- RED phase skipped: -30%
+- No edge case tests: -20%
+- No error case tests: -15%
+```
+
+---
+**Версия:** 1.0
+**Связанные модули:** `_base-confidence.mdc`, `protocol-development.mdc`

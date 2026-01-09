@@ -1,0 +1,167 @@
+---
+description: Root Cause Analysis standard using 5 Whys and 5W+H methodology
+alwaysApply: false
+---
+# 🎯 ROOT CAUSE ANALYSIS STANDARD
+
+## 1. When to Apply RCA
+
+- After ANY error or failure
+- When same error repeats
+- When fix doesn't work
+- When confidence < 0.8
+- After 2+ failed attempts
+- When freezing or hanging occurs
+
+## 2. The 5 Whys Method
+
+**Ask "Why?" until you reach the root cause:**
+
+```markdown
+## 5 WHYS ANALYSIS
+
+Problem: [Describe the symptom]
+
+Why 1: [First answer]
+Why 2: [Dig deeper]
+Why 3: [Continue]
+Why 4: [Getting closer]
+Why 5: [Root cause]
+
+Root Cause: [Final answer]
+```
+
+**Example:**
+```
+Problem: API returns 500 error
+
+Why 1: The endpoint throws an exception
+Why 2: Database query fails
+Why 3: Connection pool exhausted
+Why 4: Connections not being released
+Why 5: Missing `finally` block to close connection
+
+Root Cause: Missing connection cleanup in try/catch block
+```
+
+## 3. The 5W+H Framework
+
+**Use for complete problem analysis:**
+
+| Question | Answer |
+|----------|--------|
+| **What** | What exactly happened? What was the error message? |
+| **When** | When did it happen? What triggered it? |
+| **Where** | Where in the code? Which file, line, function? |
+| **Who** | Who/what is affected? Which component? |
+| **Why** | Why did this happen? (Use 5 Whys) |
+| **How** | How to fix? How to prevent? |
+
+## 4. RCA Report Template
+
+```markdown
+## 🔍 ROOT CAUSE ANALYSIS REPORT
+
+### Symptom
+- What happened: [description]
+- Error message: [exact text]
+- When: [timestamp/trigger]
+- Where: [file:line or component]
+
+### 5 Whys Analysis
+1. Why: [answer]
+2. Why: [answer]
+3. Why: [answer]
+4. Why: [answer]
+5. Why: [ROOT CAUSE]
+
+### 5W+H Summary
+- **What:** [symptom]
+- **When:** [timing]
+- **Where:** [location]
+- **Who:** [affected component]
+- **Why:** [root cause]
+- **How:** [fix approach]
+
+### Root Cause
+[Clear statement of the actual root cause]
+
+### Fix
+```[language]
+// Minimal code change
+```
+
+### Verification
+- [ ] Fix applied
+- [ ] Error no longer occurs
+- [ ] No regression introduced
+- [ ] Similar patterns checked elsewhere
+
+### Prevention
+- [ ] Added test case
+- [ ] Updated documentation
+- [ ] Added logging/monitoring
+```
+
+## 5. Design Injection Points
+
+**Find where AI reasoning went wrong:**
+
+```markdown
+## 🎯 DESIGN INJECTION ANALYSIS
+
+### Chain of Reasoning
+1. [Step 1 of my thought process]
+2. [Step 2] ← 🚨 WRONG TURN HERE
+3. [Step 3 based on wrong assumption]
+
+### What I Missed
+- Did not check: [what]
+- Did not read: [file/documentation]
+- Assumed without verifying: [assumption]
+
+### What Guidance Was Missing
+- Need: [specific instruction/rule]
+- Location: [where to add it]
+- Format: [how it should be written]
+
+### Proposed AI Guidance
+```
+[New rule or instruction text that would have prevented this error]
+```
+```
+
+## 6. Common Root Causes
+
+| Symptom | Common Root Cause |
+|---------|-------------------|
+| Import error | Wrong path, missing dependency |
+| Type error | Wrong assumption about data structure |
+| 500 error | Unhandled exception, missing validation |
+| Timeout | Infinite loop, unoptimized query |
+| Wrong output | Logic error, wrong variable |
+| Freeze | Blocking operation, deadlock |
+
+## 7. RCA Quality Checklist
+
+- [ ] Did I find the ACTUAL root cause, not just a symptom?
+- [ ] Can I explain WHY the error happened?
+- [ ] Is my fix addressing the root cause, not just hiding it?
+- [ ] Have I checked for similar issues elsewhere?
+- [ ] Have I added prevention measures?
+
+## 8. Anti-Patterns
+
+❌ **DO NOT:**
+- Fix symptoms without understanding cause
+- Assume "it will work now" without testing
+- Skip RCA because "I know what's wrong"
+- Apply workarounds instead of real fixes
+- Ignore repeated errors
+
+✅ **DO:**
+- Always ask "Why?" at least 3 times
+- Document every RCA for future reference
+- Test fix before declaring success
+- Look for patterns in similar code
+- Add safeguards to prevent recurrence

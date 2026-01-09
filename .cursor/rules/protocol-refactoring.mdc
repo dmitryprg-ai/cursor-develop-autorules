@@ -1,0 +1,297 @@
+---
+description: Протокол безопасного рефакторинга — улучшение структуры без изменения поведения
+alwaysApply: false
+---
+# 🔧 PROTOCOL: REFACTORING
+
+> **Активируется через:** `core-master.mdc` при улучшении существующего кода
+> **Ключевые слова:** рефакторинг, улучшить код, оптимизировать, упростить, очистить
+> **Базовые модули:** `_base-confidence.mdc`, `_base-challenge.mdc`, `standard-qa.mdc`
+
+---
+
+## Core Principle: CHANGE STRUCTURE, NOT BEHAVIOR
+
+```
+Refactoring = Улучшение структуры кода
+              БЕЗ изменения внешнего поведения
+
+Если поведение меняется → это NOT refactoring, это feature/bugfix
+```
+
+---
+
+## 1. WHEN TO REFACTOR
+
+### ✅ Refactor When:
+- [ ] Код работает, но трудно понять
+- [ ] Дублированный код (DRY violation)
+- [ ] Длинные методы (> 50 строк)
+- [ ] Глубокая вложенность (> 3 levels)
+- [ ] Сложные условия
+- [ ] Перед добавлением новой фичи в messy code
+- [ ] После того как тесты зелёные
+
+### ❌ Do NOT Refactor When:
+- [ ] Код ещё не работает (fix first!)
+- [ ] Нет тестов (add tests first!)
+- [ ] Под давлением времени (ship first, refactor later)
+- [ ] "Just because" (нужна чёткая причина)
+- [ ] Во время разработки фичи (finish feature first)
+
+---
+
+## 2. REFACTORING SAFETY PROTOCOL
+
+### Перед ЛЮБЫМ рефакторингом:
+
+```markdown
+## 🔧 REFACTORING PLAN
+
+### What: [Какой код будет изменён]
+### Why: [Зачем этот рефакторинг нужен]
+### Risk: [Что может сломаться]
+
+### Safety Checks:
+- [ ] Тесты существуют и проходят
+- [ ] Поведение задокументировано
+- [ ] План отката есть
+
+### Steps:
+1. [Маленький шаг 1]
+2. [Маленький шаг 2]
+3. [Маленький шаг 3]
+```
+
+### Safety Rules:
+
+1. **Тесты ДОЛЖНЫ существовать** перед рефакторингом
+2. **Тесты ДОЛЖНЫ проходить** перед каждым изменением
+3. **Только маленькие шаги** (одно изменение за раз)
+4. **Запуск тестов ПОСЛЕ каждого изменения**
+5. **Commit ПОСЛЕ каждого успешного шага**
+
+---
+
+## 3. REFACTORING WORKFLOW
+
+```
+1. VERIFY   → Все тесты проходят
+2. IDENTIFY → Что нужно рефакторить
+3. PLAN     → Маленькие шаги
+4. EXECUTE  → Один шаг за раз
+5. TEST     → Запуск тестов после каждого шага
+6. COMMIT   → Commit после каждого зелёного теста
+7. REPEAT   → Следующий шаг
+```
+
+### Workflow Checklist:
+
+```markdown
+## 🔄 REFACTORING WORKFLOW
+
+### Step 1: Verify Starting Point
+- [ ] All tests pass
+- [ ] Code committed
+- [ ] Branch created (optional)
+
+### Step 2: Plan Refactoring
+- [ ] Identify smell/issue
+- [ ] Choose refactoring pattern
+- [ ] Break into small steps
+
+### Step 3: Execute (for each step)
+- [ ] Make ONE small change
+- [ ] Run tests
+- [ ] If green → commit
+- [ ] If red → revert, try smaller step
+
+### Step 4: Verify End State
+- [ ] All tests still pass
+- [ ] Behavior unchanged
+- [ ] Code is cleaner
+```
+
+---
+
+## 4. COMMON REFACTORING PATTERNS
+
+### Extract Method
+```typescript
+// BEFORE: Long method
+function processOrder(order) {
+  // 50 lines doing multiple things
+}
+
+// AFTER: Small focused methods
+function processOrder(order) {
+  validateOrder(order);
+  const total = calculateTotal(order);
+  saveOrder(order, total);
+  notifyCustomer(order);
+}
+```
+
+### Rename for Clarity
+```typescript
+// BEFORE
+const d = getD();
+const x = calc(d);
+
+// AFTER
+const dealData = getDealAnalytics();
+const totalRevenue = calculateRevenue(dealData);
+```
+
+### Extract Variable
+```typescript
+// BEFORE
+if (user.age > 18 && user.country === 'RU' && user.verified && !user.banned) {
+
+// AFTER
+const isAdult = user.age > 18;
+const isRussian = user.country === 'RU';
+const isEligible = isAdult && isRussian && user.verified && !user.banned;
+if (isEligible) {
+```
+
+### Simplify Conditionals
+```typescript
+// BEFORE: Nested conditionals
+function getDiscount(user) {
+  if (user.isPremium) {
+    if (user.years > 5) { return 0.3; }
+    else { return 0.2; }
+  } else {
+    if (user.years > 5) { return 0.1; }
+    else { return 0; }
+  }
+}
+
+// AFTER: Guard clauses + early return
+function getDiscount(user) {
+  if (!user.isPremium && user.years <= 5) return 0;
+  if (!user.isPremium && user.years > 5) return 0.1;
+  if (user.isPremium && user.years <= 5) return 0.2;
+  return 0.3;
+}
+```
+
+---
+
+## 5. CODE SMELLS TO REFACTOR
+
+| Smell | Description | Refactoring |
+|-------|-------------|-------------|
+| **Long Method** | > 50 lines | Extract Method |
+| **Duplicate Code** | Same code in multiple places | Extract Method/Class |
+| **Long Parameter List** | > 4 parameters | Introduce Parameter Object |
+| **Deep Nesting** | > 3 levels | Guard Clauses, Extract Method |
+| **Magic Numbers** | Unexplained literals | Extract Constant |
+| **Dead Code** | Unused code | Delete |
+| **Feature Envy** | Method uses other class's data | Move Method |
+| **Large Class** | Class does too much | Extract Class |
+
+---
+
+## 6. ANTI-PATTERNS (AVOID)
+
+### ❌ Big Bang Refactoring
+```
+WRONG: Переписать весь модуль за раз
+RIGHT: Маленькие инкрементальные изменения с тестами между
+```
+
+### ❌ Refactoring Without Tests
+```
+WRONG: "Я просто почищу это быстренько"
+RIGHT: Сначала напиши тесты, потом рефактори
+```
+
+### ❌ Changing Behavior While Refactoring
+```
+WRONG: "Пока я тут, также исправлю этот баг"
+RIGHT: Сначала рефакторинг, потом баг в отдельном commit
+```
+
+### ❌ Premature Abstraction
+```
+WRONG: Создать абстракцию для кода который используется один раз
+RIGHT: Дождись дублирования, потом extract
+```
+
+---
+
+## 7. REFACTORING REPORT TEMPLATE
+
+```markdown
+## 🔧 REFACTORING REPORT
+
+### Target: [File/Class/Method]
+### Reason: [Зачем рефакторинг нужен]
+### Pattern: [Какой паттерн применён]
+
+### Before:
+```[language]
+// Original code
+```
+
+### After:
+```[language]
+// Refactored code
+```
+
+### Steps Taken:
+1. [Step 1] → Tests ✅
+2. [Step 2] → Tests ✅
+3. [Step 3] → Tests ✅
+
+### Verification:
+- [ ] All tests pass
+- [ ] Behavior unchanged
+- [ ] Code is cleaner
+- [ ] No new warnings
+
+### Metrics:
+- Lines changed: [N]
+- Complexity reduced: [before] → [after]
+- Duplication removed: [N instances]
+```
+
+---
+
+## 8. CONFIDENCE CALIBRATION
+
+Применить формулу из `_base-confidence.mdc`:
+
+```
+Base: 100%
+- Нет тестов перед рефакторингом: -60%
+- Большие изменения без intermediate commits: -40%
+- Поведение изменилось: -100% (это НЕ рефакторинг!)
+- Нет before/after comparison: -30%
+```
+
+---
+
+## 9. GOLDEN RULES
+
+```
+1. TESTS FIRST — нет тестов, нет рефакторинга
+2. SMALL STEPS — одно изменение за раз
+3. TEST OFTEN — после каждого изменения
+4. COMMIT OFTEN — после каждого зелёного теста
+5. BEHAVIOR UNCHANGED — same inputs → same outputs
+```
+
+### Quick Check:
+```
+Is it refactoring? Ask:
+- Does external behavior change?
+  - YES → Not refactoring (it's a feature/fix)
+  - NO → Refactoring ✅
+```
+
+---
+**Версия:** 1.0
+**Связанные модули:** `_base-confidence.mdc`, `standard-qa.mdc`, `standard-tdd.mdc`

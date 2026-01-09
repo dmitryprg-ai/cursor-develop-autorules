@@ -1,0 +1,317 @@
+---
+description: Safe Refactoring Standard - improve code structure without breaking behavior
+alwaysApply: false
+---
+# 🔧 SAFE REFACTORING STANDARD
+
+## Core Principle: CHANGE STRUCTURE, NOT BEHAVIOR
+
+```
+Refactoring = Improving code structure
+            WITHOUT changing external behavior
+
+If behavior changes → It's NOT refactoring, it's a feature/bugfix
+```
+
+## 1. When to Refactor
+
+### ✅ Refactor When:
+- [ ] Code works but is hard to understand
+- [ ] Duplicated code (DRY violation)
+- [ ] Long methods (> 50 lines)
+- [ ] Deep nesting (> 3 levels)
+- [ ] Complex conditionals
+- [ ] Before adding new feature to messy code
+- [ ] After tests are green
+
+### ❌ Do NOT Refactor When:
+- [ ] Code doesn't work yet (fix first!)
+- [ ] No tests exist (add tests first!)
+- [ ] Under time pressure (ship first, refactor later)
+- [ ] "Just because" (needs clear reason)
+- [ ] During feature development (finish feature first)
+
+## 2. Refactoring Safety Protocol
+
+### Before ANY refactoring:
+```markdown
+## 🔧 REFACTORING PLAN
+
+### What: [What code will be changed]
+### Why: [Why this refactoring is needed]
+### Risk: [What could break]
+
+### Safety Checks:
+- [ ] Tests exist and pass
+- [ ] Behavior is documented
+- [ ] Rollback plan exists
+
+### Steps:
+1. [Small step 1]
+2. [Small step 2]
+3. [Small step 3]
+```
+
+### Safety Rules:
+1. **Tests must exist** before refactoring
+2. **Tests must pass** before each change
+3. **Small steps only** (one change at a time)
+4. **Run tests after EVERY change**
+5. **Commit after each successful step**
+
+## 3. Common Refactoring Patterns
+
+### Extract Method
+```typescript
+// BEFORE: Long method
+function processOrder(order) {
+  // 50 lines of code doing multiple things
+  // validation
+  // calculation
+  // saving
+  // notification
+}
+
+// AFTER: Small focused methods
+function processOrder(order) {
+  validateOrder(order);
+  const total = calculateTotal(order);
+  saveOrder(order, total);
+  notifyCustomer(order);
+}
+```
+
+### Rename for Clarity
+```typescript
+// BEFORE: Unclear names
+const d = getD();
+const x = calc(d);
+
+// AFTER: Clear names
+const dealData = getDealAnalytics();
+const totalRevenue = calculateRevenue(dealData);
+```
+
+### Extract Variable
+```typescript
+// BEFORE: Complex expression
+if (user.age > 18 && user.country === 'RU' && user.verified && !user.banned) {
+
+// AFTER: Named conditions
+const isAdult = user.age > 18;
+const isRussian = user.country === 'RU';
+const isEligible = isAdult && isRussian && user.verified && !user.banned;
+if (isEligible) {
+```
+
+### Remove Duplication
+```typescript
+// BEFORE: Duplicated code
+function getDealsForManager(managerId) {
+  const deals = await db.query('SELECT * FROM deals WHERE manager_id = $1', [managerId]);
+  return deals.map(d => ({ id: d.id, title: d.title, amount: d.amount }));
+}
+
+function getDealsForPipeline(pipelineId) {
+  const deals = await db.query('SELECT * FROM deals WHERE pipeline_id = $1', [pipelineId]);
+  return deals.map(d => ({ id: d.id, title: d.title, amount: d.amount }));
+}
+
+// AFTER: Extracted common logic
+function mapDealToDTO(deal) {
+  return { id: deal.id, title: deal.title, amount: deal.amount };
+}
+
+function getDealsForManager(managerId) {
+  const deals = await db.query('SELECT * FROM deals WHERE manager_id = $1', [managerId]);
+  return deals.map(mapDealToDTO);
+}
+
+function getDealsForPipeline(pipelineId) {
+  const deals = await db.query('SELECT * FROM deals WHERE pipeline_id = $1', [pipelineId]);
+  return deals.map(mapDealToDTO);
+}
+```
+
+### Simplify Conditionals
+```typescript
+// BEFORE: Nested conditionals
+function getDiscount(user) {
+  if (user.isPremium) {
+    if (user.years > 5) {
+      return 0.3;
+    } else {
+      return 0.2;
+    }
+  } else {
+    if (user.years > 5) {
+      return 0.1;
+    } else {
+      return 0;
+    }
+  }
+}
+
+// AFTER: Guard clauses + early return
+function getDiscount(user) {
+  if (!user.isPremium && user.years <= 5) return 0;
+  if (!user.isPremium && user.years > 5) return 0.1;
+  if (user.isPremium && user.years <= 5) return 0.2;
+  return 0.3; // premium + years > 5
+}
+```
+
+## 4. Refactoring Workflow
+
+### Step-by-Step Process:
+```
+1. VERIFY   → All tests pass
+2. IDENTIFY → What needs refactoring
+3. PLAN     → Small steps
+4. EXECUTE  → One step at a time
+5. TEST     → Run tests after each step
+6. COMMIT   → Commit after each green test
+7. REPEAT   → Next step
+```
+
+### Workflow Checklist:
+```markdown
+## 🔄 REFACTORING WORKFLOW
+
+### Step 1: Verify Starting Point
+- [ ] All tests pass
+- [ ] Code committed
+- [ ] Branch created (optional)
+
+### Step 2: Plan Refactoring
+- [ ] Identify smell/issue
+- [ ] Choose refactoring pattern
+- [ ] Break into small steps
+
+### Step 3: Execute (for each step)
+- [ ] Make ONE small change
+- [ ] Run tests
+- [ ] If green → commit
+- [ ] If red → revert, try smaller step
+
+### Step 4: Verify End State
+- [ ] All tests still pass
+- [ ] Behavior unchanged
+- [ ] Code is cleaner
+```
+
+## 5. Code Smells to Refactor
+
+| Smell | Description | Refactoring |
+|-------|-------------|-------------|
+| **Long Method** | > 50 lines | Extract Method |
+| **Duplicate Code** | Same code in multiple places | Extract Method/Class |
+| **Long Parameter List** | > 4 parameters | Introduce Parameter Object |
+| **Deep Nesting** | > 3 levels | Guard Clauses, Extract Method |
+| **Magic Numbers** | Unexplained literals | Extract Constant |
+| **Dead Code** | Unused code | Delete |
+| **Feature Envy** | Method uses other class's data | Move Method |
+| **Large Class** | Class does too much | Extract Class |
+
+## 6. Anti-Patterns (AVOID)
+
+### ❌ Big Bang Refactoring
+```
+WRONG: Rewrite entire module at once
+RIGHT: Small incremental changes with tests between
+```
+
+### ❌ Refactoring Without Tests
+```
+WRONG: "I'll just clean this up real quick"
+RIGHT: Write tests first, then refactor
+```
+
+### ❌ Changing Behavior While Refactoring
+```
+WRONG: "While I'm here, I'll also fix this bug"
+RIGHT: Refactor first, then fix bug in separate commit
+```
+
+### ❌ Premature Abstraction
+```
+WRONG: Create abstraction for code used once
+RIGHT: Wait for duplication, then extract
+```
+
+## 7. Refactoring Report Template
+
+```markdown
+## 🔧 REFACTORING REPORT
+
+### Target: [File/Class/Method]
+### Reason: [Why refactoring needed]
+### Pattern: [Which refactoring pattern]
+
+### Before:
+```[language]
+// Original code
+```
+
+### After:
+```[language]
+// Refactored code
+```
+
+### Steps Taken:
+1. [Step 1] → Tests ✅
+2. [Step 2] → Tests ✅
+3. [Step 3] → Tests ✅
+
+### Verification:
+- [ ] All tests pass
+- [ ] Behavior unchanged
+- [ ] Code is cleaner
+- [ ] No new warnings
+
+### Metrics:
+- Lines changed: [N]
+- Complexity reduced: [before] → [after]
+- Duplication removed: [N instances]
+```
+
+## 8. Quick Reference
+
+### Safe Refactoring Cycle:
+```
+TEST → REFACTOR → TEST → COMMIT → REPEAT
+```
+
+### Golden Rules:
+1. **Tests first** - no tests, no refactoring
+2. **Small steps** - one change at a time
+3. **Test often** - after every change
+4. **Commit often** - after every green test
+5. **Behavior unchanged** - same inputs → same outputs
+
+### When in Doubt:
+```
+Is it refactoring? Ask:
+- Does external behavior change? 
+  - YES → Not refactoring (it's a feature/fix)
+  - NO → Refactoring ✅
+```
+
+## 9. Integration with Other Standards
+
+### Before Refactoring:
+- Read `.cursor/rules/tdd-doc.mdc` - ensure tests exist
+- Read `.cursor/rules/cto-lead.mdc` - understand quality goals
+
+### After Refactoring:
+- Apply `.cursor/rules/core-check.mdc` - verify results
+- Apply `.cursor/rules/ai-qa-standards.mdc` - quality check
+
+### Confidence Calibration:
+```
+Base: 100%
+- No tests before refactoring: -60%
+- Big changes without intermediate commits: -40%
+- Behavior changed: -100% (not refactoring!)
+- No before/after comparison: -30%
+```

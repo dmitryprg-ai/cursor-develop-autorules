@@ -1,0 +1,29 @@
+---
+description: "[DEPRECATED] Используйте core-master.mdc"
+alwaysApply: false
+---
+# ⚠️ DEPRECATED — USE core-master.mdc
+
+> **Этот файл устарел. Используйте:**
+> - `core-master.mdc` — единая точка входа с правильным порядком
+
+---
+# OLD CONTENT BELOW (for reference)
+
+Use the todo_tool to break down tasks into sub-tasks
+
+
+0. Look and write the nearest action plan to chat, what is your output? what test cases? which {projectname}.todo.md are you working with? what did you lose from previous actions?
+
+1. read and apply
+.cursor/rules/core-auto.mdc
+
+2. only after you apply and complete point 1 → read and apply
+.cursor/rules/core-check.mdc
+
+3. only after you apply and complete point 2 → read and apply
+.cursor/rules/core-clean.mdc
+
+4. only at the very end, check and write next actions based on what you wrote to chat and what we need to do according to {projectname}.todo.md?
+
+do we need to update the action plan? and how?

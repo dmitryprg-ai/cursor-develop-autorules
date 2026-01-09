@@ -1,0 +1,275 @@
+---
+description: Data Research Standard - structured approach to data analysis before coding
+alwaysApply: false
+---
+# 📊 RESEARCH DATA STANDARD v2.2
+
+## Core Principle: DATA FIRST, CODE SECOND
+
+```
+1. LOAD   → Load data, check accessibility
+2. SCHEMA → Show structure (types, shape, samples)
+3. PROFILE → Find risks (nulls, duplicates, anomalies)
+4. HYPOTHESIS → What do we want to prove?
+5. EXPERIMENT → One small test
+6. DOCUMENT → Record findings
+```
+
+## 1. Data Loading Protocol
+
+### Before ANY data work:
+```python
+# MANDATORY: Check data exists and is accessible
+import os
+file_path = "path/to/data.parquet"
+assert os.path.exists(file_path), f"File not found: {file_path}"
+print(f"File size: {os.path.getsize(file_path) / 1024 / 1024:.2f} MB")
+```
+
+### Loading checklist:
+- [ ] File exists and accessible
+- [ ] File size is reasonable
+- [ ] Encoding is correct (UTF-8, cp1251, etc.)
+- [ ] No permission errors
+
+## 2. Schema Analysis (MANDATORY)
+
+### Always show before any conclusions:
+```python
+import pandas as pd
+
+# Load data
+df = pd.read_parquet("data.parquet")
+
+# MANDATORY OUTPUT:
+print("=" * 60)
+print("SCHEMA ANALYSIS")
+print("=" * 60)
+print(f"Shape: {df.shape}")
+print(f"\nData Types:\n{df.dtypes}")
+print(f"\nSample (head 5):\n{df.head()}")
+print(f"\nUnique counts:\n{df.nunique()}")
+print(f"\nNull counts:\n{df.isnull().sum()}")
+print("=" * 60)
+```
+
+### Schema Report Template:
+```markdown
+## 📋 SCHEMA REPORT
+
+### File: [path]
+### Shape: [rows] x [columns]
+
+### Columns:
+| Column | Type | Nulls | Uniques | Sample Values |
+|--------|------|-------|---------|---------------|
+| col1 | int64 | 0 | 100 | 1, 2, 3... |
+| col2 | object | 5 | 50 | "A", "B"... |
+
+### Observations:
+- [observation 1]
+- [observation 2]
+```
+
+## 3. Risk Profiling
+
+### Check for common data issues:
+```python
+# Nulls
+print("NULLS:")
+print(df.isnull().sum())
+
+# Duplicates
+print(f"\nDUPLICATES: {df.duplicated().sum()}")
+
+# Data types issues
+print("\nPOTENTIAL TYPE ISSUES:")
+for col in df.select_dtypes(include=['object']).columns:
+    sample = df[col].dropna().head(3).tolist()
+    print(f"  {col}: {sample}")
+```
+
+### Risk Categories:
+| Risk | Check | Action |
+|------|-------|--------|
+| Missing data | `df.isnull().sum()` | Document, decide handling |
+| Duplicates | `df.duplicated().sum()` | Investigate, dedupe if needed |
+| Wrong types | Manual inspection | Convert types |
+| Outliers | `df.describe()` | Investigate, document |
+| Encoding | Try reading | Fix encoding |
+
+## 4. Hypothesis Formulation
+
+### Before any analysis:
+```markdown
+## 🎯 HYPOTHESIS
+
+### Question:
+[What do we want to know/prove?]
+
+### Expected outcome:
+[What we expect to find]
+
+### Success criteria:
+- [Criterion 1]
+- [Criterion 2]
+
+### Assumptions:
+- [Assumption 1]
+- [Assumption 2]
+```
+
+## 5. Mini-Experiment Protocol
+
+### One small test at a time:
+```python
+# EXPERIMENT: [Description]
+# HYPOTHESIS: [What we expect]
+
+# Step 1: Minimal query
+result = df[df['column'] == 'value'].shape[0]
+
+# Step 2: Output result
+print(f"Result: {result}")
+print(f"Expected: [expected value]")
+print(f"Status: {'✅ PASS' if result == expected else '❌ FAIL'}")
+```
+
+### Experiment Rules:
+- [ ] One question per experiment
+- [ ] Deterministic (same input → same output)
+- [ ] Fast (< 30 seconds)
+- [ ] Logged (print results)
+- [ ] Compared to expectation
+
+## 6. Documentation Format (5W+H)
+
+### Every finding must answer:
+| Question | Answer |
+|----------|--------|
+| **What** | What did you find? (specific data, not "found something") |
+| **When** | When does this occur? (date range, conditions) |
+| **Where** | Where in data? (file, column, row range) |
+| **Who** | Who/what is affected? (records, users, deals) |
+| **Why** | Why is this important? (impact, implications) |
+| **How** | How to use this? (next steps, recommendations) |
+
+### Finding Report Template:
+```markdown
+## 🔍 FINDING: [Title]
+
+### What:
+[Specific finding with numbers]
+
+### Where:
+File: [path]
+Column: [column name]
+Rows affected: [count]
+
+### Evidence:
+```python
+# Code that proves finding
+df[df['column'] == 'value'].head()
+```
+
+### Impact:
+[Why this matters]
+
+### Recommendation:
+[What to do next]
+```
+
+## 7. Anti-Patterns (AVOID)
+
+### ❌ Making conclusions without data:
+```
+WRONG: "The data probably contains..."
+RIGHT: "df.shape shows 1000 rows, df['col'].nunique() shows 50 unique values"
+```
+
+### ❌ Skipping schema analysis:
+```
+WRONG: Start coding immediately
+RIGHT: Always show dtypes, head(), nunique() first
+```
+
+### ❌ Large experiments:
+```
+WRONG: Complex analysis touching all data
+RIGHT: Small query, limited rows, one question
+```
+
+### ❌ Assumptions without verification:
+```
+WRONG: "This column is probably a date"
+RIGHT: "df['col'].dtype is datetime64, sample: 2025-01-15"
+```
+
+## 8. Research Session Checklist
+
+```markdown
+## ✅ RESEARCH SESSION CHECKLIST
+
+### Data Loading:
+- [ ] File exists and accessible
+- [ ] Size checked
+- [ ] Encoding verified
+
+### Schema Analysis:
+- [ ] Shape printed
+- [ ] dtypes shown
+- [ ] head() displayed
+- [ ] nunique() checked
+- [ ] nulls counted
+
+### Risk Profiling:
+- [ ] Duplicates checked
+- [ ] Nulls analyzed
+- [ ] Types verified
+- [ ] Outliers identified
+
+### Hypothesis:
+- [ ] Question formulated
+- [ ] Expected outcome stated
+- [ ] Success criteria defined
+
+### Experiment:
+- [ ] One question tested
+- [ ] Result logged
+- [ ] Compared to expectation
+
+### Documentation:
+- [ ] 5W+H answered
+- [ ] Evidence provided
+- [ ] Recommendations made
+```
+
+## 9. Quick Reference
+
+```
+LOAD → Check file exists, size, encoding
+SCHEMA → dtypes, shape, head(5), nunique()
+PROFILE → nulls, duplicates, outliers
+HYPOTHESIS → Question + Expected + Criteria
+EXPERIMENT → One small test + Log result
+DOCUMENT → 5W+H format
+```
+
+## 10. Confidence Calibration
+
+```
+Base: 100%
+
+Deductions:
+- Schema not shown: -40%
+- No head() sample: -30%
+- Assumptions without data: -50%
+- Large experiment (>1000 rows first try): -20%
+- 5W+H not answered: -25%
+
+Example:
+Base: 100%
+- Didn't show schema: -40%
+- Made assumption: -50%
+Final: 10% → DO NOT PROCEED
+```
