@@ -1,0 +1,281 @@
+---
+description: Протокол исправления ошибок с Root Cause Analysis
+alwaysApply: false
+---
+# 🐛 PROTOCOL: BUG FIX
+
+> **Активируется через:** `core-master.mdc` при исправлении ошибок
+> **Ключевые слова:** ошибка, баг, не работает, падает, exception, error
+> **Базовые модули:** `_base-5wh.mdc`, `_base-confidence.mdc`, `standard-rca.mdc`
+
+---
+
+## Core Principle: FIX ROOT CAUSE, NOT SYMPTOM
+
+```
+1. STOP    → Остановись при ошибке
+2. CAPTURE → Зафиксируй всю информацию
+3. ANALYZE → 5 Whys до root cause
+4. FIX     → Минимальный патч для root cause
+5. VERIFY  → Убедись что исправлено
+6. PREVENT → Добавь защиту от повторения
+```
+
+---
+
+## 1. WHEN TO APPLY THIS PROTOCOL
+
+| Ситуация | Применять? |
+|----------|-----------|
+| Ошибка в терминале | ✅ ДА |
+| Exception в коде | ✅ ДА |
+| Неожиданный результат | ✅ ДА |
+| Тест не проходит | ✅ ДА |
+| AI завис | ✅ ДА → также `protocol-freeze-recovery.mdc` |
+| Warning в консоли | ✅ ДА (проанализировать) |
+
+---
+
+## 2. ERROR CAPTURE TEMPLATE
+
+### Немедленно при ошибке зафиксируй:
+
+```markdown
+## 🚨 ERROR CAPTURED
+
+### Timestamp:
+[когда произошла ошибка]
+
+### Command/Action:
+```bash
+[exact command that caused error]
+```
+
+### Full Error Output:
+```
+[ПОЛНЫЙ вывод ошибки, не сокращать]
+```
+
+### Context:
+- File: [какой файл редактировал]
+- Action: [что пытался сделать]
+- Prior steps: [что делал до этого]
+```
+
+---
+
+## 3. ROOT CAUSE ANALYSIS (5 Whys)
+
+Применить формат из `_base-5wh.mdc`:
+
+```markdown
+## 🔍 5 WHYS ANALYSIS
+
+### Problem: [symptom description]
+
+**Why 1:** [первый ответ — обычно симптом]
+↓
+**Why 2:** [копаем глубже]
+↓
+**Why 3:** [ещё глубже]
+↓
+**Why 4:** [приближаемся к причине]
+↓
+**Why 5:** [ROOT CAUSE]
+
+### 🎯 Root Cause:
+[Чёткая формулировка корневой причины]
+
+### 🔧 Fix:
+[Минимальное исправление для устранения ROOT CAUSE]
+```
+
+---
+
+## 4. COMMON ERROR PATTERNS
+
+### Quick Reference:
+
+| Error Type | Common Root Cause | Fix Approach |
+|------------|-------------------|--------------|
+| `ModuleNotFoundError` | Не в .venv или missing in requirements.txt | `pip install` + add to requirements |
+| `ImportError` | Wrong path, circular import | Fix import path |
+| `TypeError` | Wrong data structure assumption | Check actual types |
+| `500 Error` | Unhandled exception | Add error handling |
+| `Timeout` | Infinite loop, slow query | Add limits, optimize |
+| `Permission denied` | File/folder permissions | chmod, check path |
+| `Connection refused` | Service not running | Start service |
+
+### Error Priority Matrix:
+
+| Priority | Description | Action |
+|----------|-------------|--------|
+| 🔴 CRITICAL (1-2) | Blocks all work | STOP immediately, fix first |
+| 🟠 HIGH (3-5) | Major functionality broken | Fix before next command |
+| 🟡 MEDIUM (6-7) | Feature works with issues | Fix or document |
+| 🟢 LOW (8-10) | Minor/cosmetic | Document for later |
+
+---
+
+## 5. FIX IMPLEMENTATION
+
+### Rules:
+
+1. **Minimal fix** — только то, что устраняет root cause
+2. **One change at a time** — не исправлять несколько вещей сразу
+3. **Test after fix** — запусти ту же команду и убедись что ошибки нет
+4. **No workarounds** — если workaround необходим, документируй
+
+### Fix Template:
+
+```markdown
+## 🔧 FIX APPLIED
+
+### What was changed:
+```diff
+- old code
++ new code
+```
+
+### Why this fixes root cause:
+[объяснение]
+
+### Verification:
+```bash
+[command to verify fix]
+```
+
+### Result:
+✅ Fixed / ❌ Still failing
+```
+
+---
+
+## 6. VERIFICATION PROTOCOL
+
+### После исправления ОБЯЗАТЕЛЬНО:
+
+1. **Re-run the exact same command** that caused the error
+2. **Check for side effects** — не сломалось ли что-то другое
+3. **Run related tests** if available
+
+```markdown
+## ✅ FIX VERIFICATION
+
+### Original Error:
+[краткое описание]
+
+### Fix Applied:
+[что изменили]
+
+### Verification:
+| Check | Command | Result |
+|-------|---------|--------|
+| Error gone | [original command] | ✅/❌ |
+| No side effects | [related commands] | ✅/❌ |
+| Tests pass | [test command] | ✅/❌ |
+
+### Status: ✅ VERIFIED / ❌ NEEDS MORE WORK
+```
+
+---
+
+## 7. PREVENTION MEASURES
+
+### После fix-а спроси себя:
+
+- [ ] Как предотвратить эту ошибку в будущем?
+- [ ] Нужен ли тест-кейс?
+- [ ] Нужно ли обновить документацию?
+- [ ] Нужна ли защита в коде (validation, error handling)?
+
+### Prevention Actions:
+
+```markdown
+## 🛡️ PREVENTION
+
+### Test Case Added:
+- [ ] Yes — [test file path]
+- [ ] No — reason: [why not needed]
+
+### Documentation Updated:
+- [ ] Yes — [doc file path]
+- [ ] No — reason: [why not needed]
+
+### Code Protection Added:
+- [ ] Yes — [type of protection]
+- [ ] No — reason: [why not needed]
+```
+
+---
+
+## 8. ERROR LEARNING INTEGRATION
+
+### После КАЖДОГО исправления:
+
+Записать в `error-learning.mdc` protocol:
+
+```markdown
+## ERROR #{N}: [date]
+
+### Symptom:
+[что произошло]
+
+### Root Cause:
+[почему произошло]
+
+### Fix:
+[как исправили]
+
+### Prevention:
+[как предотвратить в будущем]
+
+### Design Injection:
+[какой guidance добавить в инструкции]
+```
+
+---
+
+## 9. ANTI-PATTERNS (AVOID)
+
+### ❌ Fixing symptoms:
+```
+WRONG: Добавить try/except чтобы скрыть ошибку
+RIGHT: Найти root cause и устранить
+```
+
+### ❌ Workarounds without documentation:
+```
+WRONG: "Сделаю по-другому, так проще"
+RIGHT: Зафиксировать почему workaround и когда исправить
+```
+
+### ❌ Ignoring recurring errors:
+```
+WRONG: "Опять эта ошибка, просто перезапущу"
+RIGHT: Если ошибка повторяется — глубже RCA
+```
+
+### ❌ Multiple fixes at once:
+```
+WRONG: Исправить 5 вещей сразу и надеяться что заработает
+RIGHT: Один fix → test → следующий fix
+```
+
+---
+
+## 10. CONFIDENCE CALIBRATION
+
+Применить формулу из `_base-confidence.mdc`:
+
+```
+Base: 100%
+- Root cause не найден (только symptom fix): -60%
+- Fix не протестирован: -50%
+- Нет verification: -40%
+- Нет prevention measures: -20%
+```
+
+---
+**Версия:** 1.0
+**Связанные модули:** `_base-5wh.mdc`, `standard-rca.mdc`, `error-learning.mdc`
