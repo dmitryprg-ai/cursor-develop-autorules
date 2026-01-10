@@ -1,7 +1,7 @@
-# 🏗️ CURSOR RULES ARCHITECTURE v5.3
+# 🏗️ CURSOR RULES ARCHITECTURE v6.0
 
-**Дата обновления:** 2026-01-09
-**Версия:** 5.3 (Inline Base Modules + Completion Report)
+**Дата обновления:** 2026-01-10
+**Версия:** 6.0 (Universal Structure)
 
 ---
 
@@ -9,16 +9,33 @@
 
 ```
 .cursor/
-├── rules/                     # ⭐ АКТУАЛЬНЫЕ инструкции (22 файла)
+├── CHANGELOG.md               # История изменений
+│
+├── rules/                     # ⭐ АКТУАЛЬНЫЕ инструкции (23 файла)
 │   ├── core-master.mdc        # Entry point (alwaysApply: true)
-│   ├── _base-*.mdc            # Базовые модули (7 шт)
+│   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   ├── protocol-*.mdc         # Протоколы (7 шт)
 │   ├── standard-*.mdc         # Стандарты (5 шт)
 │   ├── error-learning.mdc     # Обучение на ошибках
-│   └── docs (*.md)            # Документация
+│   ├── ARCHITECTURE.md        # Этот файл
+│   └── HOW-TO-USE.md          # Как работать с инструкциями
 │
 └── rules_alone/               # 🎯 ОДИНОЧНЫЕ инструкции (4 файла)
-    └── *.mdc                  # Для единичных задач
+    ├── *.mdc                  # Для единичных задач
+    └── HOW-TO-USE.md          # Документация
+```
+
+**В корне проекта:**
+```
+AGENTS.md                      # Quick Start для AI агентов (опционально)
+```
+
+**Проект-специфичные файлы (в .cursor_additional/{projectname}/):**
+```
+.cursor_additional/{projectname}/
+├── improvements-backlog.md    # Накопление улучшений
+├── error-log.md               # Логи ошибок
+└── CONTEXT.md                 # История изменений проекта
 ```
 
 ---
@@ -31,14 +48,15 @@
 ├── 🎯 ENTRY POINT (единственный alwaysApply: true)
 │   └── core-master.mdc          # Master Router Protocol
 │
-├── 📦 BASE MODULES (атомарные компоненты — 7 шт)
+├── 📦 BASE MODULES (атомарные компоненты — 8 шт)
 │   ├── _base-confidence.mdc     # Калибровка уверенности
 │   ├── _base-todo-usage.mdc     # Использование todo_tool
 │   ├── _base-challenge.mdc      # Протокол Challenge
 │   ├── _base-5wh.mdc            # Формат 5W+H
 │   ├── _base-forbidden.mdc      # Запрещённые действия
 │   ├── _base-crosscheck.mdc     # Cross-check правила
-│   └── _base-jtbd-thinking.mdc  # JTBD-мышление для user-facing фич
+│   ├── _base-jtbd-thinking.mdc  # JTBD-мышление для user-facing фич
+│   └── _base-rat.mdc            # Riskiest Assumption Test
 │
 ├── 🔄 PROTOCOLS (протоколы для типов задач — 7 шт)
 │   ├── protocol-prepare-prompt.mdc  # Подготовка промта (ПЕРВЫЙ ШАГ)
@@ -107,7 +125,7 @@
 │  BASE MODULES (загружаются по необходимости)                    │
 │  ┌─────────────┬─────────────┬─────────────┬──────────────────┐ │
 │  │ confidence  │ challenge   │ crosscheck  │ jtbd-thinking    │ │
-│  │ todo-usage  │ 5wh         │ forbidden   │                  │ │
+│  │ todo-usage  │ 5wh         │ forbidden   │ rat              │ │
 │  └─────────────┴─────────────┴─────────────┴──────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
@@ -164,6 +182,7 @@
 | `_base-forbidden.mdc` | Запрещённые действия + WHY контекст | Все протоколы |
 | `_base-crosscheck.mdc` | Cross-check правила + UI проверка | Фаза VERIFY |
 | `_base-jtbd-thinking.mdc` | JTBD-мышление (Job Story, Выгоды/Налоги) | Feature Development |
+| `_base-rat.mdc` | Riskiest Assumption Test — проверка рисков | PLAN Phase, Prompt Prep |
 
 ---
 
@@ -201,6 +220,7 @@
 ├──────────────────────────────────────────────────────────────┤
 │  1. PLAN PHASE                                               │
 │     - Понять задачу                                          │
+│     - RAT: выписать и проверить рискованные предположения    │
 │     - Определить тип → выбрать протокол                      │
 │     - Создать TODO list                                      │
 │     - Выписать ожидаемый OUTPUT                              │
@@ -221,7 +241,7 @@
 │  4. CLEAN PHASE                                              │
 │     - Проверить linter errors = 0                            │
 │     - Удалить временные файлы                                │
-│     - Обновить документацию                                  │
+│     - Обновить документацию и CHANGELOG.md                   │
 │     - Auto Learning → improvements-backlog.md                │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -239,18 +259,37 @@
 
 ---
 
-## 🔗 СВЯЗЬ С ПРОЕКТНЫМИ ФАЙЛАМИ
+## 🔗 ПРОЕКТНЫЕ ФАЙЛЫ
 
-| Файл | Назначение |
-|------|------------|
-| `{projectname}-improvements-backlog.md` | Накопление улучшений |
-| `{projectname}-error-log.md` | Логи ошибок |
+| Файл | Расположение | Назначение |
+|------|--------------|------------|
+| `AGENTS.md` | корень проекта | Quick Start для AI агентов (опционально) |
+| `improvements-backlog.md` | `.cursor_additional/{projectname}/` | Накопление улучшений |
+| `error-log.md` | `.cursor_additional/{projectname}/` | Логи ошибок |
+| `CONTEXT.md` | `.cursor_additional/{projectname}/` | История изменений проекта |
 
 ---
 
-## 📈 ПРЕИМУЩЕСТВА АРХИТЕКТУРЫ
+## 🔧 КАК ДОБАВИТЬ НОВУЮ ИНСТРУКЦИЮ
 
-1. **Подготовка промта** — улучшение запроса перед выполнением
+### Новый протокол:
+1. Создай файл по образцу существующего `protocol-*.mdc`
+2. Заполни по образцу (включая Input/Output/Guardrails/WHY)
+3. Положи в `.cursor/rules/`
+4. Добавь в таблицу в `core-master.mdc`
+5. Обнови `ARCHITECTURE.md` и `CHANGELOG.md`
+
+### Новая одиночная инструкция:
+1. Создай файл по образцу существующего в `rules_alone/`
+2. Заполни
+3. Положи в `.cursor/rules_alone/`
+4. Обнови `rules_alone/HOW-TO-USE.md`
+
+---
+
+## 📈 ПРЕИМУЩЕСТВА АРХИТЕКТУРЫ v6.0
+
+1. **Универсальность** — можно скопировать на любой проект
 2. **Единая точка входа** — только `core-master.mdc` имеет `alwaysApply: true`
 3. **Quality Framework** — `standard-agent-quality.mdc` с метриками
 4. **Модульность** — правила не дублируются, `_base-*` переиспользуются
@@ -260,6 +299,6 @@
 
 ---
 
-**Версия архитектуры:** 5.3 (Inline Base Modules + Completion Report)
-**Дата обновления:** 2026-01-09
+**Версия архитектуры:** 6.0 (Universal Structure)
+**Дата обновления:** 2026-01-10
 

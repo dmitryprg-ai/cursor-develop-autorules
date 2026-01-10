@@ -25,7 +25,7 @@ alwaysApply: false
 | Тип задачи | `core-master.mdc` → routing table |
 | Протокол | `protocol-*.mdc` |
 | Базовые правила | `_base-*.mdc` |
-| История ошибок | `{project}-improvements-backlog.md` |
+| История ошибок | `.cursor_additional/{projectname}/improvements-backlog.md` |
 
 ---
 
@@ -107,7 +107,7 @@ alwaysApply: false
 ```
 Задача завершена → Quick Learning → Была ошибка?
     ├── Нет → Продолжить
-    └── Да → Записать в improvements-backlog.md
+    └── Да → Записать в .cursor_additional/{projectname}/improvements-backlog.md
 ```
 
 ### 5.2. Periodic Feedback (раз в неделю):

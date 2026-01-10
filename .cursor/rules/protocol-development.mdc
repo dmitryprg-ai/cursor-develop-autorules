@@ -106,6 +106,36 @@ apps/*/           # app-specific code
 - [что нужно для реализации]
 ```
 
+### 1.4. Find Working Example (ОБЯЗАТЕЛЬНО для UI) — из Improvement #9
+
+**Input:** Задача на UI разработку (grid, layout, компоненты)
+
+**Output:** Работающий паттерн из существующего кода
+
+**"Don't Invent — Copy First"**
+
+Перед написанием нового UI кода:
+
+1. **Поиск:** Найди в проекте похожую реализацию
+   ```bash
+   grep -r "grid-cols\|col-span" apps/web/app/
+   grep -r "flex\|gap-" apps/web/app/
+   ```
+
+2. **Анализ:** Какие классы используются? Какие breakpoints?
+
+3. **Копирование:** Используй ТОЧНО такую же структуру
+
+4. **Адаптация:** Только потом адаптируй под свои нужды
+
+**Guardrails:**
+- ❌ НЕ придумывать свои классы если есть работающий пример
+- ❌ НЕ использовать `md:grid-cols-*` без проверки что это работает в проекте
+- ✅ Копировать работающий паттерн → адаптировать
+
+> **WHY:** На странице `/settings/schedule` УЖЕ была реализована сетка 3/4 + 1/4. 
+> Использовал `md:grid-cols-4` который НЕ работает в Tailwind v4 проекта. Потеря 40 минут на 4 итерации.
+
 ### Phase 2: EXECUTE (TDD подход)
 
 1. **Написать тест-кейсы** (они должны ПАДАТЬ)
@@ -139,6 +169,46 @@ apps/*/           # app-specific code
 - [ ] Each file opened and verified
 - [ ] Content matches expectations
 ```
+
+### 3.1. Production Deployment Check (для frontend) — из Improvement #8
+
+**Input:** Успешный build frontend приложения
+
+**Output:** Подтверждение что изменения видны пользователю
+
+**Процесс:**
+
+```markdown
+### Production Deployment Verification:
+
+1. Production service перезапущен:
+   ```bash
+   sudo systemctl restart <frontend-service>
+   ```
+
+2. Ожидание запуска (3-5 секунд):
+   ```bash
+   sleep 5
+   ```
+
+3. Проверка через curl/browser:
+   ```bash
+   curl -I http://localhost:<port>/path
+   # ИЛИ открыть в браузере
+   ```
+
+4. Визуальная проверка:
+   - [ ] Изменения видны на странице
+   - [ ] Нет ошибок в консоли браузера
+```
+
+**Guardrails:**
+- ❌ НЕ объявлять "готово" пока изменения не видны пользователю
+- ❌ Build success ≠ User sees changes
+- ✅ Проверить что production сервис получил обновлённый код
+
+> **WHY:** AI объявил "готово" с уверенностью 95%, но изменения не были видны. 
+> Production сервис не был перезапущен после build. Потеря доверия пользователя.
 
 ### Phase 4: CLEAN
 
@@ -457,5 +527,6 @@ Base: 100%
 
 ---
 
-**Версия:** 2.0
+**Версия:** 2.1
+**Обновлено:** 2026-01-10 (добавлены 1.4 Find Working Example, 3.1 Production Deployment Check)
 **Связанные модули:** `_base-*`, `standard-tdd.mdc`, `standard-qa.mdc`

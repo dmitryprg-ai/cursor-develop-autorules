@@ -16,6 +16,7 @@ alwaysApply: false
 
 **При создании и улучшении инструкций опирайся на:**
 - `standard-agent-quality.mdc` — метрики успеха, границы, feedback loop
+- `template/AGENT job description writer.md` — полный формат Job Description
 
 ### Ключевые элементы качественной инструкции:
 | Элемент | Что включить |
@@ -291,6 +292,7 @@ alwaysApply: false
 - `error-learning.mdc` — записывает ошибки для анализа
 - `{projectname}-improvements-backlog.md` — хранилище улучшений
 - `standard-agent-quality.mdc` — метрики и границы для оценки качества
+- `template/AGENT job description writer.md` — полный формат Job Description (reference)
 
 ---
 

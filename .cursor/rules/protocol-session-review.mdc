@@ -6,7 +6,7 @@ alwaysApply: false
 
 > **Когда применять:** В конце каждой рабочей сессии или после завершения крупной задачи
 > **Цель:** Анализ качества выполнения и накопление улучшений инструкций
-> **Output:** Запись в `{projectname}-improvements-backlog.md`
+> **Output:** Запись в `.cursor_additional/{projectname}/improvements-backlog.md`
 
 ---
 
@@ -150,7 +150,7 @@ alwaysApply: false
 
 ## 5. ЗАПИСЬ В IMPROVEMENTS BACKLOG
 
-**После каждого review записать в `{projectname}-improvements-backlog.md`:**
+**После каждого review записать в `.cursor_additional/{projectname}/improvements-backlog.md`:**
 
 ```markdown
 ---
@@ -241,7 +241,7 @@ Session Review после [задача]
 4. Закоммить изменения
 
 ### Раз в неделю (30 мин):
-1. Открой `{projectname}-improvements-backlog.md`
+1. Открой `.cursor_additional/{projectname}/improvements-backlog.md`
 2. Просмотри накопленные улучшения
 3. Выбери 1-3 для внедрения
 4. Внедри и отметь как Done
@@ -256,9 +256,9 @@ Session Review после [задача]
 protocol-session-review.mdc
          ↓
          ├── Читает: error-learning.mdc (ошибки сессии)
-         ├── Читает: {projectname}-error-log.md (история)
+         ├── Читает: .cursor_additional/{projectname}/error-log.md (история)
          ↓
-         └── Пишет: {projectname}-improvements-backlog.md
+         └── Пишет: .cursor_additional/{projectname}/improvements-backlog.md
 ```
 
 ### Как вызывать:
@@ -271,4 +271,4 @@ protocol-session-review.mdc
 ---
 
 **Версия:** 1.0
-**Связанные файлы:** `error-learning.mdc`, `{projectname}-improvements-backlog.md`
+**Связанные файлы:** `error-learning.mdc`, `.cursor_additional/{projectname}/improvements-backlog.md`

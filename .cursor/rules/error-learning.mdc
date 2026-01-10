@@ -36,7 +36,7 @@ alwaysApply: false
 
 ## 2. ERROR RECORDING TEMPLATE
 
-### После КАЖДОГО RCA записать в `{projectname}-error-log.md`:
+### После КАЖДОГО RCA записать в `.cursor_additional/{projectname}/error-log.md`:
 
 ```markdown
 ## ERROR #{N}: [дата YYYY-MM-DD]
@@ -199,7 +199,7 @@ File: [path to .mdc file]
 
 ## 6. ERROR LOG STRUCTURE
 
-### Создать файл `{projectname}-error-log.md`:
+### Создать файл `.cursor_additional/{projectname}/error-log.md`:
 
 ```markdown
 # 📚 ERROR LOG: {projectname}
