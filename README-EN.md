@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-3.1-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -58,16 +58,25 @@ AI: "Confidence: 95% → 45% — code written, but not tested"
 ## 🏗️ Architecture
 
 ```
-.cursor/
-├── rules/                    # ⭐ Main instructions (22 files)
-│   ├── core-master.mdc       # Single entry point (alwaysApply: true)
-│   ├── _base-*.mdc           # Base modules (8 pcs)
-│   ├── protocol-*.mdc        # Task-type protocols (7 pcs)
-│   ├── standard-*.mdc        # Quality standards (5 pcs)
-│   └── error-learning.mdc    # Error learning
+your-project/
+├── .cursor/                       # ⭐ Universal instructions
+│   ├── CHANGELOG.md               # Change history
+│   ├── rules/                     # Main instructions (23 files)
+│   │   ├── core-master.mdc        # Single entry point (alwaysApply: true)
+│   │   ├── _base-*.mdc            # Base modules (8 pcs)
+│   │   ├── protocol-*.mdc         # Task-type protocols (7 pcs)
+│   │   ├── standard-*.mdc         # Quality standards (5 pcs)
+│   │   └── error-learning.mdc     # Error learning
+│   │
+│   └── rules_alone/               # Standalone instructions (4 files)
+│       └── *.mdc                  # Called explicitly via @
 │
-└── rules_alone/              # 🎯 Standalone instructions (4 files)
-    └── *.mdc                 # Called explicitly via @
+├── .cursor_additional/            # 📁 Project-specific files
+│   └── {projectname}/             # Folder for your project
+│       ├── improvements-backlog.md # Improvement accumulation
+│       └── error-log.md           # Error logs
+│
+└── AGENTS.md                      # Quick Start for AI agents
 ```
 
 ### How it works:
@@ -94,11 +103,11 @@ standard-*.mdc (verifies quality)
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/cursor-ai-rules.git
+git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
 
 # Copy .cursor and AGENTS.md to your project
-cp -r cursor-ai-rules/.cursor /path/to/your/project/
-cp cursor-ai-rules/AGENTS.md /path/to/your/project/
+cp -r cursor-develop-autorules/.cursor /path/to/your/project/
+cp cursor-develop-autorules/AGENTS.md /path/to/your/project/
 ```
 
 ### Step 2: Done!
@@ -240,22 +249,14 @@ At the end of each task, AI outputs a report:
 
 ## 🔧 Project Customization
 
-### Add a file for accumulating improvements
+### Configure AGENTS.md
 
-Create in project root:
+After copying, edit `AGENTS.md` for your project:
+- Specify project structure
+- Add build commands
+- Describe code style
 
-```markdown
-# {projectname}-improvements-backlog.md
-
-## 📊 Statistics
-- Total improvements: 0
-- Implemented: 0
-
-## 📝 Backlog
-(entries will be added automatically)
-```
-
-### Configure project-specific checks
+### Add project-specific checks
 
 If you have project-specific checks, add them to `protocol-development.mdc`:
 
@@ -437,6 +438,7 @@ MIT License — use freely in any projects.
 
 ## 🔗 Links
 
+- [GitHub Repository](https://github.com/dmitryprg-ai/cursor-develop-autorules)
 - [Cursor IDE](https://cursor.com/)
 - [Cursor Docs — Large Codebases](https://cursor.com/docs/cookbook/large-codebases)
 
