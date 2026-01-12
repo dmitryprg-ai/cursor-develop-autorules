@@ -1,353 +1,123 @@
 ---
-description: Error Learning Protocol — запись ошибок и обучение для предотвращения повторений
+description: "Применять после каждой ошибки, RCA, bugfix. Записывает ошибку в error-log.md, находит gap в инструкциях, добавляет в improvements-backlog.md. Цель: предотвратить повторение ошибок."
+globs: 
 alwaysApply: false
----
-# 📚 ERROR LEARNING PROTOCOL
-
-> **Активируется через:** `core-master.mdc`, `protocol-bugfix.mdc`, `protocol-freeze-recovery.mdc`
-> **Цель:** Накопление knowledge base ошибок для предотвращения повторений
-
+tags: [learning, errors, improvement]
 ---
 
-## Core Principle: LEARN FROM EVERY MISTAKE
+# 📚 ERROR LEARNING
 
-```
-Каждая ошибка — это возможность:
-1. ЗАПИСАТЬ что произошло
-2. ПОНЯТЬ почему произошло
-3. НАЙТИ что упустили в инструкциях
-4. ДОБАВИТЬ guidance чтобы не повторилось
-```
+## Context
+
+- **Когда:** После RCA, bugfix, freeze recovery, неожиданного поведения
+- **Цель:** Learn from mistakes, предотвратить повторения
+- **Output:** Запись в `error-log.md` + `improvements-backlog.md`
 
 ---
 
-## 1. WHEN TO APPLY
+## Requirements
+
+### When to Apply
 
 | Событие | Применять? |
 |---------|-----------|
-| После каждого RCA | ✅ ОБЯЗАТЕЛЬНО |
-| После исправления бага | ✅ ОБЯЗАТЕЛЬНО |
+| После RCA | ✅ ОБЯЗАТЕЛЬНО |
+| После bugfix | ✅ ОБЯЗАТЕЛЬНО |
 | После freeze recovery | ✅ ОБЯЗАТЕЛЬНО |
-| После неожиданного поведения | ✅ ДА |
 | После 2+ неудачных попыток | ✅ ДА |
-| После workaround | ✅ ДА (записать tech debt) |
+
+### Error Recording Template
+
+<required>
+  Записать в `.cursor_additional/{projectname}/error-log.md`:
+  
+  ```markdown
+  ## ERROR #N: [дата]
+  
+  ### Symptom:
+  [что произошло]
+  
+  ### Root Cause:
+  [почему произошло]
+  
+  ### Fix:
+  [как исправили]
+  
+  ### Prevention:
+  [как предотвратить]
+  
+  ### Design Injection:
+  [что добавить в инструкции]
+  ```
+</required>
+
+### Gap Analysis
+
+```markdown
+## 🔍 GAP ANALYSIS
+
+### Какая инструкция должна была предотвратить?
+[файл.mdc]
+
+### Почему не предотвратила?
+- [ ] Инструкция отсутствует
+- [ ] Инструкция неполная
+- [ ] Инструкция проигнорирована
+
+### Что добавить?
+[конкретное правило или шаг]
+```
+
+### Improvement Format
+
+```markdown
+## IMPROVEMENT #N: [дата] — [название]
+
+**Источник:** [из какой ошибки]
+**Проблема:** [что пошло не так]
+**Root Cause:** [почему]
+**Предложение:** [что добавить]
+**Файл:** [какой .mdc изменить]
+**Приоритет:** 🔴/🟡/🟢
+**Статус:** 📝 Backlog
+```
 
 ---
 
-## 2. ERROR RECORDING TEMPLATE
+## Examples
 
-### После КАЖДОГО RCA записать в `.cursor_additional/{projectname}/error-log.md`:
-
+<example>
+GOOD: Полный error learning
 ```markdown
-## ERROR #{N}: [дата YYYY-MM-DD]
+## ERROR #5: 2026-01-10
 
-### Категория:
-[ ] Bug Fix
-[ ] Freeze Recovery
-[ ] Unexpected Behavior
-[ ] Failed Attempt
-[ ] Other: ___
-
-### Симптом:
-[Что произошло — конкретно, с текстом ошибки]
+### Symptom:
+UI не обновился после build
 
 ### Root Cause:
-[Почему произошло — результат 5 Whys]
+Production сервис не перезапущен
 
-### Какое правило было нарушено:
-- Файл: [путь к инструкции]
-- Правило: [какое именно правило]
-- Почему нарушено: [причина]
+### Fix:
+systemctl restart frontend
 
-### Что было упущено в инструкциях:
-[Какой guidance не хватило чтобы избежать этой ошибки]
-
-### DESIGN INJECTION:
-- Файл: [какой файл инструкций нужно обновить]
-- Место: [где именно вставить]
-- Текст: 
+### Design Injection:
+Добавить в protocol-development.mdc:
+"Production Deployment = проверить что изменения видны"
 ```
-[Новый текст для добавления]
-```
-
-### Fix Applied:
-```[language]
-// код исправления
-```
-
-### Prevention Added:
-- [ ] Test case добавлен
-- [ ] Logging улучшен
-- [ ] Validation добавлена
-- [ ] Documentation обновлена
-- [ ] Instruction updated (Design Injection)
-
-### Tags:
-[#tag1 #tag2 #tag3]
-```
+</example>
 
 ---
 
-## 3. ERROR PATTERN DETECTION
+## Critical Points
 
-### После каждых 5 ошибок — анализ паттернов:
-
-```markdown
-## 📊 ERROR PATTERN ANALYSIS
-
-### Period: [start date] — [end date]
-### Errors analyzed: [N]
-
-### Pattern 1: [Name]
-- Frequency: [N] times
-- Common root cause: [description]
-- Affected files/areas: [list]
-- Prevention: [what to add/change]
-
-### Pattern 2: [Name]
-- Frequency: [N] times
-- Common root cause: [description]
-- Affected files/areas: [list]
-- Prevention: [what to add/change]
-
-### Recommendations:
-1. [Recommendation 1 with file to update]
-2. [Recommendation 2 with file to update]
-3. [Recommendation 3 with file to update]
-```
+<critical>
+  - КАЖДАЯ ошибка = запись в error-log
+  - Найти GAP в инструкциях
+  - Добавить Improvement в backlog
+  - Периодически внедрять через backlog-to-rules.mdc
+</critical>
 
 ---
 
-## 4. INSTRUCTION UPDATE TRIGGER
-
-### Правило 3x:
-
-**Если одна и та же ошибка повторилась 3+ раза:**
-
-1. **STOP** всю работу
-2. **ANALYZE** все 3+ случая — найти общий паттерн
-3. **UPDATE** соответствующую инструкцию
-4. **ADD** конкретный пример и guidance
-5. **COMMIT** изменения в инструкции
-6. **CONTINUE** работу
-
-### Update Template:
-
-```markdown
-## 🔄 INSTRUCTION UPDATE
-
-### Trigger: 
-Ошибка "[name]" повторилась [N] раз
-
-### Affected Instruction:
-File: [path to .mdc file]
-
-### Current Text:
-```
-[текущий текст]
-```
-
-### Updated Text:
-```
-[новый текст с добавленным guidance]
-```
-
-### Why This Helps:
-[объяснение как это предотвратит повторение]
-
-### Verification:
-- [ ] Instruction updated
-- [ ] Example added
-- [ ] Tested mentally that it would prevent the error
-```
-
----
-
-## 5. DESIGN INJECTION ANALYSIS
-
-### Для каждой ошибки найди:
-
-```markdown
-## 🎯 DESIGN INJECTION ANALYSIS
-
-### Error: [description]
-
-### Chain of Reasoning (где свернул не туда):
-1. [Step 1 мышления]
-2. [Step 2] ← 🚨 WRONG TURN HERE
-3. [Step 3 на основе неверного предположения]
-
-### What Was Missing:
-- Инструкция не содержала: [что]
-- Не было примера для: [ситуация]
-- Не было warning о: [риск]
-
-### Proposed Injection:
-- File: [какой файл]
-- Section: [какой раздел]
-- After: [после какого текста]
-- Add:
-```
-[Новый текст с guidance]
-```
-
-### Expected Effect:
-[Как это предотвратит повторение ошибки]
-```
-
----
-
-## 6. ERROR LOG STRUCTURE
-
-### Создать файл `.cursor_additional/{projectname}/error-log.md`:
-
-```markdown
-# 📚 ERROR LOG: {projectname}
-
-## Meta
-- Created: [date]
-- Last Updated: [date]
-- Total Errors: [N]
-- Patterns Identified: [N]
-- Instructions Updated: [N]
-
-## Quick Stats
-| Category | Count |
-|----------|-------|
-| Bug Fix | N |
-| Freeze Recovery | N |
-| Unexpected Behavior | N |
-| Failed Attempts | N |
-
-## Common Tags
-#import-error #type-error #timeout #data-assumption
-
----
-
-## Errors
-
-### ERROR #1: [date]
-[full error record]
-
-### ERROR #2: [date]
-[full error record]
-
----
-
-## Pattern Analysis
-
-### Analysis #1: [date]
-[pattern analysis]
-
----
-
-## Instruction Updates
-
-### Update #1: [date]
-[update record]
-```
-
----
-
-## 7. LEARNING METRICS
-
-### Track these metrics:
-
-| Metric | Description | Goal |
-|--------|-------------|------|
-| Error Repeat Rate | % ошибок которые повторяются | < 10% |
-| Time to Fix | Среднее время на исправление | Уменьшается |
-| Design Injections | Количество обновлений инструкций | Увеличивается |
-| Pattern Coverage | % паттернов с prevention | > 90% |
-
-### Monthly Review Template:
-
-```markdown
-## 📊 MONTHLY ERROR REVIEW
-
-### Month: [YYYY-MM]
-
-### Statistics:
-- Total errors: [N]
-- Unique errors: [N]
-- Repeated errors: [N] ([%])
-- Avg time to fix: [time]
-
-### Top 3 Error Categories:
-1. [Category] - [N] errors
-2. [Category] - [N] errors
-3. [Category] - [N] errors
-
-### Instructions Updated: [N]
-### Patterns Identified: [N]
-
-### Improvements Made:
-- [Improvement 1]
-- [Improvement 2]
-
-### Next Month Focus:
-- [Focus area 1]
-- [Focus area 2]
-```
-
----
-
-## 8. INTEGRATION WITH OTHER PROTOCOLS
-
-### After `protocol-bugfix.mdc`:
-```
-Fix applied → Run Error Learning → Record in error-log
-```
-
-### After `protocol-freeze-recovery.mdc`:
-```
-Recovered → Run Error Learning → Record freeze pattern
-```
-
-### After `standard-rca.mdc`:
-```
-RCA complete → Run Error Learning → Design Injection
-```
-
----
-
-## 9. ANTI-PATTERNS
-
-### ❌ DO NOT:
-- Skip recording "small" errors
-- Delay recording to later
-- Record without root cause
-- Skip Design Injection analysis
-- Ignore repeated errors
-
-### ✅ DO:
-- Record IMMEDIATELY after fix
-- Include full context
-- Find root cause first
-- Always look for instruction gap
-- Update instructions proactively
-
----
-
-## 10. QUICK REFERENCE
-
-### After EVERY error:
-```
-1. FIX the error
-2. RCA to find root cause
-3. RECORD in error-log.md
-4. ANALYZE for Design Injection
-5. UPDATE instruction if needed
-```
-
-### Error Classification:
-```
-🔴 Critical: Blocks work, needs immediate fix
-🟠 High: Major issue, fix today
-🟡 Medium: Workaround exists, fix soon
-🟢 Low: Minor, document for later
-```
-
----
-**Версия:** 1.0
-**Связанные модули:** `standard-rca.mdc`, `protocol-bugfix.mdc`, `protocol-freeze-recovery.mdc`
+**Версия:** 1.1
+**Связанные модули:** `protocol-bugfix.mdc`, `backlog-to-rules.mdc`

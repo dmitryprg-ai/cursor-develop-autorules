@@ -1,0 +1,148 @@
+---
+alwaysApply: false
+---
+# Standard Format for Cursor Rules
+
+## Core Structure for Rules Files
+```mdc
+---
+description: `Comprehensive description that provides full context and clearly indicates when this rule should be applied. Include key scenarios, impacted areas, and why following this rule is important. While being thorough, remain focused and relevant. The description should be detailed enough that the agent can confidently determine whether to apply the rule in any given situation.`
+globs: *.mdc {OR blank}
+alwaysApply: {true or false}
+tags: [tag1, tag2] {optional, categorization key words}
+priority: 1-5 {optional, 1 is highest priority, 5 is lowest priority}
+---
+
+# Rule Title
+
+## Context
+- When to apply this rule
+- Prerequisites or conditions
+
+## Requirements
+- Concise, bulleted list of actionable rules the agent MUST follow
+- Each requirement must be testable
+
+## Examples
+<example>
+Good concise example with explanation
+</example>
+
+<example type="invalid">
+Invalid concise example with explanation
+</example>
+
+## Critical Points
+<critical>
+  - ALWAYS do X
+  - NEVER do Y
+  - ENSURE Z
+</critical>
+```
+
+## Naming Convention
+CATEGORY-rule-name-TYPE.mdc where CATEGORY is a number range:
+- core: Core standards or ENTRY POINT
+- _base: BASE MODULES атомарные компоненты
+- protocol: PROTOCOLS протоколы для типов задач
+- standard: STANDARDS стандарты качества
+- learning: LEARNING rules инструкции обучения
+- workflows: Workflows
+- templates: Templates
+- framework: Framework rules
+- _[XXX-]rule-name.mdc: Private rules
+
+TYPE — одно из следующих:
+- auto: правило применяется ко всем файлам, соответствующим glob-паттерну
+- agent: правило выбирается агентом на основе описания
+- manual: правило применяется вручную
+- always: правило всегда применяется в каждом чате и cmd/ctrl-k
+
+<required>
+  - Use kebab-case (e.g., api-integration.mdc)
+  - Choose the most specific category that applies
+</required>
+
+## 🌍 Universality Requirement (CRITICAL)
+
+Правила должны работать **в любом проекте**, а не только в текущем. Один набор rules может использоваться в нескольких проектах.
+
+<critical>
+  ### НЕ включать в правила:
+  - ❌ Конкретные домены, URL, IP, креды → выноси в `.cursor/.secrets/*`
+  - ❌ Названия конкретных сущностей проекта (`DealsTable`, `BitrixService`) → используй `<ComponentName>`, `<ServiceName>`
+  - ❌ Проектную архитектуру (`module.types.ts → module.service.ts`) → описывай общие принципы
+  - ❌ Проектные интеграции (`Bitrix24 UF-поля`, `PostgreSQL bigint`) → обобщай до "external API", "database types"
+  - ❌ Конкретные баги/lessons learned проекта → выноси в `AGENTS.md` или `.cursor_additional/`
+  
+  ### ВКЛЮЧАТЬ в правила:
+  - ✅ Общие принципы (TDD, JTBD, Cross-check)
+  - ✅ Универсальные примеры с плейсхолдерами (`<url>`, `<user>`, `<ComponentName>`)
+  - ✅ Абстрактные паттерны ("types → repository → service → routes")
+  - ✅ Общие категории рисков ("API structure", "type mismatch")
+</critical>
+
+### Где хранить проектную специфику:
+| Что | Где |
+|-----|-----|
+| Секреты (URL, креды) | `.cursor/.secrets/*` |
+| Архитектура проекта | `AGENTS.md` |
+| Lessons learned | `.cursor_additional/{project}/improvements-backlog.md` |
+| Проектные workarounds | `AGENTS.md` → "⚠️ Важные нюансы" |
+
+## Расположение инструкций
+- .cursor/rules: используй для инструкций, которые в основном будут нам помогать для работы над проектом
+- .cursor/rules_alone: используй для одиночных инструкций
+
+
+## Glob Pattern Examples
+Common glob patterns for different rule types:
+- Core standards: .cursor/rules/*.mdc
+- Одиночные инструкции: .cursor/rules_alone/*.mdc
+- Language rules: *.cs, *.cpp
+- Testing standards: *.test.ts, *.test.js
+- React components: src/components/**/*.tsx
+- Documentation: docs/**/*.md, *.md
+- Configuration files: *.config.js
+- Build artifacts: dist/**/*
+- Multiple extensions: *.js, *.ts, *.tsx
+- Multiple patterns: dist/**/*.*, docs/**/*.md, *test*.*
+
+## Formatting Guidelines
+- Use Concise Markdown primarily
+- XML tags limited to:
+  - <example>
+  - <danger>
+  - <required>
+  - <rules>
+  - <rule>
+  - <critical>
+- Always indent content within XML or nested XML tags by 2 spaces
+- Keep rules as short as possbile
+- Emojis and Mermaid diagrams are allowed and encouraged if it is not redundant and better explains the rule for the AI comprehension
+- Keep examples as short as possible to clearly convey the positive or negative example
+
+## Critical Points
+- Rule files will be located and named ALWAYS as: `.cursor/rules/{CATEGORY}-rule-name-{auto|agent|manual|always}.mdc`
+- Rules will NEVER be created anywhere other than .cursor/rules/* or .cursor/rules_alone/*
+- You will always check to see if there is an existing rule to update under .cursor/rules/* or .cursor/rules_alone/*
+- FrontMatter Rules Types:
+  - The front matter section must always start the file and include all 3 fields, even if the field value will be blank - the types are:
+    - Manual Rule: IF a Manual rule is requested - description and globs MUST be blank and alwaysApply: false in folder.cursor/rules_alone/ и имя файла заканчивается на -manual.mdc
+    - Auto Rule: IF a rule is requested that should apply always to certain glob patterns (example all typescript files or all markdown files) - description must be blank, and alwaysApply: false and filename ends with -auto.mdc.
+    - Always Rule: Global Rule applies to every chat and cmd/ctrl-k - description and globs blank, and alwaysApply: true  and filename ends with -always.mdc.
+    - Agent Select Rule: The rule does not need to be loaded into every chat thread, it serves a specific purpose. The description MUST provide comprehensive context about when to apply the rule, including scenarios like code changes, architecture decisions, bug fixes, or new file creation. Globs blank, and alwaysApply:false and filename ends with -agent.mdc
+- For Rule Content - focus on actionable, clear directives without unnecessary explanation
+- When a rule will only be used sometimes (alwaysApply: false) the description MUST provide enough context for the AI to confidently determine when to load and apply the rule
+- Use Concise Markdown Tailored to Agent Context Window usage
+- While there is no strict line limit, be judicious with content length as it impacts performance. Focus on essential information that helps the agent make decisions
+- Always include a valid and invalid example
+- NEVER use quotes around glob patterns, NEVER group glob extensions with `{}`
+- If the request for a rule or a future behavior change includes context of a mistake is made, this would be great to use in the example for the rule
+- CRITICAL: Rules must be **UNIVERSAL** — no project-specific entities, architectures, or integrations. See "Universality Requirement" section
+- CRITICAL: For Agent Select Rules, NEVER leave the description field empty. ALWAYS provide a properly formatted description using the ACTION-TRIGGER-OUTCOME format. An empty or incorrectly formatted description will prevent proper rule activation.
+- ALWAYS verify that the description field has been properly updated by checking the file after creation or modification
+- After rule is created or updated, Respond with the following:
+  - Rule {Created or Updated}: path/rule-name.mdc
+  - Rule Type: {Rule Type}
+  - Rule Description: {The exact content of the description field}

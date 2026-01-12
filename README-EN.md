@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.1-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-4.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -247,6 +247,28 @@ At the end of each task, AI outputs a report:
 
 ---
 
+## 🌍 Rule Universality (NEW in v4.0)
+
+Rules are designed to work **in any project**. One `.cursor/rules/` set can be used across multiple projects without modifications.
+
+### Principle: Separation of Universal and Project-Specific
+
+| Universal (in `.cursor/rules/`) | Project-Specific (separate) |
+|--------------------------------|----------------------------|
+| Protocols and workflows | Project structure → `AGENTS.md` |
+| Quality standards | Secrets (URLs, creds) → `.cursor/.secrets/` |
+| Base checks | Lessons learned → `.cursor_additional/` |
+
+### Examples in rules use placeholders:
+
+```
+✅ <ComponentName>.tsx     instead of   ❌ DealsTable.tsx
+✅ <url>, <user>, <pass>   instead of   ❌ actual values
+✅ "external API fields"   instead of   ❌ "Bitrix24 UF fields"
+```
+
+---
+
 ## 🔧 Project Customization
 
 ### Configure AGENTS.md
@@ -255,19 +277,26 @@ After copying, edit `AGENTS.md` for your project:
 - Specify project structure
 - Add build commands
 - Describe code style
+- **Add project specifics** (integrations, data types, workarounds)
 
-### Add project-specific checks
+### Create secrets folder (if needed)
 
-If you have project-specific checks, add them to `protocol-development.mdc`:
+```bash
+mkdir -p .cursor/.secrets/
+echo ".cursor/.secrets/" >> .gitignore
+```
+
+### Add project-specific checks to AGENTS.md
+
+Add project checks to `AGENTS.md`, not to `.cursor/rules/`:
 
 ```markdown
-### X.Y. [Your check]
+## ⚠️ Important Project Notes
 
-**Input:** [When to apply]
-
-**Output:** [What should be done]
-
-**WHY:** [Real error case]
+### [Integration Name]
+- [Specificity 1]
+- [Specificity 2]
+- WHY: [Real error case]
 ```
 
 ---
@@ -444,6 +473,21 @@ MIT License — use freely in any projects.
 
 ---
 
-**Version:** 3.1  
-**Date:** 2026-01-10
+**Version:** 4.0  
+**Date:** 2026-01-12
+
+---
+
+## 🆕 What's New in v4.0
+
+### Rule Universality
+
+- Rules now work **in any project** without modifications
+- Examples use placeholders (`<ComponentName>`, `<url>`)
+- Project specifics moved to `AGENTS.md` and `.cursor/.secrets/`
+
+### New Files
+
+- `workflows-site-basic-auth-always.mdc` — universal Basic Auth rule
+- `core-rules-standard-format-always.mdc` — rule generation standard
 

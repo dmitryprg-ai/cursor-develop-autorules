@@ -15,6 +15,111 @@
 
 ---
 
+## [8.0.0] - 2026-01-12
+
+### Changed — UNIVERSALITY REQUIREMENT
+
+**Задача:** Сделать все правила универсальными для использования в любых проектах
+
+**Проблема:**
+- Правила содержали проектные привязки (Bitrix24, DealsTable, PostgreSQL bigint)
+- Примеры были проектно-специфичными (module.types.ts → ...)
+- Правила нельзя было переносить в другие проекты без переделки
+
+**Решение:**
+
+1. **Добавлен стандарт универсальности** в `standart-generating-agent.mdc`:
+   - Секция "🌍 Universality Requirement (CRITICAL)"
+   - Таблица "Где хранить проектную специфику"
+   - Invalid examples с проектными привязками
+
+2. **Обновлены правила (7 файлов):**
+   - `protocol-development.mdc` — "Project-Specific Rules" → "Common Pitfalls (универсальные)"
+   - `standard-qa.mdc` — `DealsTable` → `<ComponentName>`
+   - `_base-rat.mdc` — "Bitrix24" → "внешний API"
+   - `_base-todo-usage.mdc` — `DealsTable` → `<DataTable>`
+   - `protocol-session-review.mdc` — "Tailwind v4" → "CSS-фреймворк"
+   - `core-rules-standard-format-always.mdc` — добавлено требование универсальности
+   - `workflows-site-basic-auth-always.mdc` — убраны конкретные URL/креды
+
+3. **Проектная специфика вынесена в:**
+   - Секреты → `.cursor/.secrets/*`
+   - Архитектура проекта → `AGENTS.md`
+   - Lessons learned → `.cursor_additional/{project}/improvements-backlog.md`
+
+### Added
+- **`workflows-site-basic-auth-always.mdc`** — универсальное правило для Basic Auth
+- **`core-rules-standard-format-always.mdc`** — always-правило для генерации rules по стандарту
+- **`.cursor/.secrets/`** — папка для секретов проекта (добавлена в .gitignore)
+
+---
+
+## [7.0.0] - 2026-01-12
+
+### Changed — STANDARD FORMAT COMPLIANCE
+
+**Задача:** Привести все правила к стандарту `standart-generating-agent.mdc`
+
+**Изменения:**
+
+1. **Все файлы по новому стандарту:**
+   - description в ACTION-TRIGGER-OUTCOME формате
+   - Структура: Context → Requirements → Examples → Critical Points
+   - XML теги: `<critical>`, `<required>`, `<example>`
+   - Tags для категоризации
+
+2. **Обновлённые файлы (22 шт):**
+   - `core-master.mdc` v3.1
+   - `_base-forbidden.mdc` v2.1
+   - `_base-crosscheck.mdc` v2.1
+   - `_base-challenge.mdc` v2.1
+   - `_base-confidence.mdc` v2.1
+   - `_base-todo-usage.mdc` v1.1
+   - `_base-5wh.mdc` v1.1
+   - `_base-jtbd-thinking.mdc` v1.1
+   - `_base-rat.mdc` v1.2
+   - `protocol-development.mdc` v2.2
+   - `protocol-bugfix.mdc` v1.1
+   - `protocol-research.mdc` v1.1
+   - `protocol-refactoring.mdc` v1.1
+   - `protocol-freeze-recovery.mdc` v1.1
+   - `protocol-session-review.mdc` v1.1
+   - `protocol-prepare-prompt.mdc` v1.1
+   - `standard-agent-quality.mdc` v1.1
+   - `standard-rca.mdc` v1.1
+   - `standard-qa.mdc` v1.1
+   - `standard-tdd.mdc` v1.1
+   - `standard-cto-review.mdc` v1.1
+   - `error-learning.mdc` v1.1
+
+3. **Обновлённая документация:**
+   - `ARCHITECTURE.md` v7.0
+   - `HOW-TO-USE.md` v5.0
+   - `rules_alone/HOW-TO-USE.md` v1.3
+
+### Сохранено
+- Весь контекст и WHY из оригинальных правил
+- Архитектура flow (core → protocol → _base)
+- Имена файлов (для совместимости)
+
+---
+
+## [3.0.0] - 2026-01-10
+
+### Changed — MAJOR REFACTORING
+
+**Проблема:** Инструкции игнорировались, AI пропускал шаги.
+
+**Решение:**
+- core-master.mdc сокращён до ~150 строк
+- Критические модули `alwaysApply: true`
+- DONE блок обязателен в конце ответа
+
+### Added
+- **`rules_alone/fix-last-task.mdc`** — протокол исправления недоработок
+
+---
+
 ## [3.1.2] - 2026-01-10
 
 ### Changed
@@ -263,34 +368,37 @@
 
 | Файл | Текущая версия |
 |------|----------------|
-| `core-master.mdc` | 2.1 |
-| `ARCHITECTURE.md` | 6.0 |
-| `HOW-TO-USE.md` | 4.0 |
+| `core-master.mdc` | 3.1 |
+| `ARCHITECTURE.md` | 8.0 |
+| `HOW-TO-USE.md` | 5.0 |
+| `standart-generating-agent.mdc` | 2.0 |
 | `protocol-prepare-prompt.mdc` | 1.2 |
-| `protocol-development.mdc` | 2.1 |
-| `protocol-bugfix.mdc` | 1.0 |
-| `protocol-refactoring.mdc` | 1.0 |
-| `protocol-research.mdc` | 1.0 |
-| `protocol-freeze-recovery.mdc` | 1.0 |
-| `protocol-session-review.mdc` | 1.0 |
-| `standard-agent-quality.mdc` | 1.0 |
-| `standard-qa.mdc` | 1.0 |
-| `standard-rca.mdc` | 1.0 |
-| `standard-tdd.mdc` | 1.0 |
-| `standard-cto-review.mdc` | 1.0 |
-| `error-learning.mdc` | 1.0 |
-| `_base-confidence.mdc` | 1.0 |
-| `_base-todo-usage.mdc` | 1.0 |
-| `_base-challenge.mdc` | 1.0 |
-| `_base-5wh.mdc` | 1.0 |
-| `_base-forbidden.mdc` | 1.0 |
-| `_base-crosscheck.mdc` | 1.1 |
-| `_base-jtbd-thinking.mdc` | 1.0 |
-| `_base-rat.mdc` | 1.1 |
-| `git/README.md` | 3.1 |
-| `git/README-EN.md` | 3.1 |
+| `protocol-development.mdc` | 2.3 |
+| `protocol-bugfix.mdc` | 1.1 |
+| `protocol-refactoring.mdc` | 1.1 |
+| `protocol-research.mdc` | 1.1 |
+| `protocol-freeze-recovery.mdc` | 1.1 |
+| `protocol-session-review.mdc` | 1.2 |
+| `standard-agent-quality.mdc` | 1.1 |
+| `standard-qa.mdc` | 1.2 |
+| `standard-rca.mdc` | 1.1 |
+| `standard-tdd.mdc` | 1.1 |
+| `standard-cto-review.mdc` | 1.1 |
+| `error-learning.mdc` | 1.1 |
+| `_base-confidence.mdc` | 2.1 |
+| `_base-todo-usage.mdc` | 1.2 |
+| `_base-challenge.mdc` | 2.1 |
+| `_base-5wh.mdc` | 1.1 |
+| `_base-forbidden.mdc` | 2.1 |
+| `_base-crosscheck.mdc` | 2.1 |
+| `_base-jtbd-thinking.mdc` | 1.1 |
+| `_base-rat.mdc` | 1.3 |
+| `workflows-site-basic-auth-always.mdc` | 1.0 |
+| `core-rules-standard-format-always.mdc` | 1.0 |
+| `git/README.md` | 4.0 |
+| `git/README-EN.md` | 4.0 |
 
 ---
 
-**Последнее обновление:** 2026-01-10
+**Последнее обновление:** 2026-01-12
 

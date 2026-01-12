@@ -1,304 +1,204 @@
-# 🏗️ CURSOR RULES ARCHITECTURE v6.0
+# 🏗️ CURSOR RULES ARCHITECTURE v8.0
 
-**Дата обновления:** 2026-01-10
-**Версия:** 6.0 (Universal Structure)
+**Дата обновления:** 2026-01-12
+**Версия:** 8.0 (Universality Requirement)
 
 ---
 
-## 📊 ОБЩАЯ СТРУКТУРА .cursor
+## 📊 Общая структура
 
 ```
 .cursor/
 ├── CHANGELOG.md               # История изменений
 │
-├── rules/                     # ⭐ АКТУАЛЬНЫЕ инструкции (23 файла)
+├── rules/                     # ⭐ АКТУАЛЬНЫЕ инструкции
 │   ├── core-master.mdc        # Entry point (alwaysApply: true)
 │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   ├── protocol-*.mdc         # Протоколы (7 шт)
 │   ├── standard-*.mdc         # Стандарты (5 шт)
 │   ├── error-learning.mdc     # Обучение на ошибках
+│   ├── standart-generating-agent.mdc  # Стандарт создания правил
 │   ├── ARCHITECTURE.md        # Этот файл
-│   └── HOW-TO-USE.md          # Как работать с инструкциями
+│   └── HOW-TO-USE.md          # Как работать
 │
-└── rules_alone/               # 🎯 ОДИНОЧНЫЕ инструкции (4 файла)
+└── rules_alone/               # 🎯 ОДИНОЧНЫЕ инструкции
     ├── *.mdc                  # Для единичных задач
     └── HOW-TO-USE.md          # Документация
 ```
 
-**В корне проекта:**
-```
-AGENTS.md                      # Quick Start для AI агентов (опционально)
-```
+---
 
-**Проект-специфичные файлы (в .cursor_additional/{projectname}/):**
+## 🔄 Flow: Как это работает
+
 ```
-.cursor_additional/{projectname}/
-├── improvements-backlog.md    # Накопление улучшений
-├── error-log.md               # Логи ошибок
-└── CONTEXT.md                 # История изменений проекта
+USER REQUEST
+     ↓
+core-master.mdc (alwaysApply: true)
+  ├── ШАГ 0: Определить сложность 🟢/🟡/🔴
+  ├── ШАГ 1: План (для STANDARD/COMPLEX)
+  ├── ШАГ 2: Выполнение
+  ├── ШАГ 3: Проверка (Cross-check + Challenge)
+  └── ШАГ 4: DONE блок (ОБЯЗАТЕЛЬНО)
+     ↓
+protocol-*.mdc (по типу задачи)
+     ↓
+_base-*.mdc (загружаются автоматически: alwaysApply: true)
+     ↓
+standard-*.mdc (верификация)
 ```
 
 ---
 
-## 📁 СТРУКТУРА rules/
+## 📁 Категории файлов
 
-```
-.cursor/rules/
-│
-├── 🎯 ENTRY POINT (единственный alwaysApply: true)
-│   └── core-master.mdc          # Master Router Protocol
-│
-├── 📦 BASE MODULES (атомарные компоненты — 8 шт)
-│   ├── _base-confidence.mdc     # Калибровка уверенности
-│   ├── _base-todo-usage.mdc     # Использование todo_tool
-│   ├── _base-challenge.mdc      # Протокол Challenge
-│   ├── _base-5wh.mdc            # Формат 5W+H
-│   ├── _base-forbidden.mdc      # Запрещённые действия
-│   ├── _base-crosscheck.mdc     # Cross-check правила
-│   ├── _base-jtbd-thinking.mdc  # JTBD-мышление для user-facing фич
-│   └── _base-rat.mdc            # Riskiest Assumption Test
-│
-├── 🔄 PROTOCOLS (протоколы для типов задач — 7 шт)
-│   ├── protocol-prepare-prompt.mdc  # Подготовка промта (ПЕРВЫЙ ШАГ)
-│   ├── protocol-development.mdc     # Разработка новых фич
-│   ├── protocol-research.mdc        # Исследование данных
-│   ├── protocol-bugfix.mdc          # Исправление ошибок
-│   ├── protocol-refactoring.mdc     # Рефакторинг
-│   ├── protocol-freeze-recovery.mdc # Восстановление после зависаний
-│   └── protocol-session-review.mdc  # Анализ сессии
-│
-├── 📋 STANDARDS (стандарты качества — 5 шт)
-│   ├── standard-agent-quality.mdc  # Метрики успеха, границы, feedback
-│   ├── standard-qa.mdc             # QA стандарты
-│   ├── standard-rca.mdc            # Root Cause Analysis
-│   ├── standard-tdd.mdc            # Test-Driven Development
-│   └── standard-cto-review.mdc     # CTO/Lead Review
-│
-├── 📚 LEARNING
-│   └── error-learning.mdc       # Обучение на ошибках
-│
-└── 📖 DOCUMENTATION
-    ├── ARCHITECTURE.md          # Этот файл
-    └── HOW-TO-USE.md            # Как работать с инструкциями
+### Entry Point (alwaysApply: true)
+
+| Файл | Назначение |
+|------|------------|
+| `core-master.mdc` | Master Router, единственная точка входа |
+
+### Base Modules (alwaysApply: true — критичные)
+
+| Файл | Назначение |
+|------|------------|
+| `_base-forbidden.mdc` | Критические запреты |
+| `_base-crosscheck.mdc` | Независимая проверка |
+| `_base-challenge.mdc` | 4 вопроса перед "готово" |
+| `_base-confidence.mdc` | Калибровка уверенности |
+| `_base-todo-usage.mdc` | Использование todo_tool |
+| `_base-5wh.mdc` | Формат 5W+H и 5 Whys |
+| `_base-jtbd-thinking.mdc` | Jobs To Be Done |
+| `_base-rat.mdc` | Riskiest Assumption Test |
+
+### Protocols (alwaysApply: false — по типу задачи)
+
+| Файл | Ключевые слова |
+|------|----------------|
+| `protocol-development.mdc` | добавить, создать, фича |
+| `protocol-bugfix.mdc` | ошибка, баг, не работает |
+| `protocol-refactoring.mdc` | рефакторинг, улучшить |
+| `protocol-research.mdc` | данные, анализ, pandas |
+| `protocol-freeze-recovery.mdc` | завис, freeze |
+| `protocol-session-review.mdc` | review, конец сессии |
+| `protocol-prepare-prompt.mdc` | улучшение промта |
+
+### Standards (alwaysApply: false — верификация)
+
+| Файл | Когда применять |
+|------|-----------------|
+| `standard-agent-quality.mdc` | VERIFY фаза |
+| `standard-qa.mdc` | Code Review |
+| `standard-rca.mdc` | Bug Fix, Freeze |
+| `standard-tdd.mdc` | Development |
+| `standard-cto-review.mdc` | COMPLEX задачи |
+
+---
+
+## 📋 Формат правил (standart-generating-agent.mdc)
+
+Все файлы соответствуют стандарту:
+
+```mdc
+---
+description: "ACTION-TRIGGER-OUTCOME формат"
+globs: 
+alwaysApply: true/false
+tags: [tag1, tag2]
+---
+
+# Title
+
+## Context
+- Когда применять
+- Предусловия
+
+## Requirements
+<required>
+  - Тестируемые требования
+</required>
+
+## Examples
+<example>
+GOOD: ...
+</example>
+
+<example type="invalid">
+BAD: ...
+</example>
+
+## Critical Points
+<critical>
+  - ALWAYS do X
+  - NEVER do Y
+</critical>
 ```
 
 ---
 
-## 🔄 FLOW: КАК ЭТО РАБОТАЕТ
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  USER REQUEST                                                    │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  0. ПОДГОТОВКА ПРОМТА (protocol-prepare-prompt.mdc)             │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │  🟢 SIMPLE → Пропустить                                    │ │
-│  │  🟡 STANDARD → Quick Prompt Prep (Goal/Files/Constraints)  │ │
-│  │  🔴 COMPLEX → Полный protocol-prepare-prompt               │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  core-master.mdc (ЕДИНСТВЕННЫЙ alwaysApply: true)               │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │  1. Определяет сложность (Simple/Standard/Complex)         │ │
-│  │  2. Определяет тип задачи по ключевым словам               │ │
-│  │  3. Выбирает соответствующий protocol-*.mdc                │ │
-│  │  4. Загружает нужные _base-*.mdc модули                    │ │
-│  │  5. Применяет универсальные правила                        │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  PROTOCOL (выбирается по типу задачи)                           │
-│  ┌──────────────┬──────────────┬──────────────┬───────────────┐ │
-│  │  Research    │  Development │  Bug Fix     │  Refactoring  │ │
-│  │  ↓           │  ↓           │  ↓           │  ↓            │ │
-│  │  protocol-   │  protocol-   │  protocol-   │  protocol-    │ │
-│  │  research    │  development │  bugfix      │  refactoring  │ │
-│  └──────────────┴──────────────┴──────────────┴───────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  BASE MODULES (загружаются по необходимости)                    │
-│  ┌─────────────┬─────────────┬─────────────┬──────────────────┐ │
-│  │ confidence  │ challenge   │ crosscheck  │ jtbd-thinking    │ │
-│  │ todo-usage  │ 5wh         │ forbidden   │ rat              │ │
-│  └─────────────┴─────────────┴─────────────┴──────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  STANDARDS (применяются на этапе верификации)                   │
-│  ┌─────────────┬─────────────┬─────────────┬──────────────────┐ │
-│  │ agent-      │ qa          │ rca         │ cto-review       │ │
-│  │ quality     │             │             │ tdd              │ │
-│  └─────────────┴─────────────┴─────────────┴──────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  ERROR LEARNING & SESSION REVIEW                                │
-│  └── error-learning.mdc → записывает в improvements-backlog.md │
-│  └── protocol-session-review.mdc → анализ сессии               │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📊 ОПРЕДЕЛЕНИЕ СЛОЖНОСТИ
+## 🎯 Определение сложности
 
 | Сложность | Признаки | Flow |
 |-----------|----------|------|
-| 🟢 **SIMPLE** | 1-2 файла, без зависимостей, очевидный результат | Пропустить подготовку → EXECUTE → VERIFY(linter) |
-| 🟡 **STANDARD** | Новая функциональность, несколько файлов | Quick Prompt Prep → Полный 4-фазный протокол |
-| 🔴 **COMPLEX** | Архитектура, много потребителей, критические данные | Полный prepare-prompt → Протокол + CTO Review + Session Review |
+| 🟢 SIMPLE | 1-2 файла, очевидный результат | EXECUTE → VERIFY(linter) → DONE |
+| 🟡 STANDARD | Новая фича, несколько файлов | PLAN → EXECUTE → VERIFY → DONE |
+| 🔴 COMPLEX | Архитектура, критичные данные | + CTO Review + Session Review |
 
 ---
 
-## 📋 ВЫБОР ПРОТОКОЛА (Decision Table)
+## 📈 Метрики успеха
 
-| Ключевые слова в запросе | Протокол | Дополнительные стандарты |
-|--------------------------|----------|--------------------------|
-| данные, parquet, csv, анализ, pandas | `protocol-research.mdc` | `_base-5wh.mdc` |
-| добавить, создать, новая фича | `protocol-development.mdc` | `standard-tdd.mdc` |
-| ошибка, баг, не работает, exception | `protocol-bugfix.mdc` | `standard-rca.mdc` |
-| рефакторинг, улучшить, оптимизировать | `protocol-refactoring.mdc` | `standard-cto-review.mdc` |
-| завис, freeze, не отвечает | `protocol-freeze-recovery.mdc` | `standard-rca.mdc` |
-| конец сессии, review, что улучшить | `protocol-session-review.mdc` | — |
+| Метрика | Target |
+|---------|--------|
+| Linter errors = 0 | 100% |
+| Задачи без переделок | >80% |
+| Повторные ошибки | <10% |
+| First-time Quality | >80% |
 
 ---
 
-## 📦 BASE MODULES — DRY Principle
+## 🔗 Проектные файлы
 
-Базовые модули содержат атомарные правила, которые НЕ дублируются:
-
-| Модуль | Что содержит | Где используется |
-|--------|--------------|------------------|
-| `_base-confidence.mdc` | Формула калибровки уверенности | Все протоколы |
-| `_base-todo-usage.mdc` | Правила использования todo_tool | `core-master.mdc` |
-| `_base-challenge.mdc` | Протокол опровержения себя | Фаза VERIFY |
-| `_base-5wh.mdc` | Формат 5W+H и 5 Whys | RCA, Research |
-| `_base-forbidden.mdc` | Запрещённые действия + WHY контекст | Все протоколы |
-| `_base-crosscheck.mdc` | Cross-check правила + UI проверка | Фаза VERIFY |
-| `_base-jtbd-thinking.mdc` | JTBD-мышление (Job Story, Выгоды/Налоги) | Feature Development |
-| `_base-rat.mdc` | Riskiest Assumption Test — проверка рисков | PLAN Phase, Prompt Prep |
+| Файл | Расположение |
+|------|--------------|
+| `AGENTS.md` | корень проекта |
+| `improvements-backlog.md` | `.cursor_additional/{projectname}/` |
+| `error-log.md` | `.cursor_additional/{projectname}/` |
 
 ---
 
-## 📋 STANDARDS — Стандарты качества
+## 🌍 Universality Requirement (NEW in v8.0)
 
-| Стандарт | Назначение | Когда применять |
-|----------|------------|-----------------|
-| `standard-agent-quality.mdc` | **Метрики успеха, границы, feedback loop** | VERIFY фаза всех задач |
-| `standard-qa.mdc` | QA критерии приёмки | Code Review, Development |
-| `standard-rca.mdc` | Root Cause Analysis (5 Whys) | Bug Fix, Freeze Recovery |
-| `standard-tdd.mdc` | Test-Driven Development | Development |
-| `standard-cto-review.mdc` | CTO/Lead Review | Complex tasks, Refactoring |
+Правила должны работать **в любом проекте**. Один набор rules используется в нескольких проектах.
 
----
+### НЕ включать в правила:
+| ❌ Что | ✅ Куда выносить |
+|--------|------------------|
+| Домены, URL, креды | `.cursor/.secrets/*` |
+| Названия сущностей (`DealsTable`) | Плейсхолдеры `<ComponentName>` |
+| Проектная архитектура | `AGENTS.md` |
+| Lessons learned | `.cursor_additional/{project}/` |
 
-## 🎯 ОДИНОЧНЫЕ ИНСТРУКЦИИ (rules_alone/)
-
-| Инструкция | Назначение | Как вызвать |
-|------------|------------|-------------|
-| `core-duplicate-check.mdc` | Проверка дубликатов | `@rules_alone/core-duplicate-check` |
-| `from-the-end.mdc` | Валидация с конца | `@rules_alone/from-the-end` |
-| `ajtbd-evaluation.mdc` | Полный AJTBD-анализ лендингов/интерфейсов | `@rules_alone/ajtbd-evaluation` |
-| `backlog-to-rules.mdc` | **Внедрение улучшений из backlog** | `@rules_alone/backlog-to-rules` |
-
----
-
-## 🔄 ФАЗЫ РАБОТЫ
-
+### Примеры:
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  0. PREPARE PROMPT PHASE (для STANDARD/COMPLEX)              │
-│     - Анализ исходного промта                                │
-│     - Улучшение: Goal/Context/Constraints/Success            │
-│     - Выбор протокола                                        │
-├──────────────────────────────────────────────────────────────┤
-│  1. PLAN PHASE                                               │
-│     - Понять задачу                                          │
-│     - RAT: выписать и проверить рискованные предположения    │
-│     - Определить тип → выбрать протокол                      │
-│     - Создать TODO list                                      │
-│     - Выписать ожидаемый OUTPUT                              │
-├──────────────────────────────────────────────────────────────┤
-│  2. EXECUTE PHASE                                            │
-│     - Применить протокол                                     │
-│     - Маленькие шаги                                         │
-│     - Проверка после каждого шага                            │
-│     - Фиксация уверенности                                   │
-├──────────────────────────────────────────────────────────────┤
-│  3. VERIFY PHASE                                             │
-│     - Открыть и проверить артефакты                          │
-│     - Сравнить expected vs actual                            │
-│     - Cross-check (_base-crosscheck.mdc)                     │
-│     - Challenge protocol (_base-challenge.mdc)               │
-│     - standard-agent-quality.mdc (metrics/guardrails)        │
-├──────────────────────────────────────────────────────────────┤
-│  4. CLEAN PHASE                                              │
-│     - Проверить linter errors = 0                            │
-│     - Удалить временные файлы                                │
-│     - Обновить документацию и CHANGELOG.md                   │
-│     - Auto Learning → improvements-backlog.md                │
-└──────────────────────────────────────────────────────────────┘
+❌ BAD:  DealsTable.tsx, Bitrix24 UF-поля, module.types.ts
+✅ GOOD: <ComponentName>.tsx, External API fields, types → service → routes
 ```
 
 ---
 
-## 📈 МЕТРИКИ УСПЕХА (standard-agent-quality.mdc)
+## 🆕 Что нового в v8.0
 
-| Метрика | Target | Как измерять |
-|---------|--------|--------------|
-| Linter errors = 0 | 100% | `read_lints` |
-| Задачи без переделок | >80% | Session Review |
-| Повторные ошибки | <10% | Error Log анализ |
-| First-time Quality | >80% | Backlog анализ |
+1. **Universality Requirement** — правила работают в любом проекте
+2. **Проектная специфика вынесена** — в AGENTS.md и .cursor/.secrets/
+3. **Обновлены примеры** — плейсхолдеры вместо проектных названий
+4. **Новые always-правила** — `workflows-site-basic-auth`, `core-rules-standard-format`
 
----
-
-## 🔗 ПРОЕКТНЫЕ ФАЙЛЫ
-
-| Файл | Расположение | Назначение |
-|------|--------------|------------|
-| `AGENTS.md` | корень проекта | Quick Start для AI агентов (опционально) |
-| `improvements-backlog.md` | `.cursor_additional/{projectname}/` | Накопление улучшений |
-| `error-log.md` | `.cursor_additional/{projectname}/` | Логи ошибок |
-| `CONTEXT.md` | `.cursor_additional/{projectname}/` | История изменений проекта |
+### Что было в v7.0:
+- Все правила по стандарту — description в ACTION-TRIGGER-OUTCOME формате
+- Критичные модули alwaysApply: true — forbidden, crosscheck, challenge, confidence
+- XML теги — `<critical>`, `<required>`, `<example>`
 
 ---
 
-## 🔧 КАК ДОБАВИТЬ НОВУЮ ИНСТРУКЦИЮ
-
-### Новый протокол:
-1. Создай файл по образцу существующего `protocol-*.mdc`
-2. Заполни по образцу (включая Input/Output/Guardrails/WHY)
-3. Положи в `.cursor/rules/`
-4. Добавь в таблицу в `core-master.mdc`
-5. Обнови `ARCHITECTURE.md` и `CHANGELOG.md`
-
-### Новая одиночная инструкция:
-1. Создай файл по образцу существующего в `rules_alone/`
-2. Заполни
-3. Положи в `.cursor/rules_alone/`
-4. Обнови `rules_alone/HOW-TO-USE.md`
-
----
-
-## 📈 ПРЕИМУЩЕСТВА АРХИТЕКТУРЫ v6.0
-
-1. **Универсальность** — можно скопировать на любой проект
-2. **Единая точка входа** — только `core-master.mdc` имеет `alwaysApply: true`
-3. **Quality Framework** — `standard-agent-quality.mdc` с метриками
-4. **Модульность** — правила не дублируются, `_base-*` переиспользуются
-5. **Контекстный выбор** — протоколы выбираются по типу задачи
-6. **Обучение на ошибках** — `error-learning.mdc` → `backlog-to-rules.mdc`
-7. **Ясный порядок** — PREPARE → PLAN → EXECUTE → VERIFY → CLEAN
-
----
-
-**Версия архитектуры:** 6.0 (Universal Structure)
-**Дата обновления:** 2026-01-10
-
+**Версия:** 8.0
+**Дата:** 2026-01-12

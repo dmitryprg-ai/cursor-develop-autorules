@@ -1,224 +1,83 @@
 ---
-description: Quality Assurance стандарты для верификации работы AI агента
+description: "Применять при Code Review и Development. QA стандарты: критерии приёмки кода, чеклисты качества, JTBD verification для user-facing фич."
+globs: 
 alwaysApply: false
----
-# 🛡️ STANDARD: QUALITY ASSURANCE
-
-> **Базовые модули:** `_base-confidence.mdc`, `_base-challenge.mdc`, `_base-crosscheck.mdc`
-> **Используется в:** всех протоколах на этапе VERIFY
-
+tags: [qa, code-review, quality]
 ---
 
-## 1. QUALITY GATES
+# ✅ STANDARD: QA
 
-### Gate 1: Pre-Implementation
-- [ ] Задача чётко понята
-- [ ] Expected output определён
-- [ ] Test cases написаны
-- [ ] Dependencies identified
-- [ ] Risks assessed
+## Context
 
-### Gate 2: Implementation
-- [ ] Code follows project standards
-- [ ] No duplicate code created
-- [ ] Error handling implemented
-- [ ] Logging added where needed
-
-### Gate 3: Post-Implementation
-- [ ] All test cases pass
-- [ ] No linter errors (0!)
-- [ ] Output matches expectation
-- [ ] Artifacts verified
-- [ ] Documentation updated
+- **Когда:** Code Review, Development verification
+- **Цель:** Критерии приёмки кода
+- **Связь:** `protocol-development.mdc`, `protocol-refactoring.mdc`
 
 ---
 
-## 2. VERIFICATION LAYERS
+## Requirements
 
-```
-Layer 1: SYNTAX CHECK
-├── Code compiles
-├── No syntax errors
-└── Imports resolve
+### Code Quality Checklist
 
-Layer 2: LOGIC CHECK
-├── Functions return expected values
-├── Edge cases handled
-└── Error paths work
+<required>
+  - [ ] 0 linter errors
+  - [ ] 0 TypeScript errors
+  - [ ] No console.log (кроме debug)
+  - [ ] Tests pass
+  - [ ] Edge cases handled
+  - [ ] Error cases handled
+</required>
 
-Layer 3: INTEGRATION CHECK
-├── Components work together
-├── API endpoints respond
-└── Data flows correctly
+### Naming Standards
 
-Layer 4: OUTPUT CHECK
-├── Expected output achieved
-├── User can use result as-is
-└── No manual steps needed
-```
+| Type | Convention | Example |
+|------|------------|---------|
+| Files (components) | PascalCase | `<ComponentName>.tsx` |
+| Files (utils) | camelCase | `<utilName>.ts` |
+| Functions | camelCase | `<functionName>()` |
+| Components | PascalCase | `<ComponentName>` |
+| Constants | UPPER_SNAKE | `<CONSTANT_NAME>` |
 
----
-
-## 3. EVIDENCE REQUIREMENTS
-
-**Каждое утверждение должно иметь evidence:**
-
-| Claim | Required Evidence |
-|-------|-------------------|
-| "File created" | Show file path + content sample |
-| "Test passes" | Show test execution output |
-| "Error fixed" | Show before/after + no error |
-| "API works" | Show request/response |
-| "Data correct" | Show actual data samples |
-
----
-
-## 4. CONFIDENCE CALIBRATION
-
-Применить формулу из `_base-confidence.mdc`:
-
-```
-Base: 100%
-
-Deductions:
-- Code not tested on real data: -50%
-- Artifacts not opened/verified: -40%
-- No independent cross-check: -30%
-- Assumptions not validated: -25%
-- Edge cases not tested: -20%
-- No error handling: -15%
-
-Example:
-Base: 100%
-- Code written but not tested: -50%
-- Didn't open output file: -40%
-Final: 10% → DO NOT CLAIM SUCCESS
-```
-
----
-
-## 5. TEST CASE TEMPLATE
+### JTBD Verification (user-facing)
 
 ```markdown
-## 🧪 TEST CASE: [Name]
-
-### Preconditions:
-- [Setup required]
-
-### Input:
-- [Input data]
-
-### Steps:
-1. [Step 1]
-2. [Step 2]
-
-### Expected Result:
-- [What should happen]
-
-### Actual Result:
-- [What actually happened]
-
-### Status: ✅ PASS / ❌ FAIL
-
-### Evidence:
-[Screenshot/output/log]
+## JTBD Verification
+- [ ] Job Story реализована
+- [ ] UI тексты про выгоды (🟨), не про фичи
+- [ ] Минимум шагов до результата
+- [ ] Нет непонятных терминов
 ```
 
 ---
 
-## 6. DEFECT CATEGORIES
+## Examples
 
-| Severity | Description | Action |
-|----------|-------------|--------|
-| 🔴 Critical | Blocks functionality | Fix immediately |
-| 🟠 High | Major feature broken | Fix before completion |
-| 🟡 Medium | Feature works with issues | Fix or document |
-| 🟢 Low | Cosmetic/minor | Document for later |
-
----
-
-## 7. QA CHECKLIST BEFORE "DONE"
-
+<example>
+GOOD: Полный QA check
 ```markdown
-## ✅ FINAL QA CHECKLIST
+## ✅ QA CHECKLIST
 
-### Code Quality:
-- [ ] 0 linter errors (check Problems panel)
-- [ ] 0 TypeScript errors
-- [ ] 0 console errors
-- [ ] No deprecation warnings
+### Code:
+- [x] 0 linter errors
+- [x] 0 TypeScript errors
+- [x] Tests pass
 
-### Functionality:
-- [ ] All requirements implemented
-- [ ] All test cases pass
-- [ ] Edge cases handled
-- [ ] Error messages helpful
-
-### Output:
-- [ ] Output matches expectation
-- [ ] User can use as-is
-- [ ] No manual steps needed
-- [ ] Documentation clear
-
-### Verification:
-- [ ] Each artifact opened and checked
-- [ ] Independent cross-check performed
-- [ ] Before/after comparison done
-- [ ] Evidence documented
-
-### Confidence:
-- [ ] Confidence > 80% after calibration
-- [ ] All deductions justified
-- [ ] Risks documented
+### JTBD:
+- [x] Job Story: "Когда ищу сделки, хочу фильтр по дате"
+- [x] UI: "Показать за период" — про результат
 ```
+</example>
 
 ---
 
-## 8. FORBIDDEN CLAIMS WITHOUT EVIDENCE
+## Critical Points
 
-❌ **NEVER say:**
-- "Successfully completed" → без показа output
-- "Test passed" → без показа test result
-- "Error fixed" → без показа no error
-- "Works correctly" → без demonstration
-- "All done" → без checklist completion
-
-✅ **ALWAYS provide:**
-- Actual command output
-- File content samples
-- Test execution results
-- Before/after comparison
-- Evidence screenshots/logs
+<critical>
+  - Linter = 0 ВСЕГДА
+  - Для user-facing: JTBD verification
+  - Edge cases documented and handled
+</critical>
 
 ---
 
-## 9. TEST RESULTS DELIVERY PROTOCOL
-
-### После запуска ЛЮБОГО скрипта/теста:
-
-1. **DELIVER TO CHAT (MANDATORY):**
-   - Print test execution results
-   - Show actual data samples (3-5 examples)
-   - Display key findings, errors, warnings
-   - Include statistics: counts, sizes, timestamps
-
-2. **FORMAT:**
-```
-================================================================================
-📊 TEST EXECUTION RESULTS: [Test Name]
-================================================================================
-
-✅ Status: [Success/Failure]
-📁 Data File: [path]
-📅 Date: [timestamp]
-
-📋 DETAILED RESULTS:
-[Show actual data samples with field values]
-
-✅ CONFIRMATION: [What was successfully tested/verified]
-================================================================================
-```
-
----
-**Версия:** 1.0
-**Связанные модули:** `_base-confidence.mdc`, `_base-challenge.mdc`, `_base-crosscheck.mdc`
+**Версия:** 1.1
