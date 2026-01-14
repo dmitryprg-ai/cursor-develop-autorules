@@ -15,6 +15,43 @@
 
 ---
 
+## [8.1.0] - 2026-01-14
+
+### Added — FILE SIZE LIMITS STANDARD
+
+**Задача:** Контроль размера файлов для предотвращения "монолитов"
+
+**Новый файл:**
+- **`standard-file-size-limits-always.mdc`** v1.0 — контроль размера файлов:
+  - Soft/Hard limits для разных типов файлов (Routes: 200/400, Services: 250/500)
+  - Файл > 300 строк = план разбиения ПЕРЕД добавлением кода
+  - Разбиение по бизнес-доменам, НЕ по техническим слоям
+  - Структуры разбиения для Backend (Express) и Frontend (React)
+  - Процесс инкрементального разбиения
+
+### Changed — SERVICE RESTART & FILE SIZE INTEGRATION
+
+**`protocol-development.mdc`** v2.2 → v2.3:
+- Добавлена ссылка на `standard-file-size-limits-always.mdc` в Context
+- ПРАВИЛО #5: Перезапуск сервисов Backend/Frontend после изменений
+- ПРАВИЛО #6: Соблюдать стандарт file-size-limits при проектировании
+- PRE-ACTION: добавлен шаг 4 "Control File Size"
+- EXECUTE: добавлен шаг 5 "Перезапустить сервисы"
+- Critical Points: добавлен "Check Service Restart"
+
+**`protocol-refactoring.mdc`** v1.1 → v1.2:
+- Workflow: добавлен шаг "PREPLAN" со ссылкой на file-size-limits
+- Golden Rules: добавлено правило "RULES FIRST" — соблюдение file-size-limits
+
+### Updated — DOCUMENTATION
+
+- **`ARCHITECTURE.md`** v8.0 → v8.1 — добавлен standard-file-size-limits-always.mdc
+- **`HOW-TO-USE.md`** v5.0 → v5.1 — документация по контролю размера файлов
+- **`git/README.md`** v4.0 → v8.0 — актуализирован под v8.1
+- **`git/README-EN.md`** v4.0 → v8.0 — актуализирован под v8.1
+
+---
+
 ## [8.0.0] - 2026-01-12
 
 ### Changed — UNIVERSALITY REQUIREMENT
@@ -374,8 +411,9 @@
 | `standart-generating-agent.mdc` | 2.0 |
 | `protocol-prepare-prompt.mdc` | 1.2 |
 | `protocol-development.mdc` | 2.3 |
+| `standard-file-size-limits-always.mdc` | 1.0 |
 | `protocol-bugfix.mdc` | 1.1 |
-| `protocol-refactoring.mdc` | 1.1 |
+| `protocol-refactoring.mdc` | 1.2 |
 | `protocol-research.mdc` | 1.1 |
 | `protocol-freeze-recovery.mdc` | 1.1 |
 | `protocol-session-review.mdc` | 1.2 |
@@ -395,8 +433,8 @@
 | `_base-rat.mdc` | 1.3 |
 | `workflows-site-basic-auth-always.mdc` | 1.0 |
 | `core-rules-standard-format-always.mdc` | 1.0 |
-| `git/README.md` | 4.0 |
-| `git/README-EN.md` | 4.0 |
+| `git/README.md` | 8.0 |
+| `git/README-EN.md` | 8.0 |
 
 ---
 

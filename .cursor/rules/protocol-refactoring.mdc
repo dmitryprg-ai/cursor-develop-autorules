@@ -45,6 +45,7 @@ tags: [refactoring, code-quality, tdd]
 ```
 1. VERIFY   → Все тесты проходят
 2. IDENTIFY → Что рефакторить
+3. PREPLAN  → Как рефкторить согласно инструкции .cursor/rules/standard-file-size-limits-always.mdc
 3. PLAN     → Маленькие шаги
 4. EXECUTE  → Один шаг
 5. TEST     → Тесты после шага
@@ -106,6 +107,7 @@ BAD: Рефакторинг без тестов
 <critical>
   ### Golden Rules:
   1. TESTS FIRST — нет тестов, нет рефакторинга
+  2. RULES FIRST — критичное соблюдение правил инструкции по размеру файла перед рефакторингом .cursor/rules/standard-file-size-limits-always.mdc
   2. SMALL STEPS — одно изменение за раз
   3. TEST OFTEN — после каждого изменения
   4. COMMIT OFTEN — после каждого зелёного теста
@@ -121,5 +123,5 @@ BAD: Рефакторинг без тестов
 
 ---
 
-**Версия:** 1.1
+**Версия:** 1.2
 **Связанные модули:** `_base-confidence.mdc`, `standard-qa.mdc`, `standard-tdd.mdc`

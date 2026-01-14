@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-8.1-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,7 +61,7 @@ AI: "Confidence: 95% → 45% — code written, but not tested"
 your-project/
 ├── .cursor/                       # ⭐ Universal instructions
 │   ├── CHANGELOG.md               # Change history
-│   ├── rules/                     # Main instructions (23 files)
+│   ├── rules/                     # Main instructions (24 files)
 │   │   ├── core-master.mdc        # Single entry point (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Base modules (8 pcs)
 │   │   ├── protocol-*.mdc         # Task-type protocols (7 pcs)
@@ -153,7 +153,7 @@ AI will automatically:
 | `_base-jtbd-thinking` | JTBD thinking for user-facing features |
 | `_base-rat` | **NEW:** Riskiest Assumption Test — verify risks BEFORE implementation |
 
-### 📋 Quality Standards (5 items)
+### 📋 Quality Standards (6 items)
 
 | Standard | Purpose |
 |----------|---------|
@@ -162,6 +162,7 @@ AI will automatically:
 | `standard-rca` | Root Cause Analysis (5 Whys) |
 | `standard-tdd` | Test-Driven Development |
 | `standard-cto-review` | CTO/Lead Review for complex tasks |
+| `standard-file-size-limits` | **NEW:** File size control (< 300 lines) |
 
 ### 🎯 Standalone Instructions (4 items)
 
@@ -473,8 +474,61 @@ MIT License — use freely in any projects.
 
 ---
 
-**Version:** 4.0  
-**Date:** 2026-01-12
+**Version:** 8.1  
+**Date:** 2026-01-14
+
+---
+
+## 🆕 What's New in v8.1
+
+### File Size Limits Standard
+
+New standard `standard-file-size-limits-always.mdc` (alwaysApply: true):
+
+| File Type | Soft/Hard limit |
+|-----------|-----------------|
+| Routes/Controllers | 200/400 lines |
+| Services | 250/500 lines |
+| React components | 200/400 lines |
+
+**Rules:**
+- File > 300 lines = **splitting plan BEFORE adding code**
+- Split by **business domains**, NOT by technical layers
+- Use barrel exports (`index.ts`)
+
+### Service Restart & Integration
+
+**`protocol-development.mdc` v2.3:**
+- RULE #5: Restart services after changes
+- RULE #6: Follow file-size-limits standard
+- PRE-ACTION: "Control File Size" step
+
+**`protocol-refactoring.mdc` v1.2:**
+- Workflow: "PREPLAN" step with file-size-limits reference
+- Golden Rules: "RULES FIRST"
+
+---
+
+## 🆕 What's New in v8.0
+
+### Universality Requirement
+
+All rules are **fully universal** and work in any project:
+
+- ❌ Removed project-specific references (Bitrix24, DealsTable, PostgreSQL bigint)
+- ✅ Examples use placeholders (`<ComponentName>`, `<url>`)
+- ✅ Project specifics moved to `AGENTS.md` and `.cursor/.secrets/`
+
+---
+
+## 🆕 What's New in v7.0
+
+### STANDARD FORMAT COMPLIANCE
+
+- All 22 files brought to unified standard
+- description in ACTION-TRIGGER-OUTCOME format
+- Structure: Context → Requirements → Examples → Critical Points
+- XML tags: `<critical>`, `<required>`, `<example>`
 
 ---
 

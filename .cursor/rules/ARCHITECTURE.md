@@ -1,7 +1,7 @@
-# 🏗️ CURSOR RULES ARCHITECTURE v8.0
+# 🏗️ CURSOR RULES ARCHITECTURE v8.1
 
-**Дата обновления:** 2026-01-12
-**Версия:** 8.0 (Universality Requirement)
+**Дата обновления:** 2026-01-14
+**Версия:** 8.1 (File Size Limits)
 
 ---
 
@@ -15,7 +15,7 @@
 │   ├── core-master.mdc        # Entry point (alwaysApply: true)
 │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   ├── protocol-*.mdc         # Протоколы (7 шт)
-│   ├── standard-*.mdc         # Стандарты (5 шт)
+│   ├── standard-*.mdc         # Стандарты (6 шт)
 │   ├── error-learning.mdc     # Обучение на ошибках
 │   ├── standart-generating-agent.mdc  # Стандарт создания правил
 │   ├── ARCHITECTURE.md        # Этот файл
@@ -82,15 +82,16 @@ standard-*.mdc (верификация)
 | `protocol-session-review.mdc` | review, конец сессии |
 | `protocol-prepare-prompt.mdc` | улучшение промта |
 
-### Standards (alwaysApply: false — верификация)
+### Standards (верификация и архитектура)
 
-| Файл | Когда применять |
-|------|-----------------|
-| `standard-agent-quality.mdc` | VERIFY фаза |
-| `standard-qa.mdc` | Code Review |
-| `standard-rca.mdc` | Bug Fix, Freeze |
-| `standard-tdd.mdc` | Development |
-| `standard-cto-review.mdc` | COMPLEX задачи |
+| Файл | alwaysApply | Когда применять |
+|------|-------------|-----------------|
+| `standard-agent-quality.mdc` | false | VERIFY фаза |
+| `standard-qa.mdc` | false | Code Review |
+| `standard-rca.mdc` | false | Bug Fix, Freeze |
+| `standard-tdd.mdc` | false | Development |
+| `standard-cto-review.mdc` | false | COMPLEX задачи |
+| `standard-file-size-limits-always.mdc` | **true** | **Контроль размера файлов** |
 
 ---
 
@@ -186,12 +187,40 @@ BAD: ...
 
 ---
 
-## 🆕 Что нового в v8.0
+## 📏 File Size Limits (NEW in v8.1)
 
-1. **Universality Requirement** — правила работают в любом проекте
-2. **Проектная специфика вынесена** — в AGENTS.md и .cursor/.secrets/
-3. **Обновлены примеры** — плейсхолдеры вместо проектных названий
-4. **Новые always-правила** — `workflows-site-basic-auth`, `core-rules-standard-format`
+Новый стандарт `standard-file-size-limits-always.mdc` предотвращает создание "монолитных" файлов.
+
+### Лимиты:
+
+| Тип файла | Soft limit | Hard limit |
+|-----------|------------|------------|
+| Routes/Controllers | 200 строк | 400 строк |
+| Services | 250 строк | 500 строк |
+| API client (frontend) | 200 строк | 400 строк |
+| React components | 200 строк | 400 строк |
+
+### Правила:
+- Файл > 300 строк = **план разбиения ПЕРЕД добавлением кода**
+- Разбиение по **бизнес-доменам**, НЕ по техническим слоям
+- Использовать **barrel exports** (`index.ts`)
+
+### Интеграция:
+- `protocol-development.mdc` — ПРАВИЛО #6 + шаг "Control File Size"
+- `protocol-refactoring.mdc` — шаг "PREPLAN" + "RULES FIRST"
+
+---
+
+## 🆕 Что нового в v8.1
+
+1. **`standard-file-size-limits-always.mdc`** — контроль размера файлов (alwaysApply: true)
+2. **`protocol-development.mdc` v2.3** — интеграция file-size-limits + перезапуск сервисов
+3. **`protocol-refactoring.mdc` v1.2** — PREPLAN шаг + RULES FIRST
+
+### Что было в v8.0:
+- Universality Requirement — правила работают в любом проекте
+- Проектная специфика вынесена — в AGENTS.md и .cursor/.secrets/
+- Обновлены примеры — плейсхолдеры вместо проектных названий
 
 ### Что было в v7.0:
 - Все правила по стандарту — description в ACTION-TRIGGER-OUTCOME формате
@@ -200,5 +229,5 @@ BAD: ...
 
 ---
 
-**Версия:** 8.0
-**Дата:** 2026-01-12
+**Версия:** 8.1
+**Дата:** 2026-01-14
