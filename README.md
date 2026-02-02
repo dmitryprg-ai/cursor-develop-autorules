@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Система инструкций для AI-агентов в Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-9.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-10.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,11 +61,11 @@ AI: "Уверенность: 95% → 45% — код написан, но не з
 your-project/
 ├── .cursor/                       # ⭐ Универсальные инструкции
 │   ├── CHANGELOG.md               # История изменений
-│   ├── rules/                     # Основные инструкции (26 файлов)
+│   ├── rules/                     # Основные инструкции (27 файлов)
 │   │   ├── core-master.mdc        # Единая точка входа (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   │   ├── protocol-*.mdc         # Протоколы по типам задач (7 шт)
-│   │   ├── standard-*.mdc         # Стандарты качества (8 шт)
+│   │   ├── standard-*.mdc         # Стандарты качества (9 шт)
 │   │   └── error-learning.mdc     # Обучение на ошибках
 │   │
 │   └── rules_alone/               # Одиночные инструкции (6 файлов)
@@ -153,7 +153,7 @@ AI автоматически:
 | `_base-jtbd-thinking` | JTBD-мышление для user-facing фич |
 | `_base-rat` | **NEW:** Riskiest Assumption Test — проверка рисков ДО реализации |
 
-### 📋 Стандарты качества (8 штук)
+### 📋 Стандарты качества (9 штук)
 
 | Стандарт | Назначение |
 |----------|------------|
@@ -163,8 +163,9 @@ AI автоматически:
 | `standard-tdd` | Test-Driven Development |
 | `standard-cto-review` | CTO/Lead Review для сложных задач |
 | `standard-file-size-limits` | Контроль размера файлов (< 300 строк) |
-| `standard-api-pagination` | **NEW:** Правила пагинации API (предотвращает бесконечные циклы) |
-| `standard-react-hooks` | **NEW:** Правила React хуков (предотвращает Error #310) |
+| `standard-api-pagination` | Правила пагинации API (предотвращает бесконечные циклы) |
+| `standard-react-hooks` | Правила React хуков (предотвращает Error #310) |
+| `standard-kiss-yagni` | **NEW:** KISS/YAGNI/MVP — Anti-Overengineering |
 
 ### 🎯 Одиночные инструкции (6 штук)
 
@@ -178,7 +179,7 @@ AI автоматически:
 @rules_alone/techdebt Запусти поиск технического долга
 ```
 
-### 🧹 Команда /techdebt (NEW in v9.0)
+### 🧹 Команда /techdebt (v9.0)
 
 Запуск в конце сессии для поиска и документирования технического долга:
 
@@ -193,6 +194,30 @@ AI автоматически:
 - Приоритизирует по Impact/Effort
 - Выделяет Quick Wins
 - Записывает P0-P1 проблемы в backlog
+
+### 🎯 KISS/YAGNI/MVP (NEW in v10.0)
+
+Обязательные принципы простоты кода (alwaysApply: true):
+
+| Принцип | Описание |
+|---------|----------|
+| **KISS** | Simplicity beats complexity, Less code = fewer bugs |
+| **YAGNI** | No code "for later", Current requirements ONLY |
+| **MVP Mindset** | Start simple, Add complexity when proven needed |
+| **One Way** | Single way to do X (logging, config, errors) |
+
+**Complexity Checklist (ПЕРЕД усложнением):**
+1. Эта фича нужна СЕЙЧАС? → Нет = НЕ делай
+2. Есть РЕАЛЬНАЯ проблема? → Нет = НЕ делай
+3. Упростит код для ДРУГИХ? → Нет = НЕ делай
+4. Можно решить ПРОЩЕ? → Да = делай проще
+5. Добавляет НОВУЮ зависимость? → Да = подумай дважды
+
+**Over-Engineering Red Flags:**
+- 🚩 > 3 слоёв абстракции для одной операции
+- 🚩 Фабрики создающие фабрики
+- 🚩 Несколько способов сделать одно и то же
+- 🚩 Абстракция для кода используемого 1 раз
 
 ---
 

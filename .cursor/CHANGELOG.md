@@ -15,6 +15,37 @@
 
 ---
 
+## [10.0.0] - 2026-02-02
+
+### Added — KISS/YAGNI/MVP PRINCIPLES
+
+**Новое always-правило для борьбы с over-engineering:**
+
+- **`standard-kiss-yagni-always.mdc`** v1.1 — принципы простоты кода:
+  - **KISS** — Simplicity beats complexity, Less code = fewer bugs
+  - **YAGNI** — No code "for later", Current requirements ONLY
+  - **MVP Mindset** — Start simple, Clear initialization
+  - **One Way Principle** — Single way to do X (logging, config, errors)
+  - **Complexity Checklist** — 5 обязательных вопросов перед усложнением
+  - **Over-Engineering Red Flags** — 8 СТОП-сигналов
+  - Ссылка на локальный контекст: `.cursor_additional/{project}/`
+
+### Updated — CLAUDE.md
+
+- Добавлен блок **MAIN PRINCIPLES (ОБЯЗАТЕЛЬНО)** в начало файла
+- KISS, YAGNI, MVP Mindset, One Way Principle
+- Complexity Checklist и Over-Engineering Red Flags
+
+### Statistics v10.0
+
+| Метрика | v9.0 | v10.0 |
+|---------|------|-------|
+| Файлов в rules/ | 26 | 27 (+1) |
+| alwaysApply: true | 8 | 9 (+1) |
+| Покрытие MAIN PRINCIPLES | — | **100%** (36/36 правил) |
+
+---
+
 ## [9.0.0] - 2026-02-02
 
 ### Added — NEW ALWAYS-APPLY STANDARDS

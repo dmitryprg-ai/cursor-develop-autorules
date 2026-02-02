@@ -1,7 +1,7 @@
-# 🏗️ CURSOR RULES ARCHITECTURE v9.0
+# 🏗️ CURSOR RULES ARCHITECTURE v10.0
 
 **Дата обновления:** 2026-02-02
-**Версия:** 9.0 (API Pagination + React Hooks + TechDebt)
+**Версия:** 10.0 (KISS/YAGNI/MVP Principles)
 
 ---
 
@@ -15,7 +15,7 @@
 │   ├── core-master.mdc        # Entry point (alwaysApply: true)
 │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   ├── protocol-*.mdc         # Протоколы (7 шт)
-│   ├── standard-*.mdc         # Стандарты (8 шт)
+│   ├── standard-*.mdc         # Стандарты (9 шт)
 │   ├── error-learning.mdc     # Обучение на ошибках
 │   ├── standart-generating-agent.mdc  # Стандарт создания правил
 │   ├── ARCHITECTURE.md        # Этот файл
@@ -92,8 +92,9 @@ standard-*.mdc (верификация)
 | `standard-tdd.mdc` | false | Development |
 | `standard-cto-review.mdc` | false | COMPLEX задачи |
 | `standard-file-size-limits-always.mdc` | **true** | Контроль размера файлов |
-| `standard-api-pagination-always.mdc` | **true** | **Пагинация API (предотвращает infinite loops)** |
-| `standard-react-hooks-always.mdc` | **true** | **React хуки (предотвращает Error #310)** |
+| `standard-api-pagination-always.mdc` | **true** | Пагинация API (предотвращает infinite loops) |
+| `standard-react-hooks-always.mdc` | **true** | React хуки (предотвращает Error #310) |
+| `standard-kiss-yagni-always.mdc` | **true** | **KISS/YAGNI/MVP — Anti-Overengineering** |
 
 ---
 

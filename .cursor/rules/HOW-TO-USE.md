@@ -102,6 +102,32 @@ DONE блок (обязательно в конце ответа)
 
 ---
 
+## 🎯 KISS/YAGNI/MVP (NEW in v10.0)
+
+`standard-kiss-yagni-always.mdc` — обязательные принципы простоты:
+
+| Принцип | Описание |
+|---------|----------|
+| **KISS** | Simplicity beats complexity, Less code = fewer bugs |
+| **YAGNI** | No code "for later", Current requirements ONLY |
+| **MVP Mindset** | Start simple, Add complexity when proven needed |
+| **One Way** | Single way to do X (logging, config, errors) |
+
+### Complexity Checklist (ПЕРЕД усложнением):
+1. Эта фича нужна СЕЙЧАС? → Нет = НЕ делай
+2. Есть РЕАЛЬНАЯ проблема? → Нет = НЕ делай
+3. Упростит код для ДРУГИХ? → Нет = НЕ делай
+4. Можно решить ПРОЩЕ? → Да = делай проще
+5. Добавляет НОВУЮ зависимость? → Да = подумай дважды
+
+### Over-Engineering Red Flags:
+- 🚩 > 3 слоёв абстракции для одной операции
+- 🚩 Фабрики создающие фабрики
+- 🚩 Несколько способов сделать одно и то же
+- 🚩 Абстракция для кода используемого 1 раз
+
+---
+
 ## 📏 Контроль размера файлов (v8.1)
 
 `standard-file-size-limits-always.mdc` предотвращает "монолиты":
@@ -185,5 +211,5 @@ A: В `.cursor/rules_alone/`
 
 ---
 
-**Версия:** 6.0
+**Версия:** 7.0
 **Дата:** 2026-02-02

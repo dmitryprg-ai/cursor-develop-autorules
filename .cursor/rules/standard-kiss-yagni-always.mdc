@@ -1,0 +1,183 @@
+---
+description:
+globs:
+alwaysApply: true
+tags: [architecture, simplicity, anti-overengineering]
+---
+
+# 🎯 KISS / YAGNI / MVP — Anti-Overengineering
+
+## Context
+
+- **Когда:** КАЖДОЕ создание/изменение кода
+- **Роль:** Guardrails против over-engineering
+- **Триггер:** Автоматически для ЛЮБОЙ задачи с кодом
+
+<critical>
+  Эти принципы ОБЯЗАТЕЛЬНЫ, не рекомендательны!
+  Нарушение = технический долг + потеря времени.
+</critical>
+
+---
+
+## Requirements
+
+### KISS — Keep It Simple, Stupid
+
+<required>
+  1. **Simplicity beats complexity** — простое решение ВСЕГДА предпочтительнее
+  2. **Less code = fewer bugs** — минимум кода для решения задачи
+  3. **No premature optimization** — оптимизируй ТОЛЬКО при доказанной проблеме
+</required>
+
+### YAGNI — You Aren't Gonna Need It
+
+<required>
+  1. **No code "for later"** — НЕ писать код "на будущее"
+  2. **Current requirements ONLY** — реализовывать ТОЛЬКО текущие требования
+  3. **Remove unused code** — удалять неиспользуемый код СРАЗУ
+</required>
+
+### MVP Mindset
+
+<required>
+  1. **Start simple** — начинай с минимального работающего решения
+  2. **Add complexity when proven needed** — усложняй ТОЛЬКО при доказанной необходимости
+  3. **Refactor over rewrite** — рефакторинг предпочтительнее переписывания
+  4. **Clear initialization** — простая и понятная последовательность запуска
+</required>
+
+### One Way Principle
+
+<required>
+  1. **Single way to do X** — один способ для logging, config, error handling
+  2. **Unified patterns** — одинаковые паттерны для одинаковых задач
+  3. **Project context** — специфику проекта смотри в `.cursor_additional/{project}/`
+</required>
+
+---
+
+## Complexity Checklist (ОБЯЗАТЕЛЬНО перед усложнением)
+
+<critical>
+  ПЕРЕД добавлением абстракции/слоя/паттерна — ответь на 5 вопросов:
+  
+  1. ❓ Эта фича нужна СЕЙЧАС? → Нет = НЕ делай
+  2. ❓ Есть РЕАЛЬНАЯ проблема которую это решает? → Нет = НЕ делай
+  3. ❓ Это упростит код для ДРУГИХ разработчиков? → Нет = НЕ делай
+  4. ❓ Можно решить ПРОЩЕ? → Да = делай проще
+  5. ❓ Это добавляет НОВУЮ зависимость? → Да = подумай дважды
+  
+  Если хоть один ответ указывает на излишество → НЕ ДОБАВЛЯЙ сложность!
+</critical>
+
+---
+
+## Over-Engineering Red Flags (СТОП-сигналы)
+
+<critical>
+  При обнаружении — ОСТАНОВИСЬ и упрости:
+  
+  🚩 **> 3 слоёв абстракции** для одной операции
+  🚩 **Фабрики создающие фабрики** (Factory of Factories)
+  🚩 **Сложная конфигурация** вместо environment variables
+  🚩 **Несколько способов** сделать одно и то же (logging, config, errors)
+  🚩 **Single-method interfaces** без явной причины
+  🚩 **Абстракция для кода** используемого 1 раз
+  🚩 **"Универсальное решение"** для единственного use case
+  🚩 **Неявная инициализация** — сложная/магическая последовательность запуска
+</critical>
+
+---
+
+## Examples
+
+<example>
+GOOD: KISS в действии
+```typescript
+// Задача: получить имя пользователя
+
+// ✅ KISS — простое решение
+function getUserName(user: User): string {
+  return user.name || 'Anonymous';
+}
+
+// Нет лишних абстракций, интерфейсов, фабрик
+// Решает задачу в 1 строку
+```
+</example>
+
+<example>
+GOOD: YAGNI — только текущие требования
+```typescript
+// Запрос: "нужен endpoint для списка пользователей"
+
+// ✅ YAGNI — только то что просили
+app.get('/users', async (req, res) => {
+  const users = await db.query('SELECT * FROM users');
+  res.json(users);
+});
+
+// НЕ добавляем: пагинацию, фильтры, сортировку
+// пока их НЕ ПРОСИЛИ
+```
+</example>
+
+<example type="invalid">
+BAD: Over-engineering
+```typescript
+// Задача: получить имя пользователя
+
+// ❌ Over-engineering — 5 абстракций для 1 строки
+interface INameProvider { getName(): string; }
+interface IUserNameStrategy { execute(user: User): string; }
+class UserNameStrategyFactory { create(type: string): IUserNameStrategy }
+class DefaultUserNameStrategy implements IUserNameStrategy { ... }
+class UserNameService { constructor(private factory: UserNameStrategyFactory) ... }
+
+// Результат: 50 строк вместо 1, сложность обслуживания x10
+```
+Проблема: Абстракции "на будущее" которое не наступит. Потеря времени на создание и поддержку.
+</example>
+
+<example type="invalid">
+BAD: Код "на будущее"
+```typescript
+// Запрос: "нужен endpoint для списка пользователей"
+
+// ❌ YAGNI violation — добавлено то что НЕ просили
+app.get('/users', async (req, res) => {
+  const { page, limit, sort, filter, search, include } = req.query;
+  // ... 100 строк логики для фич которые никто не просил
+});
+
+// Результат: время потрачено, фичи не используются, код усложнён
+```
+Проблема: "А вдруг понадобится" — в 90% случаев НЕ понадобится.
+</example>
+
+---
+
+## Critical Points
+
+<critical>
+  ### ОБЯЗАТЕЛЬНО:
+  - ✅ Начинай с ПРОСТЕЙШЕГО решения
+  - ✅ Усложняй ТОЛЬКО при доказанной необходимости
+  - ✅ Удаляй неиспользуемый код СРАЗУ
+  - ✅ Проходи Complexity Checklist перед абстракциями
+  
+  ### НИКОГДА:
+  - ❌ НЕ пиши код "на будущее"
+  - ❌ НЕ создавай абстракции "для гибкости"
+  - ❌ НЕ добавляй слои без конкретной проблемы
+  - ❌ НЕ оптимизируй без измерений
+  
+  ### При нарушении:
+  СТОП → Убери лишнее → Продолжи с простым решением
+</critical>
+
+---
+
+**Версия:** 1.1
+**Принцип:** "Simplicity is the ultimate sophistication" — Leonardo da Vinci

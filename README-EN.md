@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-9.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-10.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,11 +61,11 @@ AI: "Confidence: 95% → 45% — code written, but not tested"
 your-project/
 ├── .cursor/                       # ⭐ Universal instructions
 │   ├── CHANGELOG.md               # Change history
-│   ├── rules/                     # Main instructions (26 files)
+│   ├── rules/                     # Main instructions (27 files)
 │   │   ├── core-master.mdc        # Single entry point (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Base modules (8 pcs)
 │   │   ├── protocol-*.mdc         # Task-type protocols (7 pcs)
-│   │   ├── standard-*.mdc         # Quality standards (8 pcs)
+│   │   ├── standard-*.mdc         # Quality standards (9 pcs)
 │   │   └── error-learning.mdc     # Error learning
 │   │
 │   └── rules_alone/               # Standalone instructions (6 files)
@@ -153,7 +153,7 @@ AI will automatically:
 | `_base-jtbd-thinking` | JTBD thinking for user-facing features |
 | `_base-rat` | **NEW:** Riskiest Assumption Test — verify risks BEFORE implementation |
 
-### 📋 Quality Standards (8 items)
+### 📋 Quality Standards (9 items)
 
 | Standard | Purpose |
 |----------|---------|
@@ -163,8 +163,9 @@ AI will automatically:
 | `standard-tdd` | Test-Driven Development |
 | `standard-cto-review` | CTO/Lead Review for complex tasks |
 | `standard-file-size-limits` | File size control (< 300 lines) |
-| `standard-api-pagination` | **NEW:** API pagination rules (prevents infinite loops) |
-| `standard-react-hooks` | **NEW:** React hooks rules (prevents Error #310) |
+| `standard-api-pagination` | API pagination rules (prevents infinite loops) |
+| `standard-react-hooks` | React hooks rules (prevents Error #310) |
+| `standard-kiss-yagni` | **NEW:** KISS/YAGNI/MVP — Anti-Overengineering |
 
 ### 🎯 Standalone Instructions (6 items)
 
@@ -178,7 +179,7 @@ Called explicitly via `@`:
 @rules_alone/techdebt Run technical debt scan
 ```
 
-### 🧹 TechDebt Command (NEW in v9.0)
+### 🧹 TechDebt Command (v9.0)
 
 Run at the end of session to find and document technical debt:
 
@@ -193,6 +194,30 @@ Run at the end of session to find and document technical debt:
 - Prioritizes by Impact/Effort
 - Highlights Quick Wins
 - Records P0-P1 issues in backlog
+
+### 🎯 KISS/YAGNI/MVP (NEW in v10.0)
+
+Mandatory code simplicity principles (alwaysApply: true):
+
+| Principle | Description |
+|-----------|-------------|
+| **KISS** | Simplicity beats complexity, Less code = fewer bugs |
+| **YAGNI** | No code "for later", Current requirements ONLY |
+| **MVP Mindset** | Start simple, Add complexity when proven needed |
+| **One Way** | Single way to do X (logging, config, errors) |
+
+**Complexity Checklist (BEFORE adding complexity):**
+1. Is this feature needed NOW? → No = DON'T do it
+2. Is there a REAL problem? → No = DON'T do it
+3. Will it simplify code for OTHERS? → No = DON'T do it
+4. Can we solve it SIMPLER? → Yes = do it simpler
+5. Does it add a NEW dependency? → Yes = think twice
+
+**Over-Engineering Red Flags:**
+- 🚩 > 3 abstraction layers for one operation
+- 🚩 Factories creating factories
+- 🚩 Multiple ways to do the same thing
+- 🚩 Abstraction for code used only once
 
 ---
 
