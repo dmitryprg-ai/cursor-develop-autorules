@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Система инструкций для AI-агентов в Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-10.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-10.1-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,11 +61,11 @@ AI: "Уверенность: 95% → 45% — код написан, но не з
 your-project/
 ├── .cursor/                       # ⭐ Универсальные инструкции
 │   ├── CHANGELOG.md               # История изменений
-│   ├── rules/                     # Основные инструкции (27 файлов)
+│   ├── rules/                     # Основные инструкции (30 файлов)
 │   │   ├── core-master.mdc        # Единая точка входа (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   │   ├── protocol-*.mdc         # Протоколы по типам задач (7 шт)
-│   │   ├── standard-*.mdc         # Стандарты качества (9 шт)
+│   │   ├── standard-*.mdc         # Стандарты качества (12 шт)
 │   │   └── error-learning.mdc     # Обучение на ошибках
 │   │
 │   └── rules_alone/               # Одиночные инструкции (6 файлов)

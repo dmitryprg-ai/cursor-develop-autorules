@@ -14,7 +14,8 @@ tags: [architecture, refactoring, modules]
 - Цель: предотвратить создание "монолитных" файлов, снизить риск потери функционала
 
 <critical>
-  Файл > 300 строк = требуется план разбиения ПЕРЕД добавлением кода
+  Файл > soft limit = требуется план разбиения ПЕРЕД добавлением кода
+  Файл > hard limit = ОБЯЗАТЕЛЬНО разбить перед любыми изменениями
 </critical>
 
 ---
@@ -25,12 +26,13 @@ tags: [architecture, refactoring, modules]
 
 | Тип файла | Soft limit | Hard limit | Действие при превышении |
 |-----------|------------|------------|-------------------------|
-| Routes/Controllers | 200 строк | 400 строк | Split by domain |
-| Services | 250 строк | 500 строк | Extract sub-services |
-| Repositories | 250 строк | 500 строк | Split by entity |
-| API client (frontend) | 200 строк | 400 строк | Split by feature |
+| Routes/Controllers | 300 строк | 600 строк | Split by domain |
+| Services | 400 строк | 800 строк | Extract sub-services |
+| Repositories | 400 строк | 800 строк | Split by entity |
+| Analytics/Calculations | 500 строк | 1000 строк | Extract helpers/transformers |
+| API client (frontend) | 300 строк | 600 строк | Split by feature |
 | React components | 200 строк | 400 строк | Extract sub-components |
-| Types/Interfaces | 150 строк | 300 строк | Split by domain |
+| Types/Interfaces | 200 строк | 400 строк | Split by domain |
 
 ### Правила разбиения
 
@@ -47,10 +49,10 @@ tags: [architecture, refactoring, modules]
 **Backend (Express/Node.js):**
 ```
 src/modules/<domain>/
-  ├── <domain>.routes.ts        # Только route definitions (< 200 строк)
+  ├── <domain>.routes.ts        # Только route definitions (< 300 строк)
   ├── <domain>.controller.ts    # Request handling logic
-  ├── <domain>.service.ts       # Business logic
-  ├── <domain>.repository.ts    # Data access
+  ├── <domain>.service.ts       # Business logic (< 400 строк)
+  ├── <domain>.repository.ts    # Data access (< 400 строк)
   ├── <domain>.types.ts         # Types/interfaces
   └── index.ts                  # Barrel export
 ```
@@ -58,7 +60,7 @@ src/modules/<domain>/
 **Frontend (React/Next.js):**
 ```
 lib/api/
-  ├── <feature>.api.ts          # API calls for one feature (< 200 строк)
+  ├── <feature>.api.ts          # API calls for one feature (< 300 строк)
   ├── types/
   │   └── <feature>.types.ts    # Types for feature
   └── index.ts                  # Barrel export
@@ -148,16 +150,16 @@ routes/
 ## Critical Points
 
 <critical>
-### ПЕРЕД добавлением кода в файл > 300 строк:
+### ПЕРЕД добавлением кода в файл > soft limit:
 
 1. **STOP** — не добавляй код сразу
 2. **CHECK** — посчитай текущий размер: `wc -l <file>`
-3. **PLAN** — если > 300 строк, составь план разбиения
+3. **PLAN** — если > soft limit, составь план разбиения
 4. **SPLIT FIRST** — сначала разбей, потом добавляй новый код
 5. **TEST** — проверь что всё работает после разбиения
 
 ### НИКОГДА:
-- ❌ Не добавлять код в файл > 500 строк без разбиения
+- ❌ Не добавлять код в файл > hard limit без разбиения
 - ❌ Не создавать файлы `_part1.ts`, `_part2.ts`
 - ❌ Не разбивать по техническим слоям (GET/POST/PUT)
 
@@ -169,4 +171,4 @@ routes/
 
 ---
 
-**Версия:** 1.0
+**Версия:** 1.1 (2026-02-02: расширены лимиты на основе TechDebt Scan)

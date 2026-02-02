@@ -1,77 +1,247 @@
 ---
-description: "Применять при Development для Test-Driven Development подхода. Workflow: тест-кейсы ПЕРЕД реализацией, минимальный код для прохождения, рефакторинг после зелёных тестов."
-globs: 
+description: "Применять при Development/Refactoring для Test-Driven Development подхода. ОБЯЗАТЕЛЬНЫЙ workflow: тест-кейсы ПЕРЕД кодом, failing tests → minimal code → green tests → refactor."
+globs:
 alwaysApply: false
-tags: [tdd, testing, development]
+tags: [tdd, testing, development, refactoring, mandatory]
 ---
 
-# 🧪 STANDARD: TDD
+# 🧪 STANDARD: TDD — Test-Driven Development
 
 ## Context
 
-- **Когда:** Development, особенно для логики и API
-- **Принцип:** Red → Green → Refactor
-- **Связь:** `protocol-development.mdc`
+- **Когда:** Development новых фич, Refactoring существующего кода, Bugfix
+- **Принцип:** Red → Green → Refactor (СТРОГО по порядку!)
+- **Связь:** `protocol-development.mdc`, `protocol-refactoring.mdc`, `techdebt-manual.mdc`
+
+<critical>
+  ⛔ СТОП! Этот стандарт ОБЯЗАТЕЛЕН когда активирован.
+  НЕ ПРОПУСКАТЬ шаги! НЕ писать код без failing tests!
+  Каждый шаг имеет CHECKPOINT — выполнить ВСЕ до перехода к следующему.
+</critical>
 
 ---
 
 ## Requirements
 
-### TDD Workflow
+### PHASE 0: TEST PLANNING (ОБЯЗАТЕЛЬНО ПЕРВЫЙ ШАГ)
 
 <required>
-  1. **Write Test** — тест должен ПАДАТЬ (red)
-  2. **Write Code** — минимальный код для прохождения
-  3. **Run Test** — должен пройти (green)
-  4. **Refactor** — улучшить код, тесты зелёные
-</required>
-
-### Test Cases Template
+**CHECKPOINT 0.1** — Перед ЛЮБЫМ кодом заполнить таблицу тест-кейсов:
 
 ```markdown
-## 📋 TEST CASES (BEFORE implementation)
+## 📋 TEST CASES (заполнить ПЕРЕД реализацией!)
 
-| # | Input | Expected Output | Status |
-|---|-------|-----------------|--------|
-| 1 | [input] | [expected] | ⏳ |
-| 2 | [edge case] | [expected] | ⏳ |
-| 3 | [error case] | [error msg] | ⏳ |
+| # | Сценарий | Input | Expected Output | Тип | Status |
+|---|----------|-------|-----------------|-----|--------|
+| 1 | Happy path | <input> | <expected> | Unit | ⏳ |
+| 2 | Edge case: empty | [] | <expected> | Unit | ⏳ |
+| 3 | Edge case: null | null | Error | Unit | ⏳ |
+| 4 | Integration | <context> | <expected> | Integration | ⏳ |
 ```
 
-### Coverage Requirements
+**CHECKPOINT 0.2** — Убедиться что покрыты ВСЕ категории:
+- [ ] Happy path (основной сценарий)
+- [ ] Edge cases (пустые данные, границы, null/undefined)
+- [ ] Error cases (невалидный input, exceptions)
+- [ ] Integration points (если есть зависимости)
+</required>
 
-| Type | What to test |
-|------|--------------|
-| Happy path | Normal flow |
-| Edge cases | Empty, null, boundary |
-| Error cases | Invalid input, exceptions |
+⛔ **СТОП:** НЕ переходить к Phase 1 пока таблица не заполнена!
+
+---
+
+### PHASE 1: RED — Написать Failing Tests
+
+<required>
+**CHECKPOINT 1.1** — Создать тестовый файл:
+```typescript
+// <feature>.test.ts или <feature>.spec.ts
+describe('<Feature>', () => {
+  // Тесты для КАЖДОГО кейса из таблицы
+});
+```
+
+**CHECKPOINT 1.2** — Написать тесты для ВСЕХ кейсов из таблицы Phase 0
+
+**CHECKPOINT 1.3** — Запустить тесты и УБЕДИТЬСЯ что они ПАДАЮТ:
+```bash
+npm test -- --grep "<feature>"
+# Ожидаемый результат: ❌ FAIL (тесты должны падать!)
+```
+
+**CHECKPOINT 1.4** — Обновить таблицу статусами:
+| Status | Значение |
+|--------|----------|
+| ⏳ | Ожидает написания |
+| 🔴 | Test written, FAILING (правильно!) |
+| 🟢 | Test PASSING |
+| ⏭️ | Skipped (обосновать!) |
+</required>
+
+⛔ **СТОП:** НЕ писать implementation code пока тесты не написаны И не падают!
+
+---
+
+### PHASE 2: GREEN — Минимальный код для прохождения
+
+<required>
+**CHECKPOINT 2.1** — Написать МИНИМАЛЬНЫЙ код чтобы тест прошёл
+- НЕ оптимизировать
+- НЕ добавлять "на будущее"
+- ТОЛЬКО то что нужно для прохождения теста
+
+**CHECKPOINT 2.2** — Запустить тест:
+```bash
+npm test -- --grep "<feature>"
+# Ожидаемый результат: ✅ PASS
+```
+
+**CHECKPOINT 2.3** — Обновить статус в таблице: 🔴 → 🟢
+
+**CHECKPOINT 2.4** — Повторить для КАЖДОГО теста из таблицы
+</required>
+
+⛔ **СТОП:** НЕ рефакторить пока ВСЕ тесты не зелёные!
+
+---
+
+### PHASE 3: REFACTOR — Улучшение кода
+
+<required>
+**CHECKPOINT 3.1** — ВСЕ тесты зелёные? 
+- [ ] Да → можно рефакторить
+- [ ] Нет → вернуться к Phase 2
+
+**CHECKPOINT 3.2** — Рефакторинг:
+- Убрать дублирование
+- Улучшить читаемость
+- Оптимизировать (если нужно)
+
+**CHECKPOINT 3.3** — После КАЖДОГО изменения:
+```bash
+npm test
+# Все тесты должны оставаться 🟢
+```
+
+**CHECKPOINT 3.4** — Финальная проверка:
+- [ ] Все тесты проходят
+- [ ] Код чистый
+- [ ] Нет TODO/FIXME без причины
+</required>
+
+---
+
+### PHASE 4: VERIFY — Финальная верификация
+
+<required>
+**Заполнить финальный отчёт:**
+
+```markdown
+## ✅ TDD VERIFICATION
+
+### Test Coverage Summary
+| Категория | Написано | Passing | Skipped |
+|-----------|----------|---------|---------|
+| Happy path | X | X | 0 |
+| Edge cases | X | X | 0 |
+| Error cases | X | X | 0 |
+| Integration | X | X | 0 |
+| **TOTAL** | X | X | 0 |
+
+### Test Commands
+```bash
+npm test -- --coverage
+```
+
+### Результат
+- [ ] Все тесты проходят
+- [ ] Coverage > 80% для нового кода
+- [ ] Нет skipped тестов без обоснования
+```
+</required>
 
 ---
 
 ## Examples
 
 <example>
-GOOD: TDD flow
+GOOD: Полный TDD цикл с чекпоинтами
+
 ```markdown
-## Test Cases:
-| # | Input | Expected | Status |
-|---|-------|----------|--------|
-| 1 | [1,2,3] | 6 | ⏳ |
-| 2 | [] | 0 | ⏳ |
-| 3 | null | Error | ⏳ |
+## 📋 TEST CASES для calculateDiscount()
 
-// Step 1: Write test (red)
-test('sum of [1,2,3] = 6', () => {
-  expect(sum([1,2,3])).toBe(6);
+| # | Сценарий | Input | Expected | Тип | Status |
+|---|----------|-------|----------|-----|--------|
+| 1 | 10% скидка | (100, 10) | 90 | Unit | 🟢 |
+| 2 | Нет скидки | (100, 0) | 100 | Unit | 🟢 |
+| 3 | 100% скидка | (100, 100) | 0 | Unit | 🟢 |
+| 4 | Отрицательная цена | (-50, 10) | Error | Unit | 🟢 |
+| 5 | Скидка > 100% | (100, 150) | Error | Unit | 🟢 |
+
+## Phase 1: RED ✅
+// calculateDiscount.test.ts
+describe('calculateDiscount', () => {
+  it('applies 10% discount correctly', () => {
+    expect(calculateDiscount(100, 10)).toBe(90);
+  });
+  // ... остальные тесты
 });
-// FAIL ❌
+// Результат: ❌ FAIL (calculateDiscount is not defined)
 
-// Step 2: Write code (green)
-function sum(arr) { return arr.reduce((a,b) => a+b, 0); }
-// PASS ✅
+## Phase 2: GREEN ✅
+function calculateDiscount(price: number, percent: number): number {
+  if (price < 0) throw new Error('Price cannot be negative');
+  if (percent < 0 || percent > 100) throw new Error('Invalid discount');
+  return price * (1 - percent / 100);
+}
+// Результат: ✅ PASS
 
-// Step 3: Next test...
+## Phase 3: REFACTOR ✅
+// Код уже чистый, рефакторинг не нужен
+
+## ✅ TDD VERIFICATION
+- Все 5 тестов проходят
+- Coverage: 100%
+- Skipped: 0
 ```
+</example>
+
+<example type="invalid">
+BAD: Код БЕЗ тестов
+
+```typescript
+// ❌ НЕПРАВИЛЬНО: сразу пишет код
+function calculateDiscount(price, percent) {
+  return price * (1 - percent / 100);
+}
+// "Потом напишу тесты"
+```
+Проблема: Нарушен TDD — код написан БЕЗ failing tests.
+Edge cases (negative price, invalid percent) не обработаны.
+</example>
+
+<example type="invalid">
+BAD: Тесты после кода
+
+```
+1. Написал функцию calculateDiscount
+2. Функция работает
+3. Теперь напишу тесты чтобы "покрыть"
+```
+Проблема: Это не TDD, это "test-after". 
+Тесты будут подстраиваться под код, а не код под требования.
+</example>
+
+<example type="invalid">
+BAD: Пропуск Phase 0
+
+```
+"Понятно что нужно сделать, сразу напишу тест"
+test('it works', () => {
+  expect(myFunction()).toBeTruthy();
+});
+```
+Проблема: Нет таблицы тест-кейсов → пропущены edge cases → баги в production.
 </example>
 
 ---
@@ -79,12 +249,41 @@ function sum(arr) { return arr.reduce((a,b) => a+b, 0); }
 ## Critical Points
 
 <critical>
-  - Тесты ПЕРЕД кодом
-  - Тест должен сначала ПАДАТЬ
-  - Минимальный код для прохождения
-  - Refactor только после зелёных тестов
+### ОБЯЗАТЕЛЬНЫЙ ПОРЯДОК (НЕ МЕНЯТЬ!):
+1. ⏹️ **PHASE 0**: Таблица тест-кейсов → CHECKPOINT
+2. 🔴 **PHASE 1**: Failing tests → CHECKPOINT (тесты ДОЛЖНЫ падать!)
+3. 🟢 **PHASE 2**: Minimal code → CHECKPOINT (тесты проходят)
+4. ♻️ **PHASE 3**: Refactor → CHECKPOINT (тесты всё ещё проходят)
+5. ✅ **PHASE 4**: Verify → финальный отчёт
+
+### ЗАПРЕЩЕНО:
+- ❌ Писать код ДО таблицы тест-кейсов
+- ❌ Писать код ДО failing tests
+- ❌ Рефакторить с красными тестами
+- ❌ Пропускать checkpoints
+- ❌ "Потом допишу тесты"
+
+### ЕСЛИ НАРУШИЛ:
+⛔ СТОП → Удалить код → Вернуться к Phase 0 → Начать правильно
 </critical>
 
 ---
 
-**Версия:** 1.1
+## Integration
+
+**Связанные протоколы:**
+- `protocol-development.mdc` — использует TDD для новых фич
+- `protocol-refactoring.mdc` — использует TDD для безопасного рефакторинга
+- `techdebt-manual.mdc` — использует TDD при исправлении техдолга
+
+**Инструменты тестирования:**
+- Jest / Vitest — unit tests
+- Supertest — API tests
+- Playwright / Cypress — E2E tests
+- Testing Library — React components
+
+---
+
+**Версия:** 2.0
+**Обновлено:** 2026-02-02
+**Источники:** Claude Code TDD Best Practices, claudecode101.com

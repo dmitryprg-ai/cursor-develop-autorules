@@ -15,6 +15,32 @@
 
 ---
 
+## [10.1.0] - 2026-01-14
+
+### Added — API TESTING STANDARD
+
+**Новое always-правило для тестирования API:**
+
+- **`standard-api-testing-always.mdc`** v1.0 — тестирование с авторизацией:
+  - Два уровня авторизации: Basic Auth (nginx) + Session Auth (API)
+  - Процесс получения сессии через login endpoint
+  - Cleanup session files после тестов
+  - Секреты в `.cursor/.secrets/` (заигнорены в git)
+
+### Updated — DOCUMENTATION
+
+- Обновлены `standard-file-size-limits-always.mdc` и `standard-tdd.mdc`
+- Синхронизированы все правила между `.cursor/` и `git/.cursor/`
+
+### Statistics v10.1
+
+| Метрика | v10.0 | v10.1 |
+|---------|-------|-------|
+| Файлов в rules/ | 27 | 30 (+3) |
+| alwaysApply: true | 9 | 10 (+1) |
+
+---
+
 ## [10.0.0] - 2026-02-02
 
 ### Added — KISS/YAGNI/MVP PRINCIPLES
