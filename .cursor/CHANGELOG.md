@@ -15,6 +15,55 @@
 
 ---
 
+## [9.0.0] - 2026-02-02
+
+### Added — NEW ALWAYS-APPLY STANDARDS
+
+**Новые правила (alwaysApply: true):**
+
+- **`standard-api-pagination-always.mdc`** v1.0 — правила работы с пагинированными API:
+  - НИКОГДА не полагаться только на `response.length < limit`
+  - ВСЕГДА использовать `total` из метаданных ответа
+  - Safety limits как ДОПОЛНИТЕЛЬНАЯ защита
+  - Чеклист и примеры для различных API (Bitrix24, Salesforce, HubSpot)
+  - Real-world bug example: бесконечный цикл загрузивший 333000+ записей
+
+- **`standard-react-hooks-always.mdc`** v1.0 — правила использования React хуков:
+  - Хуки ВСЕГДА в начале компонента, ДО early returns
+  - Хуки НЕ вызываются условно (внутри if/else, циклов, try/catch)
+  - Проверки данных — ВНУТРИ callback хука
+  - Предотвращает React Error #310, #300
+
+### Added — TECHDEBT COMMAND
+
+**Новая команда для поиска технического долга:**
+
+- **`rules_alone/techdebt-manual.mdc`** v1.0 — команда `/techdebt`:
+  - 5 фаз: SCAN → ANALYZE → PRIORITIZE → REPORT → BACKLOG
+  - Поиск файлов > 300 строк (согласно file-size-limits)
+  - Поиск дублирующегося кода через semantic search и grep
+  - Выявление code smells (длинные функции, глубокая вложенность)
+  - Приоритизация по Impact/Effort матрице
+  - Quick Wins выделяются отдельно
+  - Запуск: `@rules_alone/techdebt` или "запусти techdebt scan"
+
+### Updated — DOCUMENTATION
+
+- **`ARCHITECTURE.md`** v8.1 → v9.0 — добавлены новые стандарты
+- **`HOW-TO-USE.md`** v5.1 → v6.0 — документация по новым правилам и командам
+- **`git/README.md`** v8.1 → v9.0 — актуализирован под v9.0
+- **`git/README-EN.md`** v8.1 → v9.0 — актуализирован под v9.0
+
+### Statistics
+
+| Метрика | v8.1 | v9.0 |
+|---------|------|------|
+| Файлов в rules/ | 24 | 26 (+2) |
+| Файлов в rules_alone/ | 5 | 6 (+1) |
+| alwaysApply: true | 6 | 8 (+2) |
+
+---
+
 ## [8.1.0] - 2026-01-14
 
 ### Added — FILE SIZE LIMITS STANDARD
@@ -406,12 +455,15 @@
 | Файл | Текущая версия |
 |------|----------------|
 | `core-master.mdc` | 3.1 |
-| `ARCHITECTURE.md` | 8.0 |
-| `HOW-TO-USE.md` | 5.0 |
+| `ARCHITECTURE.md` | 9.0 |
+| `HOW-TO-USE.md` | 6.0 |
 | `standart-generating-agent.mdc` | 2.0 |
 | `protocol-prepare-prompt.mdc` | 1.2 |
 | `protocol-development.mdc` | 2.3 |
 | `standard-file-size-limits-always.mdc` | 1.0 |
+| `standard-api-pagination-always.mdc` | 1.0 |
+| `standard-react-hooks-always.mdc` | 1.0 |
+| `techdebt-manual.mdc` | 1.0 |
 | `protocol-bugfix.mdc` | 1.1 |
 | `protocol-refactoring.mdc` | 1.2 |
 | `protocol-research.mdc` | 1.1 |
@@ -438,5 +490,5 @@
 
 ---
 
-**Последнее обновление:** 2026-01-12
+**Последнее обновление:** 2026-02-02
 

@@ -1,7 +1,7 @@
-# 🏗️ CURSOR RULES ARCHITECTURE v8.1
+# 🏗️ CURSOR RULES ARCHITECTURE v9.0
 
-**Дата обновления:** 2026-01-14
-**Версия:** 8.1 (File Size Limits)
+**Дата обновления:** 2026-02-02
+**Версия:** 9.0 (API Pagination + React Hooks + TechDebt)
 
 ---
 
@@ -15,7 +15,7 @@
 │   ├── core-master.mdc        # Entry point (alwaysApply: true)
 │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   ├── protocol-*.mdc         # Протоколы (7 шт)
-│   ├── standard-*.mdc         # Стандарты (6 шт)
+│   ├── standard-*.mdc         # Стандарты (8 шт)
 │   ├── error-learning.mdc     # Обучение на ошибках
 │   ├── standart-generating-agent.mdc  # Стандарт создания правил
 │   ├── ARCHITECTURE.md        # Этот файл
@@ -91,7 +91,9 @@ standard-*.mdc (верификация)
 | `standard-rca.mdc` | false | Bug Fix, Freeze |
 | `standard-tdd.mdc` | false | Development |
 | `standard-cto-review.mdc` | false | COMPLEX задачи |
-| `standard-file-size-limits-always.mdc` | **true** | **Контроль размера файлов** |
+| `standard-file-size-limits-always.mdc` | **true** | Контроль размера файлов |
+| `standard-api-pagination-always.mdc` | **true** | **Пагинация API (предотвращает infinite loops)** |
+| `standard-react-hooks-always.mdc` | **true** | **React хуки (предотвращает Error #310)** |
 
 ---
 
@@ -211,11 +213,26 @@ BAD: ...
 
 ---
 
-## 🆕 Что нового в v8.1
+## 🆕 Что нового в v9.0
 
-1. **`standard-file-size-limits-always.mdc`** — контроль размера файлов (alwaysApply: true)
-2. **`protocol-development.mdc` v2.3** — интеграция file-size-limits + перезапуск сервисов
-3. **`protocol-refactoring.mdc` v1.2** — PREPLAN шаг + RULES FIRST
+1. **`standard-api-pagination-always.mdc`** v1.0 — правила пагинации API (alwaysApply: true)
+   - Предотвращает бесконечные циклы при работе с пагинированными API
+   - ВСЕГДА использовать `total` из метаданных ответа
+   - Safety limits как дополнительная защита
+
+2. **`standard-react-hooks-always.mdc`** v1.0 — правила React хуков (alwaysApply: true)
+   - Хуки ВСЕГДА в начале компонента, ДО early returns
+   - Предотвращает React Error #310, #300
+
+3. **`rules_alone/techdebt-manual.mdc`** v1.0 — команда `/techdebt`
+   - 5 фаз: SCAN → ANALYZE → PRIORITIZE → REPORT → BACKLOG
+   - Поиск дублирующегося кода и code smells
+   - Quick Wins выделяются отдельно
+
+### Что было в v8.1:
+- `standard-file-size-limits-always.mdc` — контроль размера файлов
+- `protocol-development.mdc` v2.3 — интеграция file-size-limits
+- `protocol-refactoring.mdc` v1.2 — PREPLAN шаг
 
 ### Что было в v8.0:
 - Universality Requirement — правила работают в любом проекте
@@ -229,5 +246,5 @@ BAD: ...
 
 ---
 
-**Версия:** 8.1
-**Дата:** 2026-01-14
+**Версия:** 9.0
+**Дата:** 2026-02-02

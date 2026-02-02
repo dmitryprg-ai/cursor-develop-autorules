@@ -1,0 +1,209 @@
+---
+description: 
+globs: 
+alwaysApply: true
+tags: [api, pagination, integration, critical]
+---
+
+# 📄 API PAGINATION — Правила работы с пагинированными API
+
+## Context
+
+- **Когда:** При написании кода, который загружает данные из API с пагинацией
+- **Применять:** К ЛЮБОМУ внешнему API (REST, GraphQL) с пагинированными ответами
+- **Цель:** Предотвратить бесконечные циклы и загрузку лишних данных
+
+<critical>
+ НИКОГДА не полагаться ТОЛЬКО на размер ответа для остановки пагинации!
+</critical>
+
+---
+
+## Requirements
+
+### Антипаттерн (ЗАПРЕЩЕНО)
+
+```typescript
+// ❌ НЕПРАВИЛЬНО — полагается только на размер батча
+while (hasMore) {
+  const response = await api.getList({ start, limit });
+  results.push(...response);
+  
+  if (response.length < limit) {  // ⚠️ ОПАСНО!
+    hasMore = false;
+  } else {
+    start += limit;
+  }
+}
+```
+
+**Почему опасно:**
+- API может возвращать полный батч даже когда записи закончились
+- Некоторые API (Bitrix24, Salesforce) при `start > total` возвращают записи БЕЗ фильтра
+- Результат: бесконечный цикл или загрузка миллионов лишних записей
+
+### Правильный паттерн (ОБЯЗАТЕЛЬНО)
+
+```typescript
+// ✅ ПРАВИЛЬНО — использует total из ответа API
+const MAX_RECORDS_SAFETY = 10000; // Safety limit
+let total: number | null = null;
+
+while (hasMore) {
+  // 1. Получить ПОЛНЫЙ ответ с метаданными
+  const rawResponse = await api.getListRaw({ start, limit });
+  const items = rawResponse.result;
+  
+  // 2. Извлечь total из первого ответа
+  if (total === null && rawResponse.total !== undefined) {
+    total = rawResponse.total;
+    
+    // 3. Safety check — если total неразумно большой
+    if (total > MAX_RECORDS_SAFETY) {
+      throw new Error(`API returned total=${total}, exceeds safety limit`);
+    }
+  }
+  
+  results.push(...items);
+  
+  // 4. КРИТИЧЕСКИ ВАЖНО: останавливаться при достижении total
+  if (total !== null && results.length >= total) {
+    break;
+  }
+  
+  // 5. Дополнительная проверка размера батча
+  if (items.length < limit) {
+    break;
+  }
+  
+  // 6. Safety limit на случай если total неточный
+  if (results.length >= MAX_RECORDS_SAFETY) {
+    throw new Error(`Reached safety limit of ${MAX_RECORDS_SAFETY}`);
+  }
+  
+  start += limit;
+}
+```
+
+### Чеклист при написании пагинации
+
+<required>
+ - [ ] Использую метод который возвращает ПОЛНЫЙ ответ (не только `result`)
+ - [ ] Извлекаю `total` из метаданных ответа
+ - [ ] Останавливаюсь при `fetched >= total`
+ - [ ] Есть safety limit как ДОПОЛНИТЕЛЬНАЯ защита
+ - [ ] Логирую `total` и `fetched` для диагностики
+</required>
+
+### API-специфичные особенности
+
+| API | Поле total | Особенности |
+|-----|------------|-------------|
+| Bitrix24 REST | `response.total` | При `start > total` возвращает записи без фильтра! |
+| Salesforce | `totalSize` | Есть `nextRecordsUrl` для пагинации |
+| HubSpot | `total` | Использует `after` cursor вместо offset |
+| Generic REST | `meta.total`, `pagination.total` | Проверь документацию |
+
+### Wrapper-методы для API клиентов
+
+При создании API клиента:
+
+```typescript
+// ❌ ПЛОХО — метод отбрасывает метаданные
+async callMethod<T>(method: string, params: any): Promise<T> {
+  const response = await this.request(method, params);
+  return response.result; // total потерян!
+}
+
+// ✅ ХОРОШО — есть метод для полного ответа
+async callMethodRaw<T>(method: string, params: any): Promise<ApiResponse<T>> {
+  return this.request(method, params); // total сохранён
+}
+```
+
+---
+
+## Examples
+
+<example>
+GOOD: Корректная пагинация с total
+```typescript
+const deals: Deal[] = [];
+let start = 0;
+let apiTotal: number | null = null;
+
+while (true) {
+  const raw = await client.callMethodRaw('crm.deal.list', { filter, start, limit: 50 });
+  
+  if (apiTotal === null) {
+    apiTotal = raw.total;
+    logBitrix(`API reports total=${apiTotal}`);
+  }
+  
+  deals.push(...raw.result);
+  logBitrix(`Fetched ${deals.length}/${apiTotal}`);
+  
+  if (deals.length >= apiTotal) break;  // ✅ Главное условие
+  if (raw.result.length < 50) break;    // Дополнительное
+  
+  start += 50;
+}
+```
+</example>
+
+<example type="invalid">
+BAD: Пагинация без total
+```typescript
+while (hasMore) {
+  const items = await client.callMethod('crm.deal.list', { filter, start, limit: 50 });
+  deals.push(...items);
+  
+  if (items.length < 50) {
+    hasMore = false;  // ❌ Единственное условие остановки
+  } else {
+    start += 50;
+  }
+}
+```
+Проблема: При багах API (Bitrix24) может загрузить ВСЮ базу (333000+ записей) вместо 100.
+</example>
+
+---
+
+## Critical Points
+
+<critical>
+### ОБЯЗАТЕЛЬНО при пагинации:
+1. **Использовать `total`** из метаданных ответа API
+2. **Останавливаться** когда `fetched >= total`
+3. **Safety limit** как ДОПОЛНИТЕЛЬНАЯ защита (не основная!)
+4. **Логировать** total и fetched для диагностики
+
+### НИКОГДА:
+- ❌ Полагаться только на `response.length < limit`
+- ❌ Отбрасывать метаданные ответа (`total`, `next`)
+- ❌ Использовать safety limit как ЕДИНСТВЕННУЮ защиту
+</critical>
+
+---
+
+## Real-World Bug Example
+
+**Проект:** crmai (2026-01-26)
+**Симптом:** Синхронизация зависла на 30+ часов, загрузила 333200 сделок вместо 100
+
+**Причина:** 
+1. Код использовал `callMethod` который отбрасывал `total`
+2. Условие остановки: только `response.length < 50`
+3. Bitrix24 API: при `start > total` возвращает записи БЕЗ фильтра
+4. Результат: бесконечный цикл до загрузки всей базы
+
+**Решение:**
+1. Использовать `callMethodRaw` для получения `total`
+2. Останавливаться при `fetched >= total`
+3. Safety limit как дополнительная защита
+
+---
+
+**Версия:** 1.0
+**Связанные модули:** `protocol-development.mdc`, `_base-crosscheck.mdc`

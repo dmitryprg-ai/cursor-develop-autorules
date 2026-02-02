@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-8.1-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-9.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,14 +61,14 @@ AI: "Confidence: 95% → 45% — code written, but not tested"
 your-project/
 ├── .cursor/                       # ⭐ Universal instructions
 │   ├── CHANGELOG.md               # Change history
-│   ├── rules/                     # Main instructions (24 files)
+│   ├── rules/                     # Main instructions (26 files)
 │   │   ├── core-master.mdc        # Single entry point (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Base modules (8 pcs)
 │   │   ├── protocol-*.mdc         # Task-type protocols (7 pcs)
-│   │   ├── standard-*.mdc         # Quality standards (5 pcs)
+│   │   ├── standard-*.mdc         # Quality standards (8 pcs)
 │   │   └── error-learning.mdc     # Error learning
 │   │
-│   └── rules_alone/               # Standalone instructions (4 files)
+│   └── rules_alone/               # Standalone instructions (6 files)
 │       └── *.mdc                  # Called explicitly via @
 │
 ├── .cursor_additional/            # 📁 Project-specific files
@@ -153,7 +153,7 @@ AI will automatically:
 | `_base-jtbd-thinking` | JTBD thinking for user-facing features |
 | `_base-rat` | **NEW:** Riskiest Assumption Test — verify risks BEFORE implementation |
 
-### 📋 Quality Standards (6 items)
+### 📋 Quality Standards (8 items)
 
 | Standard | Purpose |
 |----------|---------|
@@ -162,9 +162,11 @@ AI will automatically:
 | `standard-rca` | Root Cause Analysis (5 Whys) |
 | `standard-tdd` | Test-Driven Development |
 | `standard-cto-review` | CTO/Lead Review for complex tasks |
-| `standard-file-size-limits` | **NEW:** File size control (< 300 lines) |
+| `standard-file-size-limits` | File size control (< 300 lines) |
+| `standard-api-pagination` | **NEW:** API pagination rules (prevents infinite loops) |
+| `standard-react-hooks` | **NEW:** React hooks rules (prevents Error #310) |
 
-### 🎯 Standalone Instructions (4 items)
+### 🎯 Standalone Instructions (6 items)
 
 Called explicitly via `@`:
 
@@ -172,7 +174,25 @@ Called explicitly via `@`:
 @rules_alone/core-duplicate-check Check for duplicates before creating
 @rules_alone/ajtbd-evaluation Evaluate the landing page
 @rules_alone/backlog-to-rules Implement improvements from backlog
+@rules_alone/fix-last-task Fix issues from the last task
+@rules_alone/techdebt Run technical debt scan
 ```
+
+### 🧹 TechDebt Command (NEW in v9.0)
+
+Run at the end of session to find and document technical debt:
+
+```
+@rules_alone/techdebt Run techdebt scan
+```
+
+**What it does:**
+- Scans files > 300 lines
+- Finds duplicate code
+- Identifies code smells (long functions, deep nesting)
+- Prioritizes by Impact/Effort
+- Highlights Quick Wins
+- Records P0-P1 issues in backlog
 
 ---
 
@@ -474,8 +494,44 @@ MIT License — use freely in any projects.
 
 ---
 
-**Version:** 8.1  
-**Date:** 2026-01-14
+**Version:** 9.0  
+**Date:** 2026-02-02
+
+---
+
+## 🆕 What's New in v9.0
+
+### API Pagination Standard (alwaysApply: true)
+
+New standard `standard-api-pagination-always.mdc`:
+
+**Problem:** Infinite loops during API pagination (real case: loading 333000+ records instead of 100)
+
+**Rules:**
+- NEVER rely only on `response.length < limit`
+- ALWAYS use `total` from API response metadata
+- Safety limits as ADDITIONAL protection
+
+### React Hooks Standard (alwaysApply: true)
+
+New standard `standard-react-hooks-always.mdc`:
+
+**Problem:** React Error #310 "Rendered fewer hooks than expected"
+
+**Rules:**
+- Hooks ALWAYS at component start, BEFORE early returns
+- Hooks NOT called conditionally (inside if/else, loops)
+- Data checks — INSIDE hook callback
+
+### TechDebt Command
+
+New command `@rules_alone/techdebt`:
+
+```
+@rules_alone/techdebt Run technical debt scan
+```
+
+**5 phases:** SCAN → ANALYZE → PRIORITIZE → REPORT → BACKLOG
 
 ---
 

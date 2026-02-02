@@ -1,7 +1,7 @@
 # 🤖 Cursor AI Rules — Система инструкций для AI-агентов в Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-8.1-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-9.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
@@ -61,14 +61,14 @@ AI: "Уверенность: 95% → 45% — код написан, но не з
 your-project/
 ├── .cursor/                       # ⭐ Универсальные инструкции
 │   ├── CHANGELOG.md               # История изменений
-│   ├── rules/                     # Основные инструкции (24 файла)
+│   ├── rules/                     # Основные инструкции (26 файлов)
 │   │   ├── core-master.mdc        # Единая точка входа (alwaysApply: true)
 │   │   ├── _base-*.mdc            # Базовые модули (8 шт)
 │   │   ├── protocol-*.mdc         # Протоколы по типам задач (7 шт)
-│   │   ├── standard-*.mdc         # Стандарты качества (5 шт)
+│   │   ├── standard-*.mdc         # Стандарты качества (8 шт)
 │   │   └── error-learning.mdc     # Обучение на ошибках
 │   │
-│   └── rules_alone/               # Одиночные инструкции (4 файла)
+│   └── rules_alone/               # Одиночные инструкции (6 файлов)
 │       └── *.mdc                  # Вызываются явно через @
 │
 ├── .cursor_additional/            # 📁 Проект-специфичные файлы
@@ -153,7 +153,7 @@ AI автоматически:
 | `_base-jtbd-thinking` | JTBD-мышление для user-facing фич |
 | `_base-rat` | **NEW:** Riskiest Assumption Test — проверка рисков ДО реализации |
 
-### 📋 Стандарты качества (6 штук)
+### 📋 Стандарты качества (8 штук)
 
 | Стандарт | Назначение |
 |----------|------------|
@@ -162,9 +162,11 @@ AI автоматически:
 | `standard-rca` | Root Cause Analysis (5 Whys) |
 | `standard-tdd` | Test-Driven Development |
 | `standard-cto-review` | CTO/Lead Review для сложных задач |
-| `standard-file-size-limits` | **NEW:** Контроль размера файлов (< 300 строк) |
+| `standard-file-size-limits` | Контроль размера файлов (< 300 строк) |
+| `standard-api-pagination` | **NEW:** Правила пагинации API (предотвращает бесконечные циклы) |
+| `standard-react-hooks` | **NEW:** Правила React хуков (предотвращает Error #310) |
 
-### 🎯 Одиночные инструкции (4 штуки)
+### 🎯 Одиночные инструкции (6 штук)
 
 Вызываются явно через `@`:
 
@@ -172,7 +174,25 @@ AI автоматически:
 @rules_alone/core-duplicate-check Проверь дубликаты перед созданием
 @rules_alone/ajtbd-evaluation Оцени лендинг
 @rules_alone/backlog-to-rules Внедри улучшения из backlog
+@rules_alone/fix-last-task Исправь недоработки последней задачи
+@rules_alone/techdebt Запусти поиск технического долга
 ```
+
+### 🧹 Команда /techdebt (NEW in v9.0)
+
+Запуск в конце сессии для поиска и документирования технического долга:
+
+```
+@rules_alone/techdebt Запусти techdebt scan
+```
+
+**Что делает:**
+- Сканирует файлы > 300 строк
+- Ищет дублирующийся код
+- Выявляет code smells (длинные функции, глубокая вложенность)
+- Приоритизирует по Impact/Effort
+- Выделяет Quick Wins
+- Записывает P0-P1 проблемы в backlog
 
 ---
 
@@ -474,12 +494,48 @@ MIT License — используйте свободно в любых проек
 
 ---
 
-**Версия:** 8.1  
-**Дата:** 2026-01-14
+**Версия:** 9.0  
+**Дата:** 2026-02-02
 
 ---
 
-## 🆕 Что нового в v8.1
+## 🆕 Что нового в v9.0
+
+### API Pagination Standard (alwaysApply: true)
+
+Новый стандарт `standard-api-pagination-always.mdc`:
+
+**Проблема:** Бесконечные циклы при пагинации API (реальный случай: загрузка 333000+ записей вместо 100)
+
+**Правила:**
+- НИКОГДА не полагаться только на `response.length < limit`
+- ВСЕГДА использовать `total` из метаданных ответа
+- Safety limits как ДОПОЛНИТЕЛЬНАЯ защита
+
+### React Hooks Standard (alwaysApply: true)
+
+Новый стандарт `standard-react-hooks-always.mdc`:
+
+**Проблема:** React Error #310 "Rendered fewer hooks than expected"
+
+**Правила:**
+- Хуки ВСЕГДА в начале компонента, ДО early returns
+- Хуки НЕ вызываются условно (внутри if/else, циклов)
+- Проверки данных — ВНУТРИ callback хука
+
+### TechDebt Command
+
+Новая команда `@rules_alone/techdebt`:
+
+```
+@rules_alone/techdebt Запусти поиск технического долга
+```
+
+**5 фаз:** SCAN → ANALYZE → PRIORITIZE → REPORT → BACKLOG
+
+---
+
+## 🆕 Что было в v8.1
 
 ### File Size Limits Standard
 
