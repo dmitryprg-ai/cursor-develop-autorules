@@ -1,0 +1,94 @@
+---
+description:
+globs: *.tsx, *.jsx
+alwaysApply: false
+---
+
+# REACT HOOKS — Правила использования хуков
+
+## Context
+
+- **Когда:** При написании/изменении React компонентов с хуками
+- **Критично:** Нарушение порядка вызова хуков приводит к runtime ошибкам (React Error #310, #300)
+
+<critical>
+  Хуки ДОЛЖНЫ вызываться в ОДИНАКОВОМ порядке на КАЖДЫЙ рендер!
+  Хуки НЕЛЬЗЯ вызывать после early return statements!
+</critical>
+
+## Requirements
+
+### Правило #1: Хуки ВСЕГДА в начале компонента
+
+<required>
+  - ВСЕ хуки (useState, useEffect, useMemo, useCallback, useRef) — В НАЧАЛЕ компонента
+  - ПОСЛЕ всех хуков — early returns (loading, error)
+  - ПОСЛЕ early returns — остальная логика и JSX
+</required>
+
+```tsx
+// ПРАВИЛЬНЫЙ порядок
+function MyComponent() {
+  const [data, setData] = useState(null);
+  const processedData = useMemo(() => {
+    if (!data) return null;
+    return transform(data);
+  }, [data]);
+  useEffect(() => { /* ... */ }, []);
+  
+  if (isLoading) return <Loader />;
+  if (error) return <Error />;
+  return <div>{processedData}</div>;
+}
+```
+
+### Правило #2: Хуки НЕ вызываются условно
+
+```tsx
+// ЗАПРЕЩЕНО — хук после early return, внутри if/else, внутри цикла
+if (isLoading) return <Loader />;
+const val = useMemo(() => {}, []); // Ошибка!
+```
+
+### Правило #3: Проверки данных — ВНУТРИ хука
+
+```tsx
+const computed = useMemo(() => {
+  if (!data) return defaultValue;
+  return processData(data);
+}, [data]);
+```
+
+## Examples
+
+<example>
+GOOD: Все хуки до early returns
+```tsx
+function Detail({ id }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const code = useMemo(() => (!data ? '' : gen(data)), [data]);
+  useEffect(() => { load(id); }, [id]);
+  if (loading) return <Spinner />;
+  return <Player code={code} />;
+}
+```
+</example>
+
+<example type="invalid">
+BAD: useMemo после early return — CRASH!
+```tsx
+if (loading) return <Spinner />;
+const code = useMemo(() => gen(data), [data]); // React Error #310!
+```
+</example>
+
+## Critical Points
+
+<critical>
+  - ALWAYS: Все хуки — в начале компонента, ДО любых return
+  - ALWAYS: Проверки данных — ВНУТРИ callback хука
+  - NEVER: Хуки после if/return, внутри условий, циклов, try/catch
+</critical>
+
+**Версия:** 1.1

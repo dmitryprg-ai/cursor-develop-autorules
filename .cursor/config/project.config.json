@@ -1,0 +1,43 @@
+{
+  "project_name": "{project-name}",
+  "project_root": "/path/to/{project-name}",
+  "site_url": "https://{domain}",
+
+  "services": {
+    "backend": {
+      "name": "{service-name}",
+      "port": 5000,
+      "build_cmd": "npm run build",
+      "restart_cmd": "sudo systemctl restart {service-name}",
+      "status_cmd": "systemctl status {service-name} --no-pager",
+      "health_endpoint": "/api/health"
+    },
+    "frontend": {
+      "name": "{service-name}-web",
+      "port": 3000,
+      "subdir": "apps/web",
+      "build_cmd": "npm run build",
+      "restart_cmd": "sudo systemctl restart {service-name}-web",
+      "status_cmd": "systemctl status {service-name}-web --no-pager"
+    }
+  },
+
+  "auth": {
+    "secrets_dir": ".cursor/.secrets",
+    "basic_auth_file": "site-basic-auth.json",
+    "test_user_file": "api-test-user.json",
+    "test_user_email": "agent-test@{domain}"
+  },
+
+  "verify_pages": [
+    "/",
+    "/api/health"
+  ],
+
+  "scan_dirs": {
+    "backend": "src",
+    "frontend": "apps/web"
+  },
+
+  "_comment": "TODO: Replace all {placeholders} with actual values for your project"
+}

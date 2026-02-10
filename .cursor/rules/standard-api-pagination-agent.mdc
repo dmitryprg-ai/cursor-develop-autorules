@@ -1,0 +1,92 @@
+---
+description: "Применять при написании кода с пагинацией API (загрузка списков, синхронизация данных, batch-обработка). Предотвращает бесконечные циклы. НИКОГДА не полагаться только на response.length < limit — использовать total из метаданных ответа."
+globs:
+alwaysApply: false
+---
+
+# API PAGINATION — Правила работы с пагинированными API
+
+## Context
+
+- **Когда:** Код загружает данные из API с пагинацией (REST, GraphQL)
+- **Цель:** Предотвратить бесконечные циклы и загрузку лишних данных
+
+<critical>
+  НИКОГДА не полагаться ТОЛЬКО на размер ответа для остановки пагинации!
+</critical>
+
+## Requirements
+
+### Антипаттерн (ЗАПРЕЩЕНО)
+
+```typescript
+// НЕПРАВИЛЬНО — полагается только на размер батча
+if (response.length < limit) { hasMore = false; } // ОПАСНО!
+```
+
+### Правильный паттерн
+
+```typescript
+const MAX_RECORDS_SAFETY = 10000;
+let total: number | null = null;
+
+while (hasMore) {
+  const rawResponse = await api.getListRaw({ start, limit });
+  const items = rawResponse.result;
+  
+  if (total === null && rawResponse.total !== undefined) {
+    total = rawResponse.total;
+    if (total > MAX_RECORDS_SAFETY) throw new Error(`total=${total} exceeds safety limit`);
+  }
+  
+  results.push(...items);
+  if (total !== null && results.length >= total) break;
+  if (items.length < limit) break;
+  if (results.length >= MAX_RECORDS_SAFETY) throw new Error('Safety limit reached');
+  start += limit;
+}
+```
+
+<required>
+  - Использовать метод возвращающий ПОЛНЫЙ ответ с метаданными (total)
+  - Останавливаться при `fetched >= total`
+  - Safety limit как ДОПОЛНИТЕЛЬНАЯ защита
+  - Логировать total и fetched
+</required>
+
+### API-специфичные особенности
+
+| API | Поле total | Особенности |
+|-----|------------|-------------|
+| Bitrix24 REST | `response.total` | При `start > total` возвращает записи без фильтра! |
+| Salesforce | `totalSize` | Есть `nextRecordsUrl` |
+| Generic REST | `meta.total` | Проверь документацию |
+
+## Examples
+
+<example>
+GOOD: Пагинация с total
+```typescript
+const raw = await client.callMethodRaw('api.list', { start, limit: 50 });
+if (apiTotal === null) apiTotal = raw.total;
+if (deals.length >= apiTotal) break;
+```
+</example>
+
+<example type="invalid">
+BAD: Без total — бесконечный цикл
+```typescript
+if (items.length < 50) { hasMore = false; } // Единственное условие!
+```
+Результат: загрузка 333000+ записей вместо 100.
+</example>
+
+## Critical Points
+
+<critical>
+  - ALWAYS: использовать `total` из метаданных API
+  - ALWAYS: safety limit как дополнительная защита
+  - NEVER: полагаться только на `response.length < limit`
+</critical>
+
+**Версия:** 1.1

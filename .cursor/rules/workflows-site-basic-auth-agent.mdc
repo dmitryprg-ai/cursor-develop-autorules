@@ -1,0 +1,38 @@
+---
+description: "Применять при проверке сайта/страниц/эндпоинтов когда получаешь 401 Unauthorized. Сервер использует Basic access authentication. Креды в .cursor/.secrets/site-basic-auth.json. Использовать curl -u."
+globs:
+alwaysApply: false
+---
+
+# Site access: Basic Auth
+
+## Context
+
+- Применять при любых проверках сайта/страниц/эндпоинтов, когда сервер отвечает **401 Unauthorized**
+- В некоторых окружениях включена **Basic access authentication**
+
+## Requirements
+
+- Всегда учитывать, что без Basic Auth можно получить 401 даже на публичной странице
+- Всегда брать креды из `.cursor/.secrets/site-basic-auth.json`
+- Никогда не вставлять логин/пароль в ответы пользователю, в логи или в code snippets
+
+## Examples
+
+<example>
+GOOD: curl с Basic Auth
+```bash
+curl -u "<user>:<pass>" "<url>"
+```
+</example>
+
+<example type="invalid">
+BAD: публикация кредов в правилах/ответах
+</example>
+
+## Critical Points
+
+<critical>
+  - ALWAYS: если 401 — добавь Basic Auth из .cursor/.secrets/
+  - NEVER: публиковать креды
+</critical>

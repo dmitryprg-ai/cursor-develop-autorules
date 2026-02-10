@@ -1,0 +1,56 @@
+---
+description:
+globs: *.tsx
+alwaysApply: false
+---
+
+# RADIX SELECT — Правила использования Select
+
+<critical>
+  SelectItem с value="" = CRASH! Radix UI Select НЕ поддерживает пустую строку как value.
+</critical>
+
+## Requirements
+
+```tsx
+// ЗАПРЕЩЕНО
+<SelectItem value="">Не выбрано</SelectItem>
+
+// ПРАВИЛЬНО — используй специальный placeholder
+const NONE_VALUE = '__none__';
+<Select value={value || NONE_VALUE} onValueChange={(v) => setValue(v === NONE_VALUE ? '' : v)}>
+  <SelectContent>
+    <SelectItem value="__none__">Не выбрано</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+## Examples
+
+<example>
+GOOD: Select с корректным placeholder
+```tsx
+<Select value={team || '__none__'} onValueChange={(v) => setTeam(v === '__none__' ? '' : v)}>
+  <SelectContent>
+    <SelectItem value="__none__">Не указывать</SelectItem>
+    <SelectItem value="team_a">Команда A</SelectItem>
+  </SelectContent>
+</Select>
+```
+</example>
+
+<example type="invalid">
+BAD: Пустой value — CRASH
+```tsx
+<SelectItem value="">Не указывать</SelectItem>  // Runtime error!
+```
+</example>
+
+## Critical Points
+
+<critical>
+  - NEVER: value="" или value={undefined} в SelectItem
+  - ALWAYS: использовать `__none__` для placeholder, конвертировать в onChange
+</critical>
+
+**Версия:** 1.1

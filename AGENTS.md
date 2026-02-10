@@ -1,143 +1,58 @@
-# AGENTS.md — {Project Name}
+# AGENTS.md — crmai Project
 
-> **Для AI агентов:** Этот файл содержит quick start для работы с проектом.
-> **Глубокие правила:** `.cursor/rules/core-master.mdc`
+> Supplementary context for AI agents. Primary config: `CLAUDE.md`.
 
----
+## Production Services
 
-## 🏗️ Структура проекта
+| Service | Purpose | Port | Restart |
+|---------|---------|------|---------|
+| `crmai.service` | Backend (Node.js) | 5003 | `sudo systemctl restart crmai` |
+| `crmai-web.service` | Frontend (Next.js) | 3001 | `sudo systemctl restart crmai-web` |
 
-```
-{project-name}/
-├── src/                    # Backend (описание стека)
-│   ├── modules/            # Бизнес-логика по модулям
-│   └── index.ts            # Entry point
-├── web/                    # Frontend (если есть)
-│   └── src/                # Исходный код
-├── db/                     # Database
-│   └── schema.sql          # Схема БД
-└── .cursor/                # AI инструкции
-    └── rules/              # Правила и протоколы
-```
+**BUILD БЕЗ RESTART = СЛОМАННЫЙ САЙТ** — всегда restart после build. Use `deploy-app` skill.
 
-> **TODO:** Заполни структуру проекта для своего проекта
+## Key Files
 
----
-
-## ⚡ Команды
-
-### Backend
-```bash
-npm run dev          # Запуск dev сервера
-npm run build        # Сборка
-npm run start        # Production запуск
-```
-
-### Frontend (если есть)
-```bash
-cd web
-npm run dev          # Запуск dev сервера
-npm run build        # Production сборка
-```
-
-> **TODO:** Обнови команды для своего проекта
-
----
-
-## 📁 Ключевые файлы
-
-| Файл | Назначение |
-|------|------------|
+| File | Purpose |
+|------|---------|
 | `src/index.ts` | Backend entry point |
-| `.cursor/rules/core-master.mdc` | Главные правила AI агента |
+| `src/modules/bitrix24/bitrix24.routes.ts` | Main Bitrix24 router |
+| `src/modules/bitrix24/routes/` | Modular routes (deals, analytics) |
+| `apps/web/lib/api.ts` | Main API client |
+| `apps/web/lib/api/` | Modular API clients |
+| `db/init.sql` | Database schema |
 
-> **TODO:** Добавь ключевые файлы своего проекта
+## Chat System Messages (Open Lines)
 
----
+- `=== Исходящее сообщение ===` — ALWAYS from company (is_manager=true)
+- Format: `=== Исходящее сообщение, автор: <source> ===`
+- Sources: `Битрикс24 (ManagerName)`, `Телефон`, `WhatsApp`
+- **Rule**: check message TEXT (`startsWith`), not just DB fields
 
-## 🎨 Code Style
+## Architecture v12.0: Rules + Skills Hybrid
 
-### Общие правила
-- Linter errors = 0 перед коммитом
-- Точечные изменения (не перезаписывать файлы целиком)
-- Не создавать файлы с `_fixed`, `_final`, `_v2`
+### Rules (13 files) — Constraints
+- 1 always-apply: `core-master.mdc` v5.0
+- 2 auto (globs): react-hooks, radix-select
+- 10 agent-decided: api-pagination, file-size-limits, basic-auth, agent-quality, 4x _base-*, error-learning, freeze-recovery
 
-### Backend
-- {Описание стиля кода}
+### Skills (12 directories) — Workflows
+- `deploy-app` — deploy with shell scripts
+- `api-testing` — API auth testing with scripts
+- `development` — feature development + prompt preparation
+- `bugfix` — bug fixing with 5 Whys RCA
+- `refactoring` — safe refactoring with TDD
+- `research` — data analysis
+- `session-review` — session quality review
+- `code-review` — QA + CTO review
+- `tdd-workflow` — Test-Driven Development
+- `create-rules` — creating rules and skills
+- `techdebt-scan` — tech debt scanning with scripts (explicit /techdebt-scan only)
+- `gap-analysis` — finding gaps and stubs with scripts
 
-### Frontend
-- {Описание стиля кода}
-
-> **TODO:** Опиши code style своего проекта
-
----
-
-## 🧪 Testing & Verification
-
-### После изменений:
-1. **Linter check:** `read_lints` на изменённые файлы
-2. **Build check:** `npm run build`
-3. **Visual check:** Для UI изменений — проверить в браузере
-
-### Cross-check:
-- Каждый созданный файл открыть и проверить
-- API endpoints проверить через curl
-- SQL изменения проверить в БД
-
----
-
-## 🔗 Глубокие правила
-
-**Для полного workflow, протоколов и метрик качества:**
-
-```
-.cursor/rules/core-master.mdc      — Главный роутер (читается автоматически)
-.cursor/rules/protocol-*.mdc       — Протоколы по типам задач
-.cursor/rules/standard-*.mdc       — Стандарты качества
-```
-
-### Быстрый выбор протокола:
-| Задача | Протокол |
-|--------|----------|
-| Новая фича | `protocol-development.mdc` |
-| Баг/ошибка | `protocol-bugfix.mdc` |
-| Рефакторинг | `protocol-refactoring.mdc` |
-| Анализ данных | `protocol-research.mdc` |
+### rules_alone (5 files) — Manual @ mention
+- ajtbd-evaluation, backlog-to-rules, core-duplicate-check, fix-last-task, from-the-end
 
 ---
 
-## 📊 Метрики успеха
-
-| Метрика | Target |
-|---------|--------|
-| Linter errors | 0 |
-| Задачи без переделок | >80% |
-| Повторные ошибки | <10% |
-
-**Подробнее:** `.cursor/rules/standard-agent-quality.mdc`
-
----
-
-## ⚠️ Важные нюансы проекта
-
-> **TODO:** Опиши специфику своего проекта:
-> - Интеграции (API, внешние сервисы)
-> - Особенности работы с данными
-> - Edge cases которые нужно учитывать
-
----
-
-## 📚 Дополнительная документация
-
-| Документ | Назначение |
-|----------|------------|
-| `.cursor/rules/ARCHITECTURE.md` | Архитектура AI инструкций |
-| `.cursor/rules/HOW-TO-USE.md` | Как работать с инструкциями |
-| `.cursor/CHANGELOG.md` | История изменений |
-| `{projectname}-improvements-backlog.md` | Накопление улучшений |
-
----
-
-**Последнее обновление:** {YYYY-MM-DD}
-**Версия:** 1.0
-
+**Last updated:** 2026-02-10 | **Version:** 3.0

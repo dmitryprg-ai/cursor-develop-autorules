@@ -1,0 +1,34 @@
+---
+description: "Применять при [TRIGGER]. [ACTION] для [OUTCOME]."
+globs:
+alwaysApply: false
+---
+
+# Rule Title
+
+## Context
+- When to apply
+- Prerequisites
+
+## Requirements
+
+<required>
+  - Testable, actionable items
+</required>
+
+## Examples
+
+<example>
+GOOD: concise example
+</example>
+
+<example type="invalid">
+BAD: concise example with explanation why
+</example>
+
+## Critical Points
+
+<critical>
+  - ALWAYS do X
+  - NEVER do Y
+</critical>

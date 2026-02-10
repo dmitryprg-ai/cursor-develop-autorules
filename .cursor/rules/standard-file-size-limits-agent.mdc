@@ -1,0 +1,73 @@
+---
+description: "Применять ПЕРЕД добавлением кода в файл или при Code Review. Предотвращает создание монолитных файлов. Лимиты: Routes 300/600, Services 400/800, Components 200/400 строк. Файл > soft limit = план разбиения ПЕРЕД кодом."
+globs:
+alwaysApply: false
+---
+
+# FILE SIZE LIMITS — Лимиты размера файлов
+
+## Context
+
+- Применять ПЕРЕД созданием/изменением файлов с кодом
+- Цель: предотвратить создание "монолитных" файлов
+
+<critical>
+  Файл > soft limit = план разбиения ПЕРЕД добавлением кода
+  Файл > hard limit = ОБЯЗАТЕЛЬНО разбить перед любыми изменениями
+</critical>
+
+## Requirements
+
+### Лимиты
+
+| Тип файла | Soft limit | Hard limit | Действие |
+|-----------|------------|------------|----------|
+| Routes/Controllers | 300 строк | 600 строк | Split by domain |
+| Services | 400 строк | 800 строк | Extract sub-services |
+| Repositories | 400 строк | 800 строк | Split by entity |
+| Analytics/Calculations | 500 строк | 1000 строк | Extract helpers |
+| API client (frontend) | 300 строк | 600 строк | Split by feature |
+| React components | 200 строк | 400 строк | Extract sub-components |
+| Types/Interfaces | 200 строк | 400 строк | Split by domain |
+
+### Правила разбиения
+
+<required>
+1. **Single Responsibility** — один файл = одна ответственность
+2. **Domain-based** — разбивать по бизнес-доменам, НЕ по техническим слоям
+3. **Barrel exports** — `index.ts` для re-export
+4. **Incrementally** — перемещать код маленькими шагами, тестировать после каждого
+</required>
+
+### Исключение: High Cohesion Monolith
+
+Файл МОЖЕТ превышать лимит если:
+- Единая бизнес-ответственность, высокая связность методов
+- Чёткий публичный API, разбиение создаёт высокий риск
+- Добавить `@filesize-exception` комментарий в начало файла
+
+## Examples
+
+<example>
+GOOD: Разбиение по доменам
+```
+src/modules/crm/
+  ├── deals/deals.routes.ts       # 150 строк
+  ├── customers/customers.routes.ts # 120 строк
+  └── index.ts
+```
+</example>
+
+<example type="invalid">
+BAD: Один файл со всем (1800 строк) или разбиение по HTTP методам (get-routes, post-routes)
+</example>
+
+## Critical Points
+
+<critical>
+  - STOP перед добавлением кода в файл > soft limit
+  - NEVER: файлы `_part1.ts`, `_part2.ts`; разбиение по GET/POST/PUT
+  - ALWAYS: разбивать по бизнес-доменам, barrel exports, тестировать после шага
+</critical>
+
+**Версия:** 1.3

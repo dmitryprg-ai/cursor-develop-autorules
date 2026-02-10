@@ -1,628 +1,192 @@
-# 🤖 Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
+# Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-10.1-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-12.1-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
 
-> **A modular system of rules and protocols to improve AI agent quality in Cursor IDE**
+> **A hybrid Rules + Skills system for AI agents in Cursor IDE with token budget optimization and executable scripts**
 
 ---
 
-## 🎯 What is this?
+## What is this?
 
-**Cursor AI Rules** is a ready-to-use instruction library for AI assistants in [Cursor IDE](https://cursor.com/) that:
+**Cursor AI Rules** is an instruction library for AI assistants in [Cursor IDE](https://cursor.com/):
 
-- 📋 **Structures AI work** — clear protocols for different task types
-- 🔍 **Improves quality** — built-in checks and result verification
-- 📊 **Calibrates confidence** — AI honestly evaluates the reliability of its conclusions
-- 🔄 **Accumulates experience** — learning from errors to prevent repetition
-- ✅ **Ensures verification** — Challenge protocol and Cross-check before completion
-
----
-
-## 📈 What results will you get?
-
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Tasks without rework | ~50% | >80% | **+30%** |
-| Repeated errors | ~30% | <10% | **-20%** |
-| Linter errors on delivery | ~15% | 0% | **-15%** |
-| Missed edge cases | frequent | rare | **↓↓↓** |
-
-### Real improvement examples:
-
-**Before:**
-```
-AI: "Done! Component created."
-Reality: File created but not opened. Has syntax errors. Linter not checked.
-```
-
-**After:**
-```
-AI: "Confidence: 95% → 45% — code written, but not tested"
-    → Runs the code
-    → Cross-check completed
-    → Challenge protocol passed
-    "Confidence: 92% — everything verified"
-    
-    ✅ COMPLETION REPORT
-    Protocol: protocol-development.mdc
-    Standards: standard-tdd.mdc
-    Base Modules: _base-confidence, _base-challenge, _base-crosscheck
-```
+- **Structures AI work** — skills for different task types
+- **Improves quality** — built-in checks and verification
+- **Optimizes tokens** — 3-tier rule loading system (~2,500 always tokens)
+- **Automates workflows** — shell scripts in skills for deploy, testing, scanning
+- **Accumulates experience** — learning from errors
 
 ---
 
-## 🏗️ Architecture
+## Results
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Tasks without rework | ~50% | >80% |
+| Repeated errors | ~30% | <10% |
+| Linter errors on delivery | ~15% | 0% |
+| Always-apply tokens | ~21,000 | ~2,500 |
+
+---
+
+## Architecture v12.0: Rules + Skills Hybrid
 
 ```
 your-project/
-├── .cursor/                       # ⭐ Universal instructions
-│   ├── CHANGELOG.md               # Change history
-│   ├── rules/                     # Main instructions (27 files)
-│   │   ├── core-master.mdc        # Single entry point (alwaysApply: true)
-│   │   ├── _base-*.mdc            # Base modules (8 pcs)
-│   │   ├── protocol-*.mdc         # Task-type protocols (7 pcs)
-│   │   ├── standard-*.mdc         # Quality standards (9 pcs)
-│   │   └── error-learning.mdc     # Error learning
+├── .cursor/
+│   ├── docs/                         # Documentation
+│   ├── rules/                        # Rules — constraints (13 files)
+│   │   ├── core-master.mdc           # Tier 1: ALWAYS (only one)
+│   │   ├── standard-*-auto.mdc       # Tier 2: AUTO (2, by globs)
+│   │   └── *-agent.mdc, _base-*.mdc  # Tier 3: AGENT (10)
 │   │
-│   └── rules_alone/               # Standalone instructions (6 files)
-│       └── *.mdc                  # Called explicitly via @
+│   ├── skills/                       # Skills — workflows (12 directories)
+│   │   ├── deploy-app/               # With shell scripts
+│   │   ├── api-testing/              # With shell scripts
+│   │   ├── development/              # With references/
+│   │   ├── bugfix/, refactoring/, research/, session-review/
+│   │   ├── code-review/              # With references/
+│   │   ├── tdd-workflow/, create-rules/
+│   │   ├── techdebt-scan/            # With scripts (explicit only)
+│   │   └── gap-analysis/             # With scripts
+│   │
+│   ├── rules_alone/                  # Standalone instructions (5)
+│   └── .secrets/                     # Secrets (gitignored)
 │
-├── .cursor_additional/            # 📁 Project-specific files
-│   └── {projectname}/             # Folder for your project
-│       ├── improvements-backlog.md # Improvement accumulation
-│       └── error-log.md           # Error logs
-│
-└── AGENTS.md                      # Quick Start for AI agents
+├── .cursorignore                     # Context exclusions
+├── CLAUDE.md                         # Lean project context
+└── AGENTS.md                         # Supplementary AI context
 ```
 
-### How it works:
-
-```
-Your request
-    ↓
-core-master.mdc (determines complexity and type)
-    ↓
-protocol-*.mdc (executes the task)
-    ↓
-_base-*.mdc (applies checks)
-    ↓
-standard-*.mdc (verifies quality)
-    ↓
-✅ COMPLETION REPORT
-```
-
----
-
-## 🚀 Quick Start
-
-### Step 1: Copy files to your project
-
-```bash
-# Clone the repository
-git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
-
-# Copy .cursor and AGENTS.md to your project
-cp -r cursor-develop-autorules/.cursor /path/to/your/project/
-cp cursor-develop-autorules/AGENTS.md /path/to/your/project/
-```
-
-### Step 2: Done!
-
-Just start working in Cursor IDE. Instructions are applied **automatically**.
-
-```
-Add a component to display statistics
-```
-
-AI will automatically:
-1. Determine task complexity (Simple/Standard/Complex)
-2. Choose the appropriate protocol
-3. Apply checks and verifications
-4. Output an execution report
-
----
-
-## 📋 Library Contents
-
-### 🔄 Protocols (7 items)
-
-| Protocol | When to apply |
-|----------|---------------|
-| `protocol-prepare-prompt` | Improving user prompt before execution |
-| `protocol-development` | Developing new features |
-| `protocol-bugfix` | Fixing bugs |
-| `protocol-refactoring` | Code refactoring |
-| `protocol-research` | Data analysis (parquet, csv, SQL) |
-| `protocol-freeze-recovery` | Recovery after AI freeze |
-| `protocol-session-review` | Session analysis and improvement accumulation |
-
-### 📦 Base Modules (8 items)
-
-| Module | What it does |
-|--------|--------------|
-| `_base-confidence` | AI confidence calibration (deduction formula) |
-| `_base-challenge` | 4 questions before "done" |
-| `_base-crosscheck` | Independent result verification |
-| `_base-forbidden` | Critical prohibitions |
-| `_base-todo-usage` | TODO usage rules |
-| `_base-5wh` | 5W+H format for analysis |
-| `_base-jtbd-thinking` | JTBD thinking for user-facing features |
-| `_base-rat` | **NEW:** Riskiest Assumption Test — verify risks BEFORE implementation |
-
-### 📋 Quality Standards (9 items)
-
-| Standard | Purpose |
-|----------|---------|
-| `standard-agent-quality` | Success metrics and agent boundaries |
-| `standard-qa` | QA acceptance criteria |
-| `standard-rca` | Root Cause Analysis (5 Whys) |
-| `standard-tdd` | Test-Driven Development |
-| `standard-cto-review` | CTO/Lead Review for complex tasks |
-| `standard-file-size-limits` | File size control (< 300 lines) |
-| `standard-api-pagination` | API pagination rules (prevents infinite loops) |
-| `standard-react-hooks` | React hooks rules (prevents Error #310) |
-| `standard-kiss-yagni` | **NEW:** KISS/YAGNI/MVP — Anti-Overengineering |
-
-### 🎯 Standalone Instructions (6 items)
-
-Called explicitly via `@`:
-
-```
-@rules_alone/core-duplicate-check Check for duplicates before creating
-@rules_alone/ajtbd-evaluation Evaluate the landing page
-@rules_alone/backlog-to-rules Implement improvements from backlog
-@rules_alone/fix-last-task Fix issues from the last task
-@rules_alone/techdebt Run technical debt scan
-```
-
-### 🧹 TechDebt Command (v9.0)
-
-Run at the end of session to find and document technical debt:
-
-```
-@rules_alone/techdebt Run techdebt scan
-```
-
-**What it does:**
-- Scans files > 300 lines
-- Finds duplicate code
-- Identifies code smells (long functions, deep nesting)
-- Prioritizes by Impact/Effort
-- Highlights Quick Wins
-- Records P0-P1 issues in backlog
-
-### 🎯 KISS/YAGNI/MVP (NEW in v10.0)
-
-Mandatory code simplicity principles (alwaysApply: true):
-
-| Principle | Description |
-|-----------|-------------|
-| **KISS** | Simplicity beats complexity, Less code = fewer bugs |
-| **YAGNI** | No code "for later", Current requirements ONLY |
-| **MVP Mindset** | Start simple, Add complexity when proven needed |
-| **One Way** | Single way to do X (logging, config, errors) |
-
-**Complexity Checklist (BEFORE adding complexity):**
-1. Is this feature needed NOW? → No = DON'T do it
-2. Is there a REAL problem? → No = DON'T do it
-3. Will it simplify code for OTHERS? → No = DON'T do it
-4. Can we solve it SIMPLER? → Yes = do it simpler
-5. Does it add a NEW dependency? → Yes = think twice
-
-**Over-Engineering Red Flags:**
-- 🚩 > 3 abstraction layers for one operation
-- 🚩 Factories creating factories
-- 🚩 Multiple ways to do the same thing
-- 🚩 Abstraction for code used only once
-
----
-
-## 💡 Key Concepts
-
-### 0. RAT — Riskiest Assumption Test
-
-Verify risky assumptions **BEFORE** starting implementation:
-
-```
-RAT = 3 steps:
-1. List ALL assumptions
-2. Rank by risk (what can "kill" the solution)
-3. Verify TOP-1 risk BEFORE coding
-
-If risk is disproved → revise the plan!
-```
-
-**Typical coding risks:**
-- 🔧 Does the approach/library fit?
-- 📊 Is data/API as expected?
-- 🔗 Won't break existing code?
-
-> Source: [Ivan Zamesin — RAT](https://zamesin.ru/books/product-howto/riskiest-assumption-test/)
-
-### 1. Confidence Calibration
-
-AI honestly evaluates the reliability of its conclusions:
-
-```
-Confidence = 100% minus:
-• Code not tested: -50%
-• Artifacts not opened: -40%
-• No cross-check: -30%
-• Assumptions not verified: -25%
-
-Threshold: <80% = not ready
-```
-
-### 2. Challenge Protocol
-
-Before each "done", AI asks itself 4 questions:
-
-1. How can I disprove my conclusion?
-2. Did I open ALL created files?
-3. What edge cases did I miss?
-4. Does this solve the user's real Job?
-
-### 3. Cross-check
-
-Verifying the result using a **different method**:
-
-- File created → Open and read it
-- API works → curl + code
-- Data is correct → pandas + SQL
-
-### 4. COMPLETION REPORT
-
-At the end of each task, AI outputs a report:
-
-```markdown
-## ✅ COMPLETION REPORT
-
-**Complexity:** 🟡 STANDARD
-
-**Instructions used:**
-- Protocol: protocol-development.mdc
-- Standards: standard-tdd.mdc
-- Base Modules: _base-confidence, _base-challenge, _base-crosscheck
-
-**Final confidence:** 92%
-```
-
----
-
-## 🌍 Rule Universality (NEW in v4.0)
-
-Rules are designed to work **in any project**. One `.cursor/rules/` set can be used across multiple projects without modifications.
-
-### Principle: Separation of Universal and Project-Specific
-
-| Universal (in `.cursor/rules/`) | Project-Specific (separate) |
-|--------------------------------|----------------------------|
-| Protocols and workflows | Project structure → `AGENTS.md` |
-| Quality standards | Secrets (URLs, creds) → `.cursor/.secrets/` |
-| Base checks | Lessons learned → `.cursor_additional/` |
-
-### Examples in rules use placeholders:
-
-```
-✅ <ComponentName>.tsx     instead of   ❌ DealsTable.tsx
-✅ <url>, <user>, <pass>   instead of   ❌ actual values
-✅ "external API fields"   instead of   ❌ "Bitrix24 UF fields"
-```
-
----
-
-## 🔧 Project Customization
-
-### Configure AGENTS.md
-
-After copying, edit `AGENTS.md` for your project:
-- Specify project structure
-- Add build commands
-- Describe code style
-- **Add project specifics** (integrations, data types, workarounds)
-
-### Create secrets folder (if needed)
-
-```bash
-mkdir -p .cursor/.secrets/
-echo ".cursor/.secrets/" >> .gitignore
-```
-
-### Add project-specific checks to AGENTS.md
-
-Add project checks to `AGENTS.md`, not to `.cursor/rules/`:
-
-```markdown
-## ⚠️ Important Project Notes
-
-### [Integration Name]
-- [Specificity 1]
-- [Specificity 2]
-- WHY: [Real error case]
-```
-
----
-
-## 🔄 Recording Failures and Self-Improvement
-
-The system includes an error learning mechanism. When AI makes a mistake or the user points out a problem, it gets recorded and turned into new rules.
+### Rules vs Skills
+
+| Aspect | Rules | Skills |
+|--------|-------|--------|
+| What | Constraints, invariants | Procedural workflows |
+| Format | Single .mdc file | Directory with SKILL.md + scripts/ |
+| Scripts | No | Yes (shell, python, etc.) |
+| Loading | Always / Auto / Agent | Agent-decided or /skill-name |
+| Examples | "Don't use value='' in Select" | "Feature development protocol" |
 
 ### How it works
 
 ```
-Error detected
-        ↓
-Session Review (protocol-session-review.mdc)
-        ↓
-Record in improvements-backlog.md
-        ↓
-Implement via @rules_alone/backlog-to-rules
-        ↓
-New rule in instructions
-        ↓
-Error doesn't repeat ✅
+Your request
+    ↓
+core-master.mdc (automatic)
+  ├── Complexity 🟢/🟡/🔴
+  ├── Plan → Skill from Routing Table
+  ├── Execute (KISS/YAGNI inline)
+  ├── Verify (Forbidden + Cross-check + Challenge inline)
+  └── DONE block
+    ↓
+*.tsx open? → react-hooks, radix-select (auto)
+    ↓
+Agent loads relevant skills and rules by description
 ```
 
-### Step 1: Create a file for accumulating improvements
+---
 
-Create a folder and file for your project:
+## Quick Start
+
+### Step 1: Copy to your project
 
 ```bash
-mkdir -p .cursor_additional/{projectname}/
+git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
+cp -r cursor-develop-autorules/.cursor /path/to/your/project/
+cp cursor-develop-autorules/AGENTS.md /path/to/your/project/
+cp cursor-develop-autorules/.cursorignore /path/to/your/project/
 ```
 
-Create file `.cursor_additional/{projectname}/improvements-backlog.md`:
+### Step 2: Configure config and AGENTS.md
 
-```markdown
-# 📋 IMPROVEMENTS BACKLOG
+1. Edit `.cursor/config/project.config.json` — specify URL, services, paths
+2. Edit `AGENTS.md` — specify project structure
+3. Create `.cursor/.secrets/` with credentials (if deploy/testing skills are needed)
 
-> **Project:** {projectname}
+### Step 3: Done!
 
-## 📊 STATISTICS
-| Metric | Value |
-|--------|-------|
-| Total improvements | 0 |
-| 🔴 High priority | 0 |
-| ✅ Implemented | 0 |
-
-## 🔴 HIGH PRIORITY
-(entries will go here)
-
-## ✅ IMPLEMENTED
-(implemented improvements will go here)
-```
-
-### Step 2: Record errors after failures
-
-When AI makes a mistake, record in backlog:
-
-```markdown
----
-
-### IMPROVEMENT #N: YYYY-MM-DD (Brief name)
-
-**Source:** Session Review after [which task]
-
-**Problem:**
-[What went wrong]
-
-**Root Cause:**
-[Why it happened — 5 Whys if needed]
-
-**Proposed change:**
-```
-[Specific text to add to instructions]
-```
-
-**File to modify:** `.cursor/rules/[file].mdc`
-
-**Priority:** 🔴 High / 🟡 Medium / 🟢 Low
-**Status:** 📝 Backlog
-
----
-```
-
-### Step 3: Implement improvements
-
-When 2+ High priority improvements accumulate or a week passes:
-
-```
-@rules_alone/backlog-to-rules Implement accumulated improvements
-```
-
-AI will automatically:
-1. Read the backlog
-2. Group improvements by files
-3. Add new sections to instructions
-4. Update statuses in backlog (📝 → ✅)
-5. Output a report
-
-### Real improvement example
-
-**Was:** AI created `.cursor` inside `git/`, although user said "I'll copy 2 folders myself"
-
-**Recorded in backlog:**
-```markdown
-### IMPROVEMENT #11: Literal Request Following
-
-**Problem:** AI interprets request instead of following literally
-
-**Root Cause:** No explicit step to "write constraints verbatim"
-
-**Proposed change:** Add Explicit Constraints section to protocol-prepare-prompt.mdc
-```
-
-**After implementation:** Now AI always writes explicit constraints from the request verbatim.
-
-### When to run implementation
-
-| Condition | Priority |
-|-----------|----------|
-| 5+ improvements accumulated | 🔴 Required |
-| 2+ High priority exist | 🔴 Required |
-| Week passed | 🟡 Recommended |
-| Same error repeated 3+ times | 🔴 Immediately |
+Start working. Instructions apply automatically.
 
 ---
 
-## 📊 Task Complexity Definition
+## Library Contents
 
-| Complexity | Signs | Flow |
-|------------|-------|------|
-| 🟢 SIMPLE | 1-2 files, obvious result | EXECUTE → VERIFY |
-| 🟡 STANDARD | New functionality, multiple files | Full 4-phase protocol |
-| 🔴 COMPLEX | Architecture, critical data | + CTO Review + Session Review |
+### Rules (13 files)
 
----
+**Tier 1 — Always (1):** `core-master.mdc` — master protocol with KISS/YAGNI, Forbidden, Cross-check, Challenge, Confidence inline.
 
-## ❓ FAQ
+**Tier 2 — Auto (2):** react-hooks (*.tsx, *.jsx), radix-select (*.tsx)
 
-### Do I need to write "use core-master.mdc"?
-**No.** Files with `alwaysApply: true` are applied automatically.
+**Tier 3 — Agent (10):** api-pagination, file-size-limits, basic-auth, agent-quality, freeze-recovery, error-learning, 4x _base-* modules
 
-### Can I use this with other AI assistants?
-The library is optimized for **Cursor IDE**, but the concepts are universal.
+### Skills (12 directories)
 
-### How to add my own rules?
-1. Create a file `protocol-your-name.mdc` or `_base-your-name.mdc`
-2. Add a reference in `core-master.mdc`
-
-### How to disable instructions?
-Change `alwaysApply: true` to `false` in `core-master.mdc`.
-
----
-
-## 🤝 Contributing
-
-Welcome:
-- 🐛 Bug reports
-- 💡 Improvement suggestions
-- 📝 New protocols and modules
+| Skill | Purpose | Scripts |
+|-------|---------|---------|
+| `deploy-app` | Deploy backend/frontend | 4 scripts |
+| `api-testing` | API auth testing | 2 scripts |
+| `development` | Feature development (JTBD, TDD) | — |
+| `bugfix` | Bug fixing (5 Whys RCA) | — |
+| `refactoring` | Safe refactoring | — |
+| `research` | Data analysis | — |
+| `session-review` | Session quality review | — |
+| `code-review` | QA + CTO Review | — |
+| `tdd-workflow` | Test-Driven Development | — |
+| `create-rules` | Creating rules/skills | — |
+| `techdebt-scan` | Tech debt scan (explicit only) | 2 scripts |
+| `gap-analysis` | Finding gaps/stubs | 1 script |
 
 ---
 
-## 📄 License
+## Key Concepts
 
-MIT License — use freely in any projects.
+### KISS/YAGNI (inline in core-master)
+Simplest solution always preferred. No code "for later". Check before abstracting.
+
+### Challenge Protocol (inline)
+4 questions before "done": disprove, files opened, edge cases, Job solved?
+
+### RAT — Riskiest Assumption Test
+Verify TOP-1 risk BEFORE coding.
 
 ---
 
-## 🔗 Links
+## Self-Improvement
+
+```
+Error → session-review skill → improvements-backlog.md → @rules_alone/backlog-to-rules → New rule/skill
+```
+
+"Rule of Three": codify a rule after 3 repetitions of the same mistake.
+
+---
+
+## What's New in v12.1
+
+- **Project Config**: `.cursor/config/project.config.json` — single source for all project-specific values
+- **Full Universality**: Zero hardcoded values in rules/skills — all project-specific in config
+- **Skills Architecture**: 12 skills with SKILL.md format, progressive disclosure
+- **Executable Scripts**: 4 skills with config-driven shell scripts (deploy, testing, scanning)
+- **References/Assets**: 4 skills with reference materials
+- **Rules → Skills Migration**: 14 rules converted to 12 skills
+- **Easy Setup**: Copy `.cursor/`, edit `config/project.config.json` — done
+
+---
+
+## License
+
+MIT License
+
+## Links
 
 - [GitHub Repository](https://github.com/dmitryprg-ai/cursor-develop-autorules)
 - [Cursor IDE](https://cursor.com/)
-- [Cursor Docs — Large Codebases](https://cursor.com/docs/cookbook/large-codebases)
 
 ---
 
-**Version:** 9.0  
-**Date:** 2026-02-02
-
----
-
-## 🆕 What's New in v9.0
-
-### API Pagination Standard (alwaysApply: true)
-
-New standard `standard-api-pagination-always.mdc`:
-
-**Problem:** Infinite loops during API pagination (real case: loading 333000+ records instead of 100)
-
-**Rules:**
-- NEVER rely only on `response.length < limit`
-- ALWAYS use `total` from API response metadata
-- Safety limits as ADDITIONAL protection
-
-### React Hooks Standard (alwaysApply: true)
-
-New standard `standard-react-hooks-always.mdc`:
-
-**Problem:** React Error #310 "Rendered fewer hooks than expected"
-
-**Rules:**
-- Hooks ALWAYS at component start, BEFORE early returns
-- Hooks NOT called conditionally (inside if/else, loops)
-- Data checks — INSIDE hook callback
-
-### TechDebt Command
-
-New command `@rules_alone/techdebt`:
-
-```
-@rules_alone/techdebt Run technical debt scan
-```
-
-**5 phases:** SCAN → ANALYZE → PRIORITIZE → REPORT → BACKLOG
-
----
-
-## 🆕 What's New in v8.1
-
-### File Size Limits Standard
-
-New standard `standard-file-size-limits-always.mdc` (alwaysApply: true):
-
-| File Type | Soft/Hard limit |
-|-----------|-----------------|
-| Routes/Controllers | 200/400 lines |
-| Services | 250/500 lines |
-| React components | 200/400 lines |
-
-**Rules:**
-- File > 300 lines = **splitting plan BEFORE adding code**
-- Split by **business domains**, NOT by technical layers
-- Use barrel exports (`index.ts`)
-
-### Service Restart & Integration
-
-**`protocol-development.mdc` v2.3:**
-- RULE #5: Restart services after changes
-- RULE #6: Follow file-size-limits standard
-- PRE-ACTION: "Control File Size" step
-
-**`protocol-refactoring.mdc` v1.2:**
-- Workflow: "PREPLAN" step with file-size-limits reference
-- Golden Rules: "RULES FIRST"
-
----
-
-## 🆕 What's New in v8.0
-
-### Universality Requirement
-
-All rules are **fully universal** and work in any project:
-
-- ❌ Removed project-specific references (Bitrix24, DealsTable, PostgreSQL bigint)
-- ✅ Examples use placeholders (`<ComponentName>`, `<url>`)
-- ✅ Project specifics moved to `AGENTS.md` and `.cursor/.secrets/`
-
----
-
-## 🆕 What's New in v7.0
-
-### STANDARD FORMAT COMPLIANCE
-
-- All 22 files brought to unified standard
-- description in ACTION-TRIGGER-OUTCOME format
-- Structure: Context → Requirements → Examples → Critical Points
-- XML tags: `<critical>`, `<required>`, `<example>`
-
----
-
-## 🆕 What's New in v4.0
-
-### Rule Universality
-
-- Rules now work **in any project** without modifications
-- Examples use placeholders (`<ComponentName>`, `<url>`)
-- Project specifics moved to `AGENTS.md` and `.cursor/.secrets/`
-
-### New Files
-
-- `workflows-site-basic-auth-always.mdc` — universal Basic Auth rule
-- `core-rules-standard-format-always.mdc` — rule generation standard
-
+**Version:** 12.1 | **Date:** 2026-02-10
