@@ -3,328 +3,202 @@
 <p align="center">
   <img src="https://img.shields.io/badge/version-12.2-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
+  <img src="https://img.shields.io/badge/claude--code-supported-purple" alt="Claude Code">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
 
-> **A hybrid Rules + Skills system for AI agents in Cursor IDE with token budget optimization and executable scripts**
+> **A hybrid Rules + Skills system for AI agents in Cursor IDE and Claude Code with token budget optimization, executable scripts, and self-improvement**
 
 ---
 
 ## What is this?
 
-**Cursor AI Rules** is an instruction library for AI assistants in [Cursor IDE](https://cursor.com/):
+An instruction library for AI assistants in [Cursor IDE](https://cursor.com/) and [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
 
-- **Structures AI work** — skills for different task types
-- **Improves quality** — built-in checks and verification
-- **Optimizes tokens** — 3-tier rule loading system (~2,500 always tokens)
-- **Automates workflows** — shell scripts in skills for deploy, testing, scanning
-- **Accumulates experience** — learning from errors
-
----
-
-## Results
+- **14 skills** for different task types with shell scripts
+- **16 rules** — built-in checks (Cross-check, Challenge, DONE block)
+- **3-tier loading** system (~2,500 always tokens instead of ~21,000)
+- **Self-improvement cycle** — learning from errors
+- **Claude Code** support — `.claude/` with subagents, permissions, hooks
 
 | Metric | Before | After |
-|--------|--------|-------|
+|---|---|---|
 | Tasks without rework | ~50% | >80% |
 | Repeated errors | ~30% | <10% |
-| Linter errors on delivery | ~15% | 0% |
 | Always-apply tokens | ~21,000 | ~2,500 |
 
 ---
 
-## Architecture v12.0: Rules + Skills Hybrid
+## Architecture v12.2
 
 ```
 your-project/
 ├── .cursor/
-│   ├── docs/                         # Documentation
-│   ├── rules/                        # Rules — constraints (13 files)
-│   │   ├── core-master.mdc           # Tier 1: ALWAYS (only one)
-│   │   ├── standard-*-auto.mdc       # Tier 2: AUTO (2, by globs)
-│   │   └── *-agent.mdc, _base-*.mdc  # Tier 3: AGENT (10)
-│   │
-│   ├── skills/                       # Skills — workflows (12 directories)
-│   │   ├── deploy-app/               # With shell scripts
-│   │   ├── api-testing/              # With shell scripts
-│   │   ├── development/              # With references/
-│   │   ├── bugfix/, refactoring/, research/, session-review/
-│   │   ├── code-review/              # With references/
-│   │   ├── tdd-workflow/, create-rules/
-│   │   ├── techdebt-scan/            # With scripts (explicit only)
-│   │   └── gap-analysis/             # With scripts
-│   │
-│   ├── rules_alone/                  # Standalone instructions (5)
-│   └── .secrets/                     # Secrets (gitignored)
+│   ├── config/                        # project.config.json ← adapt here
+│   ├── rules/                         # 16 rules (always/auto/agent)
+│   ├── skills/                        # 14 skills + _shared/ (scripts, references)
+│   ├── rules_alone/                   # 3 manual instructions (invoke via @)
+│   ├── data/                          # Templates: error-log, improvements-backlog
+│   ├── docs/                          # ARCHITECTURE, HOW-TO-USE, CHANGELOG
+│   └── .secrets/                      # Credentials (gitignored)
+├── .claude/                           # Claude Code (settings, 5 agents, 4 rules)
 │
-├── .cursorignore                     # Context exclusions
-├── CLAUDE.md                         # Lean project context
-└── AGENTS.md                         # Supplementary AI context
+├── scripts/                           # validate-rules.sh, migrate-to-claude-code.sh
+├── .cursorignore, .mcp.json
+├── CLAUDE.md                          # Project context (auto-loaded)
+└── AGENTS.md                          # Supplementary AI context
 ```
 
 ### Rules vs Skills
 
-| Aspect | Rules | Skills |
-|--------|-------|--------|
-| What | Constraints, invariants | Procedural workflows |
-| Format | Single .mdc file | Directory with SKILL.md + scripts/ |
-| Scripts | No | Yes (shell, python, etc.) |
-| Loading | Always / Auto / Agent | Agent-decided or /skill-name |
-| Examples | "Don't use value='' in Select" | "Feature development protocol" |
-
-### How it works
-
-```
-Your request
-    ↓
-core-master.mdc (automatic)
-  ├── Complexity 🟢/🟡/🔴
-  ├── Plan → Skill from Routing Table
-  ├── Execute (KISS/YAGNI inline)
-  ├── Verify (Forbidden + Cross-check + Challenge inline)
-  └── DONE block
-    ↓
-*.tsx open? → react-hooks, radix-select (auto)
-    ↓
-Agent loads relevant skills and rules by description
-```
+| | Rules | Skills |
+|---|---|---|
+| Purpose | "Don't do this" — constraints | "Do it this way" — procedures |
+| Format | Single `.mdc` file | Directory: `SKILL.md` + scripts |
+| Scripts | No | Yes — `.sh` files |
+| Size | < 100 lines | 50–120 lines + extras |
 
 ---
 
 ## Quick Start
 
-### Step 1: Copy to your project
-
 ```bash
 git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
 cp -r cursor-develop-autorules/.cursor /path/to/your/project/
-cp cursor-develop-autorules/AGENTS.md /path/to/your/project/
-cp cursor-develop-autorules/.cursorignore /path/to/your/project/
+cp cursor-develop-autorules/{CLAUDE.md,AGENTS.md,.cursorignore} /path/to/your/project/
+# Optional: cp -r cursor-develop-autorules/{.claude,scripts,.mcp.json} /path/to/your/project/
+
+cd /path/to/your/project
+cp .cursor/config/project.config.example.json .cursor/config/project.config.json
+# Fill in: project_name, site_url, services, auth, verify_pages
+# Edit CLAUDE.md and AGENTS.md for your project
 ```
 
-### Step 2: Configure config and AGENTS.md
-
-1. Edit `.cursor/config/project.config.json` — specify URL, services, paths
-2. Edit `AGENTS.md` — specify project structure
-3. Create `.cursor/.secrets/` with credentials (if deploy/testing skills are needed)
-
-### Step 3: Done!
-
-Start working. Instructions apply automatically.
+Or ask the AI: *"I copied `.cursor/` from cursor-develop-autorules. Adapt `project.config.json`, `CLAUDE.md`, `AGENTS.md` for this project. Run `scripts/validate-rules.sh`."*
 
 ---
 
 ## User Guide
 
-### What works automatically (no action needed)
+### What works automatically
 
-These instructions load on their own. You don't need to write, call, or remember anything.
+**Always (every dialog):** `core-master.mdc` — complexity, plan, skill from Routing Table, checks, DONE block, KISS/YAGNI.
 
-**Always active:**
+**When files are open:**
 
-| Rule | What it ensures |
-|------|----------------|
-| `core-master.mdc` | Determines task complexity, requires a plan, enforces checks, DONE block. Routes to the right skill. Enforces KISS/YAGNI. |
-
-**Activates when specific file types are open:**
-
-| Rule | When | What it ensures |
-|------|------|----------------|
-| `standard-react-hooks-auto.mdc` | `*.tsx` or `*.jsx` is open | Hooks are called in correct order, before early returns |
-| `standard-radix-select-auto.mdc` | `*.tsx` is open | Prevents `<SelectItem value="">` (causes crash) |
-
-**Agent loads on its own (by situation):**
-
-| Rule | When the agent loads it |
-|------|------------------------|
-| `standard-api-pagination-agent.mdc` | Code with API pagination is being written |
-| `standard-file-size-limits-agent.mdc` | A large file is being created or modified |
-| `workflows-site-basic-auth-agent.mdc` | Got 401 when checking a page |
-| `standard-agent-quality.mdc` | Task verification phase |
-| `protocol-freeze-recovery.mdc` | Agent is stuck or looping |
-| `error-learning.mdc` | An error occurred, analysis needed |
-| `_base-5wh.mdc` | Structured problem analysis needed |
-| `_base-jtbd-thinking.mdc` | User-facing feature is being developed |
-| `_base-rat.mdc` | Planning a complex task (risk assessment) |
-| `_base-todo-usage.mdc` | Task needs decomposition into steps |
-
-**The agent also automatically loads skills based on your request context:**
-
-| Your request | Which skill activates |
-|--------------|----------------------|
-| "Add a date filter" | `development` — full dev cycle with JTBD and TDD |
-| "The save button is broken" | `bugfix` — 5 Whys analysis, root cause fix |
-| "Simplify this service" | `refactoring` — tests before changes, small steps |
-| "Deploy the changes" | `deploy-app` — build, restart, verify via shell scripts |
-| "Test this API" | `api-testing` — auth and testing via scripts |
-| "Analyze data from CSV" | `research` — schema first, then hypothesis |
-| "Review the code quality" | `code-review` — QA checklist and CTO review |
-| "Write tests first" | `tdd-workflow` — Red → Green → Refactor |
-| "Create a new rule" | `create-rules` — template, naming, token budget |
-| "Find unfinished features" | `gap-analysis` — scanning for TODO, empty handlers |
-
----
-
-### What you need to invoke manually
-
-**Manual instructions** (`rules_alone/`) — invoked via `@` in your message:
-
-| How to invoke | When to use | What you get |
-|---------------|-------------|-------------|
-| `@ajtbd-evaluation` | Want to evaluate a landing page or interface | Full JTBD analysis: Job Stories, benefits/taxes, conversion assessment |
-| `@backlog-to-rules` | Improvements accumulated, time to implement | 7-phase protocol for implementing from backlog |
-| `@core-duplicate-check` | Before creating a new file/class/function | Duplication check with confidence matrix |
-| `@fix-last-task` | Last task was done poorly | Analysis + rework with RCA and session review |
-| `@from-the-end` | Complex task, want to start from the result | "From the end" methodology: expected output first |
-
-**Example:** type `Analyze our landing page @ajtbd-evaluation` — the agent loads the instruction and runs a full JTBD analysis.
-
-**Explicit-only skill:**
-
-| How to invoke | What you get |
-|---------------|-------------|
-| `/techdebt-scan` | Project scan: oversized files, TODO/FIXME, code smells. Runs shell scripts. |
-
----
-
-### How Skills differ from Rules
-
-| | Rules | Skills |
+| Rule | When | What it does |
 |---|---|---|
-| **What they are** | Short constraints and standards | Step-by-step work procedures |
-| **Format** | Single `.mdc` file | Directory: `SKILL.md` + scripts + reference materials |
-| **Can run scripts** | No | Yes — real `.sh` files |
-| **Size** | Compact (< 100 lines) | Detailed (50–106 lines) + additional files |
-| **Metaphor** | Safety regulations: "don't do this" | User manual: "do it this way" |
-| **Rule example** | "Hooks only before early return" | — |
-| **Skill example** | — | "How to deploy: build → restart → verify → check logs" |
+| `react-hooks-auto` | `*.tsx`, `*.jsx` | Correct hook order |
+| `radix-select-auto` | `*.tsx` | Prevents `<SelectItem value="">` |
+| `error-handling-auto` | `*.tsx`, `*.ts` | Error boundaries, loading/error states |
 
-**When each is used:**
-- **Rule** — if violation causes a bug. "Don't do X" → Rule.
-- **Skill** — if a step-by-step procedure is needed. "How to do Y" → Skill.
+**Agent loads by situation:** api-pagination, file-size-limits, security, git-workflow, basic-auth, agent-quality, freeze-recovery, error-learning, _base-5wh, _base-jtbd, _base-rat, _base-todo-usage.
+
+**Skills — by request context:**
+
+| Your request | Skill |
+|---|---|
+| "Add a date filter" | `development` — JTBD + TDD |
+| "The button is broken" | `bugfix` — 5 Whys RCA |
+| "Simplify this service" | `refactoring` — tests → small steps |
+| "Deploy changes" | `deploy-app` — build → restart → verify (scripts) |
+| "Test this API" | `api-testing` — auth + test (scripts) |
+| "Analyze the data" | `research` — schema → hypothesis |
+| "Review the code" | `code-review` — QA + CTO review |
+| "Write tests first" | `tdd-workflow` — Red → Green → Refactor |
+| "Create a rule" | `create-rules` — template + naming |
+| "Find unfinished work" | `gap-analysis` — TODO, empty handlers |
+| "Rework the last task" | `fix-last-task` — RCA + rework |
+| "Implement improvements" | `backlog-to-rules` — 7 phases |
+
+### What to invoke manually
+
+**Via `@` (rules_alone):**
+
+| Invocation | What you get |
+|---|---|
+| `@ajtbd-evaluation` | JTBD analysis of a landing page/interface |
+| `@core-duplicate-check` | Duplication check before creating a file |
+| `@from-the-end` | "From the end" methodology for complex tasks |
+
+**Via `/` (explicit-only skill):** `/techdebt-scan` — scan for oversized files, TODO/FIXME.
+
+If the agent doesn't load a skill — say: "use the development skill".
 
 ---
 
-### What else you need to know
+### Config and universality
 
-**1. Config — single source for project-specific values**
+**All rules/skills are universal.** Project-specific values live only in `project.config.json`:
 
-`.cursor/config/project.config.json` contains the site URL, service names, ports, secrets paths, pages to verify. All scripts read values from it. Rules and skills **contain zero hardcoded values** — they are universal for any project.
-
-**2. Secrets — credentials**
-
-`.cursor/.secrets/` contains password files (Basic Auth, test user). The folder is gitignored.
-
-**3. Shared loader — common config loader for scripts**
-
-`.cursor/skills/_shared/load-config.sh` is sourced by all scripts. Provides `PROJECT_ROOT`, `SITE_URL`, `BASIC_AUTH` variables and the `json_get` function. Works with `jq` or `python3` as fallback.
-
-**4. Self-improvement cycle**
-
+```json
+{
+  "project_name": "myproject",
+  "site_url": "https://myproject.example.com",
+  "services": { "backend": { "name": "myproject-api", "port": 5003 } }
+}
 ```
-Error → session-review skill → improvements-backlog.md → @backlog-to-rules → New rule/skill
+
+Scripts read config via `_shared/load-config.sh` (works with `jq` or `python3` fallback).
+
+**Secrets** — `.cursor/.secrets/` (gitignored). **Data** — `.cursor/data/` (error-log, improvements-backlog).
+
+**Self-improvement:** Error → `session-review` → `improvements-backlog.md` → `@backlog-to-rules` → New rule.
+
+**Validation:** `bash scripts/validate-rules.sh` — cross-references, frontmatter, placeholders, routing table.
+
+---
+
+### Installing on another project
+
+**What to change:** `project.config.json`, `CLAUDE.md`, `AGENTS.md`, `.secrets/`.
+
+**What NOT to change:** `rules/`, `skills/`, `rules_alone/` — they're universal.
+
+```bash
+cp -r .cursor CLAUDE.md AGENTS.md .cursorignore /path/to/project/
+cd /path/to/project
+cp .cursor/config/project.config.example.json .cursor/config/project.config.json
+# Fill in config → done
 ```
 
-"Rule of Three": codify a rule after 3 repetitions of the same mistake.
-
-**5. Documentation (`.cursor/docs/`)**
-
-| File | Contents |
-|------|----------|
-| `ARCHITECTURE.md` | Technical architecture of rules and skills |
-| `HOW-TO-USE.md` | Detailed usage guide |
-| `CHANGELOG.md` | Full change history |
+Or ask the AI: *"Adapt `.cursor/` for this project, fill in config, describe the project in CLAUDE.md."*
 
 ---
 
-## Full Library Contents
+## Full Contents
 
-### Rules — 13 files
-
-**Tier 1 — Always (1):** `core-master.mdc` — master protocol with KISS/YAGNI, Forbidden, Cross-check, Challenge, Confidence inline.
-
-**Tier 2 — Auto (2):**
-
-| File | Globs | What it does |
-|------|-------|-------------|
-| `standard-react-hooks-auto.mdc` | *.tsx, *.jsx | Hook order enforcement |
-| `standard-radix-select-auto.mdc` | *.tsx | Prevents empty value="" |
-
-**Tier 3 — Agent (10):** api-pagination, file-size-limits, basic-auth, agent-quality, freeze-recovery, error-learning, 4x _base-* modules
-
-### Skills — 12 directories
-
-| Skill | Purpose | Scripts |
-|-------|---------|---------|
-| `deploy-app` | Deploy backend/frontend | deploy-backend.sh, deploy-frontend.sh, deploy-all.sh, verify-pages.sh |
-| `api-testing` | API auth testing | get-session.sh, test-endpoint.sh |
-| `development` | Feature development (JTBD, TDD) | — |
-| `bugfix` | Bug fixing (5 Whys RCA) | — |
-| `refactoring` | Safe refactoring | — |
-| `research` | Data analysis | — |
-| `session-review` | Session quality review | — |
-| `code-review` | QA + CTO Review | — |
-| `tdd-workflow` | Test-Driven Development | — |
-| `create-rules` | Creating rules/skills | — |
-| `techdebt-scan` | Tech debt scan (explicit only) | scan-large-files.sh, find-todos.sh |
-| `gap-analysis` | Finding gaps/stubs | scan-gaps.sh |
-
-### Rules Alone — 5 manual instructions
-
-`ajtbd-evaluation`, `backlog-to-rules`, `core-duplicate-check`, `fix-last-task`, `from-the-end`
-
-### .cursorignore
-
-Excludes from AI context: `dist/`, `node_modules/`, `.next/`, `.git/`, secrets.
-
----
-
-## What's New in v12.1
-
-- **Project Config**: `.cursor/config/project.config.json` — single source for all project-specific values
-- **Full Universality**: Zero hardcoded values in rules/skills — all project-specific in config
-- **Skills Architecture**: 12 skills with SKILL.md format, progressive disclosure
-- **Executable Scripts**: 4 skills with config-driven shell scripts (deploy, testing, scanning)
-- **References/Assets**: 4 skills with reference materials
-- **Rules → Skills Migration**: 14 rules converted to 12 skills
-- **Easy Setup**: Copy `.cursor/`, edit `config/project.config.json` — done
+| Component | Count | Details |
+|---|---|---|
+| **Rules** | 16 | 1 always + 3 auto + 12 agent |
+| **Skills** | 14 | 4 with shell scripts, 4 with references |
+| **Rules Alone** | 3 | ajtbd-evaluation, duplicate-check, from-the-end |
+| **Claude Code agents** | 5 | deploy, developer, researcher, reviewer, tester |
+| **Shell scripts** | 9 | deploy (4), testing (2), scanning (3) |
+| **Validation** | 2 | validate-rules.sh, migrate-to-claude-code.sh |
 
 ---
 
 ## FAQ
 
-**Q: Do I need to write "use core-master.mdc"?**
-A: No, `core-master.mdc` applies automatically to every request.
+**Q: Do I need to write "use core-master.mdc"?** — No, it's automatic.
 
-**Q: How do I add a new rule or skill?**
-A: Say "create a rule for X" — the agent will load the `create-rules` skill with a template and naming convention.
+**Q: How to add a rule?** — "Create a rule for X" → `create-rules` skill.
 
-**Q: How do I deploy?**
-A: Say "deploy" — the agent will load the `deploy-app` skill and run the appropriate scripts.
+**Q: How to deploy?** — "Deploy" → `deploy-app` with scripts.
 
-**Q: How do I invoke a manual instruction?**
-A: Type `@filename` in your message. For example: `@fix-last-task`.
+**Q: How to invoke a manual instruction?** — `@filename` in your message.
 
-**Q: How do I scan for tech debt?**
-A: Use `/techdebt-scan` — it's an explicit-only skill, it won't activate automatically.
+**Q: How to check integrity?** — `bash scripts/validate-rules.sh`.
 
-**Q: How do I use this in another project?**
-A: Copy `.cursor/`, edit `config/project.config.json`. All rules/skills are universal.
+**Q: Claude Code supported?** — Yes. `.claude/` + `scripts/migrate-to-claude-code.sh`.
 
-**Q: The agent doesn't load the right skill — what do I do?**
-A: Mention it explicitly: "use the development skill" or describe your task more precisely.
+**Q: How to install on another project?** — Copy `.cursor/`, fill in config. Everything is universal.
 
 ---
 
 ## License
 
-MIT License
+MIT License — [GitHub](https://github.com/dmitryprg-ai/cursor-develop-autorules) | [Cursor IDE](https://cursor.com/) | [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 
-## Links
-
-- [GitHub Repository](https://github.com/dmitryprg-ai/cursor-develop-autorules)
-- [Cursor IDE](https://cursor.com/)
-
----
-
-**Version:** 12.1 | **Date:** 2026-02-10
+**Version:** 12.2 | **Date:** 2026-02-11
