@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git checkout*)",
+      "Bash(git stash*)",
+      "Bash(curl -s *)",
+      "Bash(systemctl status *)",
+      "Bash(psql -c *)",
+      "Bash(jq *)",
+      "Bash(wc -l *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Read(src/**)",
+      "Read(apps/**)",
+      "Read(.cursor/**)",
+      "Read(.claude/**)",
+      "Write(src/**/*.ts)",
+      "Write(src/**/*.tsx)",
+      "Write(apps/**/*.ts)",
+      "Write(apps/**/*.tsx)",
+      "Write(apps/**/*.css)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(.cursor/.secrets/*)",
+      "Bash(rm -rf *)",
+      "Bash(sudo rm *)",
+      "Bash(*DROP TABLE*)",
+      "Bash(*DELETE FROM* WHERE 1*)",
+      "Bash(*TRUNCATE*)",
+      "Write(package-lock.json)",
+      "Write(node_modules/**)",
+      "Write(dist/**)",
+      "Write(.next/**)",
+      "Write(.git/**)",
+      "Write(.env*)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before writing this file, verify: (1) Will the file exceed 300 lines? If so, plan splitting first. (2) Does it follow Single Responsibility? (3) Are imports and types correct?"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If this is a build command (npm run build), remember: BUILD WITHOUT RESTART = BROKEN SITE. Always restart the affected systemd service after build."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx eslint --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

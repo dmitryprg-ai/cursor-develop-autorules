@@ -6,6 +6,35 @@
 
 ---
 
+## [12.2.0] - 2026-01-14
+
+### Added — New Rules
+- `standard-error-handling-auto.mdc` — автоматическая обработка ошибок (try-catch паттерны)
+- `standard-git-workflow-agent.mdc` — правила работы с Git (commits, branches)
+- `standard-security-agent.mdc` — проверки безопасности (secrets, SQL injection)
+
+### Added — New Skills
+- `backlog-to-rules/` — конвертация backlog items в rules
+- `fix-last-task/` — исправление последней неудачной задачи
+
+### Added — Scripts
+- `scripts/migrate-to-claude-code.sh` — миграция на Claude Code
+- `scripts/validate-rules.sh` — валидация правил
+
+### Changed
+- Обновлены shell-скрипты во всех skills (улучшена совместимость)
+- `project.config.example.json` — пример конфигурации
+
+### Statistics v12.2
+
+| Метрика | v12.1 | v12.2 |
+|---------|-------|-------|
+| Правил в rules/ | 13 | 16 (+3) |
+| Skills | 12 | 14 (+2) |
+| Скриптов | 15 | 17 (+2) |
+
+---
+
 ## [12.1.0] - 2026-02-10
 
 ### Added — Project Config System

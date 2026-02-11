@@ -1,7 +1,7 @@
 # Cursor AI Rules — Система инструкций для AI-агентов в Cursor IDE
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-12.1-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-12.2-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>

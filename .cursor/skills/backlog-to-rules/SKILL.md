@@ -1,5 +1,5 @@
 ---
-skill-name: backlog-to-rules
+name: backlog-to-rules
 description: Внедрение накопленных улучшений из improvements-backlog в инструкции AI агента
 tags: [improvement, rules, learning]
 version: "2.0"
