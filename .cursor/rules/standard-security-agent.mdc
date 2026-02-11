@@ -1,0 +1,95 @@
+---
+description: "Apply when writing API routes, database queries, form handling, or user input processing. Enforces input validation (Zod), SQL injection prevention, XSS protection. Target: zero security vulnerabilities in new code."
+globs:
+alwaysApply: false
+---
+
+# STANDARD: SECURITY
+
+## Context
+
+- **When:** Writing API routes, database queries, forms, user input handling
+- **Goal:** Prevent OWASP Top 10 vulnerabilities in generated code
+- **Impact:** CRM system handles customer data — security is critical
+
+---
+
+## Requirements
+
+### Input Validation (ALL API routes)
+
+<required>
+  - Every route handler MUST validate request body/params/query with Zod
+  - Validate BEFORE any business logic
+  - Return 400 with validation errors, not 500
+</required>
+
+```typescript
+// GOOD: Zod validation at route level
+const schema = z.object({ id: z.number().positive(), name: z.string().min(1) });
+router.post('/endpoint', async (req, res) => {
+  const result = schema.safeParse(req.body);
+  if (!result.success) return res.status(400).json({ errors: result.error.issues });
+  // proceed with result.data
+});
+```
+
+### SQL Injection Prevention
+
+<critical>
+  - ALWAYS use parameterized queries ($1, $2, ...)
+  - NEVER concatenate user input into SQL strings
+  - NEVER use template literals for SQL with user data
+</critical>
+
+```typescript
+// GOOD: Parameterized
+await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+
+// BAD: String concatenation — SQL INJECTION RISK
+await pool.query(`SELECT * FROM users WHERE id = ${userId}`);
+```
+
+### XSS Prevention
+
+<required>
+  - Never use dangerouslySetInnerHTML with user data
+  - Escape HTML entities when rendering user-provided text
+  - Sanitize data at API boundary, not just display
+</required>
+
+### Authentication & Authorization
+
+<required>
+  - Check auth middleware on every protected route
+  - Verify user has permission for the specific resource
+  - Never trust client-side data for authorization decisions
+</required>
+
+### Common Anti-patterns (FORBIDDEN)
+
+| Pattern | Risk | Fix |
+|---------|------|-----|
+| `eval(userInput)` | Remote Code Execution | Never use eval with user data |
+| `innerHTML = userText` | XSS | Use textContent or sanitize |
+| `` `SELECT ... ${var}` `` | SQL Injection | Parameterized queries |
+| Logging passwords/tokens | Data leak | Never log sensitive data |
+| Hardcoded secrets in code | Credential exposure | Use env vars / .secrets/ |
+
+---
+
+## Quick Check
+
+```markdown
+## Security Check
+- [ ] All route inputs validated with Zod
+- [ ] All SQL queries parameterized
+- [ ] No user data in innerHTML/dangerouslySetInnerHTML
+- [ ] Auth middleware on protected routes
+- [ ] No secrets hardcoded in code
+- [ ] No sensitive data in logs
+```
+
+---
+
+**Version:** 1.0

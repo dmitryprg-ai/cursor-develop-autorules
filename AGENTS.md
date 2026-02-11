@@ -9,7 +9,7 @@
 | `crmai.service` | Backend (Node.js) | 5003 | `sudo systemctl restart crmai` |
 | `crmai-web.service` | Frontend (Next.js) | 3001 | `sudo systemctl restart crmai-web` |
 
-**BUILD БЕЗ RESTART = СЛОМАННЫЙ САЙТ** — всегда restart после build. Use `deploy-app` skill.
+**BUILD WITHOUT RESTART = BROKEN SITE** — always restart after build. Use `deploy-app` skill.
 
 ## Key Files
 
@@ -29,30 +29,42 @@
 - Sources: `Битрикс24 (ManagerName)`, `Телефон`, `WhatsApp`
 - **Rule**: check message TEXT (`startsWith`), not just DB fields
 
-## Architecture v12.0: Rules + Skills Hybrid
+## Architecture v12.2: Rules + Skills Hybrid + Claude Code Support
 
-### Rules (13 files) — Constraints
-- 1 always-apply: `core-master.mdc` v5.0
-- 2 auto (globs): react-hooks, radix-select
-- 10 agent-decided: api-pagination, file-size-limits, basic-auth, agent-quality, 4x _base-*, error-learning, freeze-recovery
+### Rules (16 files) — Constraints
+- 1 always-apply: `core-master.mdc` v5.1
+- 3 auto (globs): react-hooks, radix-select, error-handling
+- 12 agent-decided: api-pagination, file-size-limits, basic-auth, agent-quality, security, git-workflow, 4x _base-*, error-learning, freeze-recovery
 
-### Skills (12 directories) — Workflows
+### Skills (13 directories) — Workflows
 - `deploy-app` — deploy with shell scripts
 - `api-testing` — API auth testing with scripts
 - `development` — feature development + prompt preparation
 - `bugfix` — bug fixing with 5 Whys RCA
 - `refactoring` — safe refactoring with TDD
-- `research` — data analysis
+- `research` — data analysis (SQL/TypeScript/Python)
 - `session-review` — session quality review
 - `code-review` — QA + CTO review
 - `tdd-workflow` — Test-Driven Development
 - `create-rules` — creating rules and skills
 - `techdebt-scan` — tech debt scanning with scripts (explicit /techdebt-scan only)
 - `gap-analysis` — finding gaps and stubs with scripts
+- `fix-last-task` — analyze and fix issues in completed tasks
 
-### rules_alone (5 files) — Manual @ mention
-- ajtbd-evaluation, backlog-to-rules, core-duplicate-check, fix-last-task, from-the-end
+### rules_alone (4 files) — Manual @ mention
+- ajtbd-evaluation, backlog-to-rules, core-duplicate-check, from-the-end
+
+### Claude Code Support (.claude/)
+- `.claude/settings.json` — permissions (allow/deny) + hooks (PreToolUse, PostToolUse)
+- `.claude/rules/` — converted rules in .md format with path scoping
+- `.claude/agents/` — 5 custom subagents: deploy, reviewer, researcher, tester, developer
+- `scripts/migrate-to-claude-code.sh` — automated migration script
+- `scripts/validate-rules.sh` — cross-reference and integrity validation
+
+### Data Directory
+- `.cursor/data/error-log.md` — error learning records
+- `.cursor/data/improvements-backlog.md` — improvement proposals
 
 ---
 
-**Last updated:** 2026-02-10 | **Version:** 3.0
+**Last updated:** 2026-02-11 | **Version:** 4.0

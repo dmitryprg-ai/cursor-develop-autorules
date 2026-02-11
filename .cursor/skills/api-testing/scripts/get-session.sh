@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+trap 'echo "ERROR: Script failed at line $LINENO" >&2' ERR
 source "$(dirname "$0")/../../_shared/load-config.sh"
 
 TEST_USER_FILE="$SECRETS_DIR/$(json_get .auth.test_user_file)"

@@ -46,10 +46,11 @@ Plan logic across multiple files. Refer to `standard-file-size-limits-agent.mdc`
 
 ## Execute (TDD approach)
 
-1. Write test cases (should FAIL)
-2. Write minimal code to pass
-3. Run tests (should pass)
-4. Refactor if needed
+Follow the `tdd-workflow` skill for full TDD process (Red → Green → Refactor):
+1. Fill test cases table BEFORE code (Phase 0)
+2. Write failing tests (Phase 1 — RED)
+3. Write minimal code to pass (Phase 2 — GREEN)
+4. Refactor (Phase 3)
 5. Restart affected services and verify
 
 ## Verify

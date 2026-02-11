@@ -31,7 +31,6 @@ tags: [productivity, task-management]
 | `pending` | Ещё не начат |
 | `in_progress` | Сейчас работаю (только 1!) |
 | `completed` | Выполнен и проверен |
-| `cancelled` | Отменён |
 
 ---
 

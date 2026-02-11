@@ -11,8 +11,8 @@
 | `core-duplicate-check.mdc` | Проверка дубликатов | `@rules_alone/core-duplicate-check` |
 | `from-the-end.mdc` | Валидация с конца | `@rules_alone/from-the-end` |
 | `ajtbd-evaluation.mdc` | Полный AJTBD-анализ | `@rules_alone/ajtbd-evaluation` |
-| `backlog-to-rules.mdc` | Внедрение улучшений | `@rules_alone/backlog-to-rules` |
-| `fix-last-task.mdc` | Исправление недоработок | `@rules_alone/fix-last-task` |
+
+> **Примечание:** `backlog-to-rules` и `fix-last-task` перенесены в `skills/` (v12.2)
 
 ---
 
@@ -27,7 +27,7 @@
 ### Способ 2: Текстом
 
 ```
-Используя rules_alone/backlog-to-rules.mdc, внедри улучшения
+Используя rules_alone/from-the-end.mdc, проверь задачу с конца
 ```
 
 ---
@@ -49,16 +49,6 @@
 **Когда:** Анализ лендингов, UI/UX, продуктовых решений
 **Что делает:** Полный JTBD-анализ по методологии Замесина
 
-### backlog-to-rules.mdc
-
-**Когда:** Раз в неделю или при 5+ улучшениях в backlog
-**Что делает:** Внедряет накопленные улучшения в инструкции
-
-### fix-last-task.mdc
-
-**Когда:** Задача "завершена" но пользователь нашёл ошибки
-**Что делает:** Анализ провала + исправление + session review
-
 ---
 
 ## ❓ FAQ
@@ -70,7 +60,10 @@
 **Можно добавить alwaysApply: true?**
 **НЕТ.** Это противоречит концепции одиночных инструкций.
 
+**Где backlog-to-rules и fix-last-task?**
+Перенесены в `.cursor/skills/` как полноценные skills (v12.2).
+
 ---
 
-**Версия:** 1.3
-**Дата:** 2026-01-12
+**Версия:** 2.0
+**Дата:** 2026-02-11

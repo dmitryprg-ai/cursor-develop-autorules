@@ -29,7 +29,7 @@ tags: [learning, errors, improvement]
 ### Error Recording Template
 
 <required>
-  Записать в `.cursor_additional/{projectname}/error-log.md`:
+  Записать в `.cursor/data/error-log.md`:
   
   ```markdown
   ## ERROR #N: [дата]
@@ -101,7 +101,7 @@ Production сервис не перезапущен
 systemctl restart frontend
 
 ### Design Injection:
-Добавить в protocol-development.mdc:
+Добавить в `development` skill:
 "Production Deployment = проверить что изменения видны"
 ```
 </example>
@@ -114,10 +114,10 @@ systemctl restart frontend
   - КАЖДАЯ ошибка = запись в error-log
   - Найти GAP в инструкциях
   - Добавить Improvement в backlog
-  - Периодически внедрять через backlog-to-rules.mdc
+  - Периодически внедрять через `backlog-to-rules` skill
 </critical>
 
 ---
 
 **Версия:** 1.1
-**Связанные модули:** `protocol-bugfix.mdc`, `backlog-to-rules.mdc`
+**Связанные модули:** `bugfix` skill, `backlog-to-rules` skill

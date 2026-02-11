@@ -51,11 +51,8 @@ SECRETS_DIR="$PROJECT_ROOT/$(json_get .auth.secrets_dir)"
 BASIC_AUTH_FILE="$SECRETS_DIR/$(json_get .auth.basic_auth_file)"
 
 if [ -f "$BASIC_AUTH_FILE" ]; then
-  BASIC_AUTH=$(python3 -c "
-import json
-d=json.load(open('$BASIC_AUTH_FILE'))
-user=d.get('username', d.get('user', ''))
-pw=d.get('password', d.get('pass', ''))
-print(user+':'+pw)
-")
+  _user=$(json_get_secrets .username "$BASIC_AUTH_FILE" 2>/dev/null || json_get_secrets .user "$BASIC_AUTH_FILE" 2>/dev/null || echo "")
+  _pass=$(json_get_secrets .password "$BASIC_AUTH_FILE" 2>/dev/null || json_get_secrets .pass "$BASIC_AUTH_FILE" 2>/dev/null || echo "")
+  BASIC_AUTH="${_user}:${_pass}"
+  unset _user _pass
 fi

@@ -55,7 +55,7 @@ After each error, record:
 **Rule Gap:** [what instruction was missing]
 ```
 
-Write improvements to `.cursor_additional/{projectname}/improvements-backlog.md`.
+Write improvements to `.cursor/data/improvements-backlog.md`.
 
 ## Success Criteria
 

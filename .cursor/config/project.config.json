@@ -39,5 +39,7 @@
     "frontend": "apps/web"
   },
 
+  "data_dir": ".cursor/data",
+
   "_comment": "TODO: Replace all {placeholders} with actual values for your project"
 }

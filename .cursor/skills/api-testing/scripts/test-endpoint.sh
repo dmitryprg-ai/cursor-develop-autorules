@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+trap 'echo "ERROR: Script failed at line $LINENO" >&2' ERR
 # Usage: test-endpoint.sh /api/endpoint
 ENDPOINT="${1:?Usage: test-endpoint.sh /api/endpoint}"
 

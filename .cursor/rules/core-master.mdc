@@ -102,6 +102,16 @@ alwaysApply: true
 | Баг / ошибка | `bugfix` skill |
 | Рефакторинг | `refactoring` skill |
 | Данные / анализ | `research` skill |
+| Деплой (build + restart) | `deploy-app` skill |
+| Тестирование API | `api-testing` skill |
+| Code Review / 🔴 COMPLEX | `code-review` skill |
+| Тесты (TDD) | `tdd-workflow` skill |
+| Обзор сессии / ретро | `session-review` skill |
+| Создание правил/скиллов | `create-rules` skill |
+| Поиск пробелов и заглушек | `gap-analysis` skill |
+| Сканирование техдолга | `/techdebt-scan` (только явный вызов) |
+| Исправление последней задачи | `fix-last-task` skill |
+| Внедрение улучшений из backlog | `backlog-to-rules` skill |
 | Зависание AI | `protocol-freeze-recovery.mdc` (rule) |
 
 ## Принципы кода (KISS/YAGNI)
@@ -114,19 +124,23 @@ alwaysApply: true
   - СТОП-сигналы: >3 слоёв абстракции, фабрики фабрик, абстракция для 1 использования
 </critical>
 
-## Дополнительные модули и скиллы
+## RAT vs Gap Analysis
 
-| Модуль / Skill | Когда |
-|----------------|-------|
+| Вопрос | Инструмент |
+|--------|-----------|
+| Делаю предположения о КАК? | `_base-rat.mdc` (RAT) |
+| Пропускаю требования о ЧТО? | `gap-analysis` skill |
+| Строю что-то новое? | Оба (RAT первый, потом Gap) |
+
+## Дополнительные модули (agent-decided rules)
+
+| Модуль | Когда |
+|--------|-------|
 | `_base-rat.mdc` | Проверка рисков ДО реализации |
 | `_base-jtbd-thinking.mdc` | User-facing фичи |
 | `_base-5wh.mdc` | Структурированный анализ проблем |
-| `code-review` skill | Code Review / 🔴 COMPLEX задачи |
-| `tdd-workflow` skill | Test-Driven Development |
 | `error-learning.mdc` | После ошибок |
-| `deploy-app` skill | Деплой (build + restart + verify) |
-| `api-testing` skill | Тестирование API с авторизацией |
 
 ---
 
-**Версия:** 5.0
+**Версия:** 5.1

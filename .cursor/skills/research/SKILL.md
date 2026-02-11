@@ -18,6 +18,39 @@ Principle: **DATA FIRST, CODE SECOND.**
 
 ## Schema Analysis (MANDATORY before any conclusions)
 
+Choose analysis method based on project stack:
+
+### PostgreSQL / SQL (for database analysis)
+
+```sql
+-- Schema inspection
+SELECT column_name, data_type, is_nullable
+FROM information_schema.columns WHERE table_name = 'target';
+
+-- Data profiling
+SELECT count(*), count(DISTINCT column_name),
+       count(*) FILTER (WHERE column_name IS NULL) as nulls
+FROM target;
+
+-- Distribution
+SELECT column_name, count(*) FROM target GROUP BY 1 ORDER BY 2 DESC LIMIT 20;
+```
+
+### TypeScript (for API/application data)
+
+```typescript
+// Shape and types
+console.log(`Records: ${data.length}`);
+console.log(`Keys: ${Object.keys(data[0] || {})}`);
+
+// Profiling
+const nullCount = data.filter(item => item.field == null).length;
+const uniqueCount = new Set(data.map(item => item.field)).size;
+const duplicates = data.length - uniqueCount;
+```
+
+### Python / pandas (for file-based data)
+
 ```python
 print(f"Shape: {df.shape}")
 print(f"dtypes:\n{df.dtypes}")
@@ -28,22 +61,22 @@ print(f"nulls:\n{df.isnull().sum()}")
 
 ## Risk Profiling
 
-| Risk | Check | Action |
-|------|-------|--------|
-| Missing data | `df.isnull().sum()` | Document, decide handling |
-| Duplicates | `df.duplicated().sum()` | Investigate |
-| Wrong types | Manual inspection | Convert types |
-| Outliers | `df.describe()` | Investigate |
+| Risk | SQL Check | TypeScript Check | Python Check |
+|------|-----------|------------------|--------------|
+| Missing data | `count(*) FILTER (WHERE col IS NULL)` | `data.filter(x => x.col == null).length` | `df.isnull().sum()` |
+| Duplicates | `count(*) - count(DISTINCT col)` | `data.length - new Set(data.map(x => x.col)).size` | `df.duplicated().sum()` |
+| Wrong types | `SELECT pg_typeof(col)` | `typeof item.field` | `df.dtypes` |
+| Outliers | `percentile_cont(0.99)` | Sort + inspect extremes | `df.describe()` |
 
 ## Mini-Experiment Protocol
 
-```python
+```
 # EXPERIMENT: [Description]
 # HYPOTHESIS: [What we expect]
-result = df[df['column'] == 'value'].shape[0]
-print(f"Result: {result}")
-print(f"Expected: {expected}")
-print(f"Status: {'PASS' if result == expected else 'FAIL'}")
+# METHOD: [SQL query / TypeScript code / Python code]
+# RESULT: [actual output]
+# EXPECTED: [what we expected]
+# STATUS: PASS / FAIL
 ```
 
 Rules:

@@ -1,0 +1,52 @@
+---
+description: "Apply when creating React components or API routes. Enforces error boundaries, loading/error/empty states, and proper API error handling patterns."
+globs: "*.tsx,*.ts"
+alwaysApply: false
+---
+
+# STANDARD: ERROR HANDLING PATTERNS
+
+## React Components — State Triforce
+
+Every data-fetching component MUST handle 3 states:
+
+```tsx
+// GOOD: All 3 states handled
+if (isLoading) return <LoadingSpinner />;
+if (error) return <ErrorMessage error={error} onRetry={refetch} />;
+if (!data || data.length === 0) return <EmptyState message="No items found" />;
+return <DataView data={data} />;
+```
+
+## API Route Error Handling
+
+Every API route MUST have structured error handling:
+
+```typescript
+// GOOD: Typed error response
+router.get('/endpoint', async (req, res) => {
+  try {
+    const result = await service.getData();
+    res.json(result);
+  } catch (error) {
+    console.error('[endpoint] Error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+```
+
+## FORBIDDEN
+
+| Pattern | Why | Fix |
+|---------|-----|-----|
+| Empty catch `catch {}` | Silences errors | Log + handle |
+| `console.log` only | No user feedback | Return error response |
+| Missing loading state | White screen during load | Add loading indicator |
+| Missing empty state | Confusing blank screen | Show "no data" message |
+
+---
+
+**Version:** 1.0

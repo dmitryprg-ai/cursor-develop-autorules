@@ -78,4 +78,4 @@ tags: [quality, metrics, verification]
 ---
 
 **Версия:** 1.1
-**Связанные модули:** `_base-crosscheck.mdc`, `_base-confidence.mdc`
+**Связанные модули:** `core-master.mdc` (Cross-check, Confidence sections)

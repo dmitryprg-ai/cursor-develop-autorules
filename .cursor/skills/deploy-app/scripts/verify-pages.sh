@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+trap 'echo "ERROR: Script failed at line $LINENO" >&2' ERR
 source "$(dirname "$0")/../../_shared/load-config.sh"
 
 echo "=== Verifying pages ==="

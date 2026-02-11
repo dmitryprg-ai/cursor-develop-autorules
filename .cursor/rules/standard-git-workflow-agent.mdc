@@ -1,0 +1,74 @@
+---
+description: "Apply when making git commits, creating branches, or preparing PRs. Enforces conventional commits, branch naming, and pre-commit quality gates."
+globs:
+alwaysApply: false
+---
+
+# STANDARD: GIT WORKFLOW
+
+## Commit Messages (Conventional Commits)
+
+Format: `<type>(<scope>): <description>`
+
+| Type | When |
+|------|------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Code restructuring (no behavior change) |
+| `docs` | Documentation only |
+| `test` | Adding/fixing tests |
+| `chore` | Build, config, dependencies |
+| `perf` | Performance improvement |
+
+Examples:
+```
+feat(deals): add date filter to deals API
+fix(auth): handle expired session tokens
+refactor(customers): extract validation to shared util
+```
+
+## Branch Naming
+
+Format: `<type>/<short-description>`
+
+```
+feat/deal-date-filter
+fix/session-expiry
+refactor/customer-validation
+```
+
+## Pre-Commit Quality Gates
+
+Before EVERY commit:
+1. `npm run lint` — must pass (0 errors)
+2. `npm run type-check` — must pass (if available)
+3. All changed files opened and verified
+
+## PR Template
+
+```markdown
+## What
+[1-2 sentences: what changed]
+
+## Why
+[1-2 sentences: why this change is needed]
+
+## How
+[Key implementation details]
+
+## Testing
+- [ ] Tests added/updated
+- [ ] Linter passes
+- [ ] Manually verified
+```
+
+## FORBIDDEN
+
+- Committing `.env`, `.secrets/`, credentials
+- Force-pushing to main/master
+- Commits without meaningful message
+- Mixing unrelated changes in one commit
+
+---
+
+**Version:** 1.0

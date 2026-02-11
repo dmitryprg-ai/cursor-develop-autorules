@@ -1,7 +1,7 @@
-# CURSOR RULES ARCHITECTURE v12.1
+# CURSOR RULES ARCHITECTURE v12.2
 
-**Дата обновления:** 2026-02-10
-**Версия:** 12.1 (Rules + Skills Hybrid Architecture + Config)
+**Дата обновления:** 2026-02-11
+**Версия:** 12.2 (Rules + Skills Hybrid + Claude Code Support)
 
 ---
 
@@ -14,18 +14,19 @@
 │   ├── HOW-TO-USE.md              # Как работать
 │   └── CHANGELOG.md               # История изменений
 │
-├── rules/                         # Правила для AI агента (13 файлов)
-│   ├── core-master.mdc            # ALWAYS — единственный entry point (v5.0)
+├── rules/                         # Правила для AI агента (16 файлов)
+│   ├── core-master.mdc            # ALWAYS — единственный entry point (v5.1)
 │   │
 │   ├── standard-react-hooks-auto.mdc      # AUTO (*.tsx, *.jsx)
 │   ├── standard-radix-select-auto.mdc     # AUTO (*.tsx)
+│   ├── standard-error-handling-auto.mdc   # AUTO (*.tsx, *.ts)
 │   │
-│   ├── standard-*-agent.mdc       # AGENT — constraints (4 шт)
+│   ├── standard-*-agent.mdc       # AGENT — constraints (6 шт: +security, +git-workflow)
 │   ├── _base-*.mdc                # AGENT — атомарные модули (4 шт)
 │   ├── error-learning.mdc         # AGENT — обучение на ошибках
 │   └── protocol-freeze-recovery.mdc  # AGENT — восстановление AI
 │
-├── skills/                        # Skills — процедурные workflows (12 шт)
+├── skills/                        # Skills — процедурные workflows (14 шт)
 │   ├── deploy-app/                # Deploy с shell-скриптами
 │   │   ├── SKILL.md
 │   │   └── scripts/               # deploy-backend.sh, deploy-frontend.sh, etc.
@@ -49,14 +50,25 @@
 │   ├── techdebt-scan/             # Сканирование техдолга (explicit only)
 │   │   ├── SKILL.md
 │   │   └── scripts/
-│   └── gap-analysis/              # Поиск пробелов и заглушек
+│   ├── gap-analysis/              # Поиск пробелов и заглушек
+│   │   ├── SKILL.md
+│   │   └── scripts/
+│   ├── fix-last-task/             # Исправление недоработок (NEW in v12.2)
+│   │   ├── SKILL.md
+│   │   └── references/
+│   └── backlog-to-rules/          # Внедрение улучшений из backlog (NEW in v12.2)
 │       ├── SKILL.md
-│       └── scripts/
+│       └── references/
 │
 ├── config/                        # Project-specific config (НЕ универсальное)
-│   └── project.config.json        # URL, сервисы, пути, auth settings
+│   ├── project.config.json        # URL, сервисы, пути, auth settings
+│   └── project.config.example.json # Пример с реальными значениями
 │
-├── rules_alone/                   # Одиночные инструкции (@ mention, 5 шт)
+├── data/                          # Persistent data (NEW in v12.2)
+│   ├── error-log.md               # Error learning records
+│   └── improvements-backlog.md    # Improvement proposals
+│
+├── rules_alone/                   # Одиночные инструкции (@ mention, 3 шт)
 │   └── *.mdc
 │
 └── .secrets/                      # Секреты (заигнорены)
@@ -66,19 +78,19 @@
 
 ## Architecture: Rules + Skills Hybrid
 
-### Rules (13 files) — Constraints & Short Guidelines
+### Rules (16 files) — Constraints & Short Guidelines
 
 | Tier | Тип | Когда загружается | Token cost | Файлов |
 |------|-----|-------------------|------------|--------|
 | **Tier 1: Always** | `alwaysApply: true` | Каждый чат | ~1,200 | 1 |
-| **Tier 2: Auto** | `globs: *.tsx` | Когда открыт matching файл | 0 unless triggered | 2 |
-| **Tier 3: Agent** | `description: "..."` | Агент решает по описанию | 0 unless triggered | 10 |
+| **Tier 2: Auto** | `globs: *.tsx` | Когда открыт matching файл | 0 unless triggered | 3 |
+| **Tier 3: Agent** | `description: "..."` | Агент решает по описанию | 0 unless triggered | 12 |
 
-### Skills (12 directories) — Procedural Workflows
+### Skills (14 directories) — Procedural Workflows
 
 | Тип | Когда загружается | Особенности |
 |-----|-------------------|-------------|
-| **Auto-discovered** | Агент решает по описанию | 11 skills |
+| **Auto-discovered** | Агент решает по описанию | 13 skills |
 | **Explicit only** | Только по `/skill-name` | 1 skill (techdebt-scan) |
 
 Skills with scripts: deploy-app (4), api-testing (2), techdebt-scan (2), gap-analysis (1)
@@ -91,6 +103,7 @@ Skills with scripts: deploy-app (4), api-testing (2), techdebt-scan (2), gap-ana
 - `auth` — пути к секретам, email тестового пользователя
 - `verify_pages` — страницы для проверки после деплоя
 - `scan_dirs` — директории для сканирования
+- `data_dir` — директория для persistent data (error-log, improvements-backlog)
 
 Все shell-скрипты в skills загружают config автоматически через `jq`.
 
@@ -168,5 +181,52 @@ Agent reads Rules → api-pagination, file-size-limits, _base-5wh, etc.
 
 ---
 
-**Версия:** 12.0
-**Дата:** 2026-02-10
+## Что изменилось в v12.2 (vs v12.0)
+
+### Добавлено
+- `.claude/` — полная поддержка Claude Code Agent (rules, settings, agents)
+- `.claude/settings.json` — permissions (allow/deny) + hooks (PreToolUse, PostToolUse)
+- `.claude/agents/` — 5 custom subagents (deploy, reviewer, researcher, tester, developer)
+- `.cursor/data/` — persistent data directory for error learning and improvements backlog
+- `standard-security-agent.mdc` — Zod validation, SQL injection, XSS prevention
+- `standard-git-workflow-agent.mdc` — conventional commits, branch naming, PR templates
+- `standard-error-handling-auto.mdc` — React state triforce, API error handling
+- `project.config.example.json` — example config with realistic values
+- `scripts/validate-rules.sh` — cross-reference and integrity validation
+- `scripts/migrate-to-claude-code.sh` — automated .cursor/ → .claude/ migration
+- `fix-last-task` skill (converted from rules_alone, fixed 5 stale cross-references)
+
+### Исправлено
+- 12+ stale cross-references to deleted files (from v11.0/v12.0 migration)
+- `.cursor_additional/{projectname}/` broken paths → `.cursor/data/`
+- `load-config.sh` jq/python3 inconsistency (BASIC_AUTH extraction)
+- All 9 shell scripts: added `set -euo pipefail` + ERR trap
+- `scan-large-files.sh`: fixed `find | while read` subshell bug
+- Routing Table in `core-master.mdc` — complete with all 13 skills + freeze recovery
+
+### Обновлено
+- `core-master.mdc` v5.0 → v5.1 (complete Routing Table)
+- `development` skill — TDD section now references `tdd-workflow` skill
+- `research` skill — added TypeScript/SQL analysis patterns alongside Python
+- `error-learning.mdc` — fixed 3 stale references
+- `standard-agent-quality.mdc` — fixed 2 stale references
+- `protocol-freeze-recovery.mdc` — fixed 1 stale reference
+- `backlog-to-rules.mdc` — fixed 3 stale references
+
+### Метрики
+
+| Метрика | v12.0 | v12.2 | Изменение |
+|---------|-------|-------|-----------|
+| Rules files | 13 | 16 | +3 (security, git, error-handling) |
+| Skills | 12 | 14 | +2 (fix-last-task, backlog-to-rules) |
+| rules_alone | 5 | 3 | -2 (→ skills) |
+| Stale cross-references | 12+ | 0 | FIXED |
+| Shell scripts with error handling | 4/9 | 9/9 | 100% |
+| Claude Code support | none | full | NEW |
+| Custom subagents | 0 | 5 | NEW |
+| Validation scripts | 0 | 2 | NEW |
+
+---
+
+**Версия:** 12.2
+**Дата:** 2026-02-11

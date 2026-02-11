@@ -1,4 +1,7 @@
 #!/bin/bash
+set -eo pipefail
+trap 'echo "ERROR: Script failed at line $LINENO" >&2' ERR
+# Note: -u omitted because grep/rg returning no matches (exit 1) is expected
 source "$(dirname "$0")/../../_shared/load-config.sh"
 
 BACKEND_DIR="$PROJECT_ROOT/$(json_get .scan_dirs.backend)"

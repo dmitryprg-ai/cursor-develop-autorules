@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+trap 'echo "ERROR: Script failed at line $LINENO" >&2' ERR
 source "$(dirname "$0")/../../_shared/load-config.sh"
 
 BE_BUILD=$(json_get .services.backend.build_cmd)
