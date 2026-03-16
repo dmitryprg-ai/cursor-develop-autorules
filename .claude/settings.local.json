@@ -2,7 +2,28 @@
   "permissions": {
     "allow": [
       "Bash(xargs -I {} sh -c 'echo \"\"File: {}\"\"; cat \"\"{}\"\"')",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(done)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''.claude/settings.json''\\)\\); print\\(''settings.json: VALID''\\)\")",
+      "Bash(python3 -c \"import json; json.load\\(open\\(''.claude/launch.json''\\)\\); print\\(''launch.json: VALID''\\)\")",
+      "Bash(for f in .claude/skills/*/evals/evals.json)",
+      "Bash(do python3 -c \"import json; json.load\\(open\\(''$f''\\)\\); print\\(''$f: VALID''\\)\")",
+      "Bash(do node -e \"JSON.parse\\(require\\(''fs''\\).readFileSync\\(''$f'',''utf8''\\)\\); console.log\\(''$f: VALID''\\)\")",
+      "WebFetch(domain:github.com)",
+      "Bash(uvx claude-cache-analyzer --version)",
+      "Bash(pip show claude-cache-analyzer)",
+      "Bash(pip install claude-cache-analyzer)",
+      "Bash(claude-cache --version)",
+      "Bash(claude-cache-analyzer --version)",
+      "Bash(python -m claude_cache_analyzer --version)",
+      "Bash(claude-cache-analyzer --top 10)",
+      "Bash(claude-cache-analyzer \"$HOME/.claude\" --top 5)",
+      "Bash(claude-cache-analyzer \"C:\\\\Users\\\\Divan\\\\.claude\" --top 5)",
+      "Bash(pip install --upgrade claude-cache-analyzer)",
+      "Bash(python -c \":*)",
+      "Bash(claude-cache-analyzer \"C:\\\\Users\\\\Divan\\\\.claude\\\\projects\\\\C--Users-Divan-OneDrive-----------GitHub-cursor-develop-autorules\" --top 5)",
+      "Bash(where gh)"
     ]
   }
 }
