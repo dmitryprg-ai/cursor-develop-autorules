@@ -2,6 +2,9 @@
 name: developer
 description: Feature development agent with JTBD analysis, duplicate check, and TDD approach. Use for building new features, adding functionality, implementing components.
 tools: Read, Write, Bash, Grep, Glob
+skills:
+  - development
+  - tdd-workflow
 model: sonnet
 maxTurns: 50
 ---

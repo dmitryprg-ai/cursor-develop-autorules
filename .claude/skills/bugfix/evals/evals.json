@@ -1,0 +1,38 @@
+{
+  "skill_name": "bugfix",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The deals page shows wrong totals after filtering by date",
+      "expected_output": "Reproduce bug, identify root cause with 5 Whys, fix, verify with test data",
+      "assertions": [
+        "Reproduces the issue before fixing",
+        "Applies 5 Whys or root cause analysis",
+        "Fix targets root cause not symptom",
+        "Verifies fix with different filter values"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "API returns 500 error on /api/customers endpoint",
+      "expected_output": "Check logs, identify error, trace to root cause, fix, test endpoint responds 200",
+      "assertions": [
+        "Checks server logs for error details",
+        "Identifies the specific error type and location",
+        "Tests endpoint after fix returns 200",
+        "No regression in related endpoints"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The sync stopped working after yesterday's deploy",
+      "expected_output": "Check service status, review recent changes, identify regression, fix and verify sync completes",
+      "assertions": [
+        "Reviews git log for recent changes",
+        "Checks service status and logs",
+        "Identifies the specific commit or change causing regression",
+        "Verifies sync runs successfully after fix"
+      ]
+    }
+  ]
+}

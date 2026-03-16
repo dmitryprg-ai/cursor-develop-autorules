@@ -1,6 +1,6 @@
 # CLAUDE.md — crmai Project
 
-> Automatically loaded into every conversation. Keep lean — details in .cursor/rules/.
+> Automatically loaded into every conversation. Keep lean — details in .claude/rules/ and .claude/skills/.
 
 ## Project Overview
 
@@ -19,7 +19,11 @@ src/modules/           — Backend modules (bitrix24/, customers/, users/, setti
 apps/web/app/          — Frontend pages (Next.js App Router)
 apps/web/features/     — Feature-based components
 apps/web/lib/api/      — Modular API clients by feature
-.cursor/rules/         — AI agent protocols
+.claude/rules/         — AI rules (Claude Code, .md with YAML frontmatter)
+.claude/skills/        — AI skills (SKILL.md + scripts/, references/, evals/)
+.claude/agents/        — Custom subagents (5 agents with skills)
+.cursor/rules/         — AI rules (Cursor IDE, .mdc format)
+.cursor/skills/        — AI skills (Cursor IDE)
 ```
 
 ## Commands
@@ -64,7 +68,7 @@ psql -h localhost -U crmai_user -d crmai
 
 ## Workflow
 
-Complex tasks → `.cursor/rules/core-master.mdc` routes to skills:
+Complex tasks → `.claude/rules/core-master.md` routes to skills:
 
 | Task | Skill |
 |------|-------|
@@ -75,8 +79,16 @@ Complex tasks → `.cursor/rules/core-master.mdc` routes to skills:
 | Deploy | `deploy-app` skill (with scripts) |
 | Code review | `code-review` skill |
 | TDD | `tdd-workflow` skill |
+| API testing | `api-testing` skill |
+| Session review | `session-review` skill |
+| Create rules | `create-rules` skill |
+| Find gaps/stubs | `gap-analysis` skill |
+| Tech debt scan | `/techdebt-scan` (explicit only) |
+| Fix last task | `fix-last-task` skill |
+| Backlog improvements | `backlog-to-rules` skill |
+| Cache/cost analysis | `cache-analysis` skill |
 
-Skills live in `.cursor/skills/` with SKILL.md + optional scripts/, references/, assets/.
+Skills live in `.claude/skills/` with SKILL.md + optional scripts/, references/, evals/.
 
 ## API Routes
 
@@ -89,4 +101,4 @@ All prefixed with `/api`:
 
 ---
 
-**Last updated:** 2026-02-10
+**Last updated:** 2026-03-13

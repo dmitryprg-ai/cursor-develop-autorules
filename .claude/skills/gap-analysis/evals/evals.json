@@ -1,0 +1,27 @@
+{
+  "skill_name": "gap-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Check the codebase for incomplete features and stubs",
+      "expected_output": "Run scan script, identify gaps, classify by severity",
+      "assertions": [
+        "Runs scan-gaps.sh script",
+        "Identifies TODO/FIXME/HACK markers",
+        "Finds empty handlers and placeholder links",
+        "Classifies gaps by HIGH/MED/LOW severity"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Before implementing the notification feature, do a gap analysis",
+      "expected_output": "Planning mode: explicit requirements, fit-gap analysis, pre-mortem",
+      "assertions": [
+        "Lists explicit requirements from user request",
+        "Covers data, UX, integration, security, performance categories",
+        "Performs pre-mortem analysis",
+        "Asks user about HIGH severity gaps before proceeding"
+      ]
+    }
+  ]
+}

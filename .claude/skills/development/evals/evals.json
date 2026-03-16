@@ -1,0 +1,39 @@
+{
+  "skill_name": "development",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add a date filter to the deals list page",
+      "expected_output": "Duplicate check, JTBD analysis, find similar filter pattern, implement types->repo->service->routes, add UI component",
+      "assertions": [
+        "Performs duplicate check before creating new code",
+        "Includes JTBD analysis for user-facing feature",
+        "Finds existing filter pattern in codebase",
+        "Creates types, then repository, then service, then routes in order",
+        "Files stay within size limits"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a new API endpoint for exporting customer data as CSV",
+      "expected_output": "Check existing exports, plan file structure, implement backend (types, service, routes), verify with curl",
+      "assertions": [
+        "Searches for existing export functionality first",
+        "Follows backend pattern: types -> service -> routes",
+        "Includes Zod validation on the route",
+        "Verifies endpoint responds correctly"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Add a dashboard widget showing manager activity stats",
+      "expected_output": "JTBD: what job does manager solve, duplicate check, find existing widget pattern, implement with KtCard wrapper",
+      "assertions": [
+        "Starts with JTBD analysis (what job is user solving)",
+        "Checks for existing similar widgets",
+        "Uses KtCard wrapper pattern from project",
+        "Component stays under 200 lines"
+      ]
+    }
+  ]
+}

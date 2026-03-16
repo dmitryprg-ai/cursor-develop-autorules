@@ -1,13 +1,13 @@
-# Cursor AI Rules — Instruction System for AI Agents in Cursor IDE
+# AI Rules — Instruction System for AI Agents (Cursor IDE + Claude Code)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-12.2-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-13.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
-  <img src="https://img.shields.io/badge/claude--code-supported-purple" alt="Claude Code">
+  <img src="https://img.shields.io/badge/claude--code-native-purple" alt="Claude Code Native">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
 
-> **A hybrid Rules + Skills system for AI agents in Cursor IDE and Claude Code with token budget optimization, executable scripts, and self-improvement**
+> **A complete dual-IDE rules and skills system for AI agents: Cursor IDE (.cursor/) and Claude Code (.claude/) with subagents, automatic checks, skill quality evaluation, and a self-improvement cycle**
 
 ---
 
@@ -15,103 +15,156 @@
 
 An instruction library for AI assistants in [Cursor IDE](https://cursor.com/) and [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
 
-- **14 skills** for different task types with shell scripts
-- **16 rules** — built-in checks (Cross-check, Challenge, DONE block)
-- **3-tier loading** system (~2,500 always tokens instead of ~21,000)
-- **Self-improvement cycle** — learning from errors
-- **Claude Code** support — `.claude/` with subagents, permissions, hooks
+- **15 skills** for any task — from development to deployment and cache analytics
+- **10 rules** for Claude Code — contextual constraints with "why" explanations
+- **5 subagents** (developer, reviewer, researcher, tester, deploy) with linked skills
+- **Automatic quality evaluation** — evals with assertions for every skill
+- **Self-improvement cycle** — learning from errors → new rules
+- **Skill-creator methodology** — skills built per [official Anthropic plugin](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator)
 
-| Metric | Before | After |
+| Metric | Before (v12) | After (v13) |
 |---|---|---|
 | Tasks without rework | ~50% | >80% |
 | Repeated errors | ~30% | <10% |
-| Always-apply tokens | ~21,000 | ~2,500 |
+| Skill eval coverage | 0% | 100% |
+| Skill-creator compliance | ~20% | 100% |
 
 ---
 
-## Architecture v12.2
+## Architecture v13.0
 
 ```
 your-project/
-├── .cursor/
-│   ├── config/                        # project.config.json ← adapt here
-│   ├── rules/                         # 16 rules (always/auto/agent)
-│   ├── skills/                        # 14 skills + _shared/ (scripts, references)
-│   ├── rules_alone/                   # 3 manual instructions (invoke via @)
-│   ├── data/                          # Templates: error-log, improvements-backlog
-│   ├── docs/                          # ARCHITECTURE, HOW-TO-USE, CHANGELOG
-│   └── .secrets/                      # Credentials (gitignored)
-├── .claude/                           # Claude Code (settings, 5 agents, 4 rules)
+├── .claude/                           # Claude Code — primary environment
+│   ├── settings.json                  # Permissions (allow/deny) + hooks
+│   ├── launch.json                    # Dev servers for Preview
+│   ├── MEMORY.md                      # Accumulated project patterns
+│   ├── agents/                        # 5 subagents (deploy, developer, ...)
+│   ├── rules/                         # 10 rules (.md with YAML frontmatter)
+│   └── skills/                        # 15 skills (SKILL.md + scripts/ + evals/)
+│       ├── deploy-app/                #   Deploy: build → restart → verify
+│       ├── development/               #   Development: JTBD + TDD
+│       ├── bugfix/                    #   Bug fixing: 5 Whys RCA
+│       ├── code-review/               #   Review: QA + CTO
+│       ├── tdd-workflow/              #   TDD: Red → Green → Refactor
+│       ├── refactoring/               #   Refactoring: tests → small steps
+│       ├── research/                  #   Analytics: SQL/TypeScript/Python
+│       ├── api-testing/               #   API tests: auth + curl scripts
+│       ├── session-review/            #   Retrospective: end of session
+│       ├── gap-analysis/              #   Gap scanning: TODO, stubs
+│       ├── techdebt-scan/             #   Tech debt: files, TODO/FIXME
+│       ├── create-rules/              #   Creating rules and skills (skill-creator)
+│       ├── fix-last-task/             #   Rework: RCA + fix
+│       ├── backlog-to-rules/          #   Implementing improvements from backlog
+│       ├── cache-analysis/            #   Cache analysis: cost, efficiency
+│       └── _shared/                   #   Shared scripts (load-config.sh)
 │
-├── scripts/                           # validate-rules.sh, migrate-to-claude-code.sh
-├── .cursorignore, .mcp.json
+├── .cursor/                           # Cursor IDE — parallel configuration
+│   ├── config/                        # project.config.json ← adapt here
+│   ├── rules/                         # 16 rules (.mdc: always/auto/agent)
+│   ├── skills/                        # 13 skills (Cursor format)
+│   ├── rules_alone/                   # 3 manual instructions (invoke via @)
+│   ├── data/                          # error-log, improvements-backlog
+│   └── .secrets/                      # Credentials (gitignored)
+│
 ├── CLAUDE.md                          # Project context (auto-loaded)
-└── AGENTS.md                          # Supplementary AI context
+├── AGENTS.md                          # Supplementary AI context
+└── scripts/                           # validate-rules.sh
 ```
 
-### Rules vs Skills
+### What's new in v13
 
-| | Rules | Skills |
+| Aspect | v12 | v13 |
 |---|---|---|
-| Purpose | "Don't do this" — constraints | "Do it this way" — procedures |
-| Format | Single `.mdc` file | Directory: `SKILL.md` + scripts |
-| Scripts | No | Yes — `.sh` files |
-| Size | < 100 lines | 50–120 lines + extras |
+| Claude Code | 4 rules, 0 skills | 10 rules, 15 skills, 5 agents |
+| Skills style | Rigid instructions | "Why" > "Don't" (skill-creator) |
+| Skill descriptions | Generic | Contextual triggers (pushy) |
+| Quality evaluation | None | Evals with assertions for every skill |
+| Cache analytics | None | cache-analysis (hit rate, cost, grade) |
+| Dev Preview | None | launch.json (backend + frontend) |
+| Project memory | None | MEMORY.md — accumulated patterns |
 
 ---
 
 ## Quick Start
 
+### For Claude Code (recommended)
+
 ```bash
 git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
+cp -r cursor-develop-autorules/.claude /path/to/your/project/
+cp cursor-develop-autorules/{CLAUDE.md,AGENTS.md} /path/to/your/project/
+
+# Edit CLAUDE.md and AGENTS.md for your project
+# Edit .claude/MEMORY.md — describe your architecture and key patterns
+```
+
+### For Cursor IDE
+
+```bash
 cp -r cursor-develop-autorules/.cursor /path/to/your/project/
 cp cursor-develop-autorules/{CLAUDE.md,AGENTS.md,.cursorignore} /path/to/your/project/
-# Optional: cp -r cursor-develop-autorules/{.claude,scripts,.mcp.json} /path/to/your/project/
 
 cd /path/to/your/project
 cp .cursor/config/project.config.example.json .cursor/config/project.config.json
 # Fill in: project_name, site_url, services, auth, verify_pages
-# Edit CLAUDE.md and AGENTS.md for your project
 ```
 
-Or ask the AI: *"I copied `.cursor/` from cursor-develop-autorules. Adapt `project.config.json`, `CLAUDE.md`, `AGENTS.md` for this project. Run `scripts/validate-rules.sh`."*
+### For both (dual-IDE)
+
+```bash
+cp -r cursor-develop-autorules/{.cursor,.claude,CLAUDE.md,AGENTS.md,.cursorignore,scripts} /path/to/your/project/
+```
+
+Or ask the AI: *"I copied `.cursor/` and `.claude/` from cursor-develop-autorules. Adapt the configuration for this project."*
 
 ---
 
 ## User Guide
 
-### What works automatically
+### How it works
 
-**Always (every dialog):** `core-master.mdc` — complexity, plan, skill from Routing Table, checks, DONE block, KISS/YAGNI.
+**The master protocol** (`core-master`) loads in every dialog and automatically:
+1. Evaluates task complexity (SIMPLE / STANDARD / COMPLEX)
+2. Selects a skill from the Routing Table
+3. Runs checks (Cross-check, Challenge)
+4. Produces a DONE block with confidence level
 
-**When files are open:**
+**Rules** activate based on context — when working with specific files or by agent decision.
 
-| Rule | When | What it does |
+### Skills — by request context
+
+| Your request | Skill | What it does |
 |---|---|---|
-| `react-hooks-auto` | `*.tsx`, `*.jsx` | Correct hook order |
-| `radix-select-auto` | `*.tsx` | Prevents `<SelectItem value="">` |
-| `error-handling-auto` | `*.tsx`, `*.ts` | Error boundaries, loading/error states |
+| "Add a date filter" | `development` | JTBD analysis + TDD + duplicate check |
+| "The button is broken" | `bugfix` | 5 Whys RCA → fix → verification |
+| "Simplify this service" | `refactoring` | Tests → small steps → verification |
+| "Deploy changes" | `deploy-app` | build → restart → health check (scripts) |
+| "Test this API" | `api-testing` | Auth + curl tests (scripts) |
+| "Analyze the data" | `research` | Schema → hypothesis → SQL/TS/Python |
+| "Review the code" | `code-review` | QA + CTO review (read-only) |
+| "Write tests first" | `tdd-workflow` | Red → Green → Refactor |
+| "Create a rule" | `create-rules` | Template + evals + validation |
+| "Find unfinished work" | `gap-analysis` | Scan for TODO, empty handlers |
+| "Rework the last task" | `fix-last-task` | RCA + fix + improvement |
+| "Implement improvements" | `backlog-to-rules` | Grouping → implementation → status updates |
+| "Show session costs" | `cache-analysis` | Hit rate, savings, grade A–F |
 
-**Agent loads by situation:** api-pagination, file-size-limits, security, git-workflow, basic-auth, agent-quality, freeze-recovery, error-learning, _base-5wh, _base-jtbd, _base-rat, _base-todo-usage.
+**Via `/` (explicit invocation):** `/techdebt-scan` — scan for oversized files, TODO/FIXME.
 
-**Skills — by request context:**
+If the agent doesn't load a skill — say: *"use the development skill"*.
 
-| Your request | Skill |
-|---|---|
-| "Add a date filter" | `development` — JTBD + TDD |
-| "The button is broken" | `bugfix` — 5 Whys RCA |
-| "Simplify this service" | `refactoring` — tests → small steps |
-| "Deploy changes" | `deploy-app` — build → restart → verify (scripts) |
-| "Test this API" | `api-testing` — auth + test (scripts) |
-| "Analyze the data" | `research` — schema → hypothesis |
-| "Review the code" | `code-review` — QA + CTO review |
-| "Write tests first" | `tdd-workflow` — Red → Green → Refactor |
-| "Create a rule" | `create-rules` — template + naming |
-| "Find unfinished work" | `gap-analysis` — TODO, empty handlers |
-| "Rework the last task" | `fix-last-task` — RCA + rework |
-| "Implement improvements" | `backlog-to-rules` — 7 phases |
+### Claude Code subagents
 
-### What to invoke manually
+| Agent | Skills | Model | Key feature |
+|---|---|---|---|
+| `developer` | development, tdd-workflow | sonnet | JTBD + duplicate check |
+| `reviewer` | code-review | sonnet | Read-only (no Write/Edit/Bash) |
+| `researcher` | research | sonnet | Data-first analysis |
+| `tester` | tdd-workflow | sonnet | Strict Red-Green-Refactor |
+| `deploy` | deploy-app | haiku | Fast build + restart |
+
+### Cursor IDE: manual instructions
 
 **Via `@` (rules_alone):**
 
@@ -121,48 +174,25 @@ Or ask the AI: *"I copied `.cursor/` from cursor-develop-autorules. Adapt `proje
 | `@core-duplicate-check` | Duplication check before creating a file |
 | `@from-the-end` | "From the end" methodology for complex tasks |
 
-**Via `/` (explicit-only skill):** `/techdebt-scan` — scan for oversized files, TODO/FIXME.
-
-If the agent doesn't load a skill — say: "use the development skill".
-
 ---
 
 ### Config and universality
 
-**All rules/skills are universal.** Project-specific values live only in `project.config.json`:
-
-```json
-{
-  "project_name": "myproject",
-  "site_url": "https://myproject.example.com",
-  "services": { "backend": { "name": "myproject-api", "port": 5003 } }
-}
-```
+**All rules and skills are universal.** Project-specific values live only in `project.config.json` (Cursor) or `MEMORY.md` (Claude Code).
 
 Scripts read config via `_shared/load-config.sh` (works with `jq` or `python3` fallback).
 
-**Secrets** — `.cursor/.secrets/` (gitignored). **Data** — `.cursor/data/` (error-log, improvements-backlog).
-
-**Self-improvement:** Error → `session-review` → `improvements-backlog.md` → `@backlog-to-rules` → New rule.
-
-**Validation:** `bash scripts/validate-rules.sh` — cross-references, frontmatter, placeholders, routing table.
+**Self-improvement:** Error → `session-review` → `improvements-backlog.md` → `backlog-to-rules` → New rule.
 
 ---
 
 ### Installing on another project
 
-**What to change:** `project.config.json`, `CLAUDE.md`, `AGENTS.md`, `.secrets/`.
+**What to change:** `CLAUDE.md`, `AGENTS.md`, `.claude/MEMORY.md`, `project.config.json`, `.secrets/`.
 
-**What NOT to change:** `rules/`, `skills/`, `rules_alone/` — they're universal.
+**What NOT to change:** `rules/`, `skills/`, `agents/` — they're universal.
 
-```bash
-cp -r .cursor CLAUDE.md AGENTS.md .cursorignore /path/to/project/
-cd /path/to/project
-cp .cursor/config/project.config.example.json .cursor/config/project.config.json
-# Fill in config → done
-```
-
-Or ask the AI: *"Adapt `.cursor/` for this project, fill in config, describe the project in CLAUDE.md."*
+Or ask the AI: *"Adapt the configuration for this project — fill in CLAUDE.md, MEMORY.md, config."*
 
 ---
 
@@ -170,30 +200,32 @@ Or ask the AI: *"Adapt `.cursor/` for this project, fill in config, describe the
 
 | Component | Count | Details |
 |---|---|---|
-| **Rules** | 16 | 1 always + 3 auto + 12 agent |
-| **Skills** | 14 | 4 with shell scripts, 4 with references |
-| **Rules Alone** | 3 | ajtbd-evaluation, duplicate-check, from-the-end |
+| **Claude Code rules** | 10 | 2 always + 4 path-scoped + 4 agent-decided |
+| **Claude Code skills** | 15 | With evals, scripts, references |
 | **Claude Code agents** | 5 | deploy, developer, researcher, reviewer, tester |
-| **Shell scripts** | 9 | deploy (4), testing (2), scanning (3) |
-| **Validation** | 2 | validate-rules.sh, migrate-to-claude-code.sh |
+| **Cursor rules** | 16 | 1 always + 3 auto + 12 agent (.mdc) |
+| **Cursor skills** | 13 | Cursor format |
+| **Cursor rules_alone** | 3 | ajtbd-evaluation, duplicate-check, from-the-end |
+| **Shell scripts** | 9+ | deploy (4), testing (2), scanning (3), cache (1) |
+| **Evals** | 15 | 2–3 test cases per skill with assertions |
 
 ---
 
 ## FAQ
 
-**Q: Do I need to write "use core-master.mdc"?** — No, it's automatic.
+**Q: Does it work automatically?** — Yes, the master protocol loads in every dialog.
 
-**Q: How to add a rule?** — "Create a rule for X" → `create-rules` skill.
+**Q: How to add a rule or skill?** — *"Create a rule for X"* → `create-rules` skill (using skill-creator methodology).
 
-**Q: How to deploy?** — "Deploy" → `deploy-app` with scripts.
+**Q: How to deploy?** — *"Deploy"* → `deploy-app` skill with shell scripts.
 
-**Q: How to invoke a manual instruction?** — `@filename` in your message.
+**Q: How to check cache efficiency?** — *"Show session costs"* → `cache-analysis` skill.
 
-**Q: How to check integrity?** — `bash scripts/validate-rules.sh`.
+**Q: Claude Code or Cursor?** — Both supported. `.claude/` — native support with agents, hooks, and preview. `.cursor/` — full configuration for Cursor IDE.
 
-**Q: Claude Code supported?** — Yes. `.claude/` + `scripts/migrate-to-claude-code.sh`.
+**Q: How to install on another project?** — Copy `.claude/` and/or `.cursor/`, adapt `CLAUDE.md` and `MEMORY.md`.
 
-**Q: How to install on another project?** — Copy `.cursor/`, fill in config. Everything is universal.
+**Q: What are evals?** — Test cases for evaluating skill quality. Each skill has `evals/evals.json` with 2–3 prompts and assertions.
 
 ---
 
@@ -201,4 +233,4 @@ Or ask the AI: *"Adapt `.cursor/` for this project, fill in config, describe the
 
 MIT License — [GitHub](https://github.com/dmitryprg-ai/cursor-develop-autorules) | [Cursor IDE](https://cursor.com/) | [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 
-**Version:** 12.2 | **Date:** 2026-02-11
+**Version:** 13.0 | **Date:** 2026-03-13

@@ -1,0 +1,38 @@
+{
+  "skill_name": "deploy-app",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Deploy the backend after fixing the auth bug",
+      "expected_output": "Build succeeds, service restarts, health check passes",
+      "assertions": [
+        "Runs npm run build before restart",
+        "Runs systemctl restart after build",
+        "Verifies /api/health endpoint responds",
+        "Checks systemctl status shows active"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The site shows Application error",
+      "expected_output": "Diagnose issue, rebuild, restart service, verify pages load",
+      "assertions": [
+        "Checks service status first to diagnose",
+        "Rebuilds the project",
+        "Restarts the service",
+        "Verifies pages no longer show Application error"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Deploy both frontend and backend",
+      "expected_output": "Build backend first, restart, verify health, then build frontend, restart, verify pages",
+      "assertions": [
+        "Deploys backend before frontend",
+        "Verifies backend health before proceeding to frontend",
+        "Both services restarted after their respective builds",
+        "Final verification covers both health endpoint and pages"
+      ]
+    }
+  ]
+}

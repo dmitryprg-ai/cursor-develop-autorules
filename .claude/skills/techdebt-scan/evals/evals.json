@@ -1,0 +1,17 @@
+{
+  "skill_name": "techdebt-scan",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/techdebt-scan",
+      "expected_output": "Run scan scripts, prioritize findings, suggest TDD approach for fixes",
+      "assertions": [
+        "Runs scan-large-files.sh",
+        "Runs find-todos.sh",
+        "Checks for functions over 50 lines",
+        "Prioritizes using impact/effort matrix",
+        "Recommends writing tests before fixing"
+      ]
+    }
+  ]
+}

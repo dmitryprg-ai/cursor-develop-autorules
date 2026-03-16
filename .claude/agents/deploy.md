@@ -2,7 +2,9 @@
 name: deploy
 description: Deploy backend and/or frontend services. Use for build, restart, deployment verification.
 tools: Bash, Read
-model: sonnet
+skills:
+  - deploy-app
+model: haiku
 maxTurns: 20
 ---
 

@@ -2,6 +2,12 @@
 name: reviewer
 description: Read-only code review for quality, security, and maintainability. Use for code review, QA check, CTO review.
 tools: Read, Grep, Glob
+disallowedTools:
+  - Write
+  - Edit
+  - Bash
+skills:
+  - code-review
 model: sonnet
 maxTurns: 30
 ---

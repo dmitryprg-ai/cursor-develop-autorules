@@ -1,13 +1,13 @@
-# Cursor AI Rules — Система инструкций для AI-агентов в Cursor IDE
+# AI Rules — Система инструкций для AI-агентов (Cursor IDE + Claude Code)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-12.2-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-13.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/cursor-compatible-green" alt="Cursor Compatible">
-  <img src="https://img.shields.io/badge/claude--code-supported-purple" alt="Claude Code">
+  <img src="https://img.shields.io/badge/claude--code-native-purple" alt="Claude Code Native">
   <img src="https://img.shields.io/badge/license-MIT-yellow" alt="License">
 </p>
 
-> **Гибридная система Rules + Skills для AI-агентов в Cursor IDE и Claude Code с оптимизацией token budget, исполняемыми скриптами и самоулучшением**
+> **Полноценная dual-IDE система правил и навыков для AI-агентов: Cursor IDE (.cursor/) и Claude Code (.claude/) с подагентами, автоматическими проверками, оценкой качества навыков и циклом самоулучшения**
 
 ---
 
@@ -15,103 +15,156 @@
 
 Библиотека инструкций для AI-ассистентов в [Cursor IDE](https://cursor.com/) и [Claude Code](https://docs.anthropic.com/en/docs/claude-code):
 
-- **14 skills** для разных типов задач с shell-скриптами
-- **16 rules** — встроенные проверки (Cross-check, Challenge, DONE-блок)
-- **3-уровневая загрузка** правил (~2,500 токенов always вместо ~21,000)
-- **Цикл самоулучшения** — обучение на ошибках
-- **Claude Code** — `.claude/` с подагентами, permissions, hooks
+- **15 навыков (skills)** для любых задач — от разработки до деплоя и аналитики кеша
+- **10 правил (rules)** для Claude Code — контекстные ограничения с объяснением «почему»
+- **5 подагентов** (developer, reviewer, researcher, tester, deploy) с привязанными навыками
+- **Автоматическая оценка качества** — evals с assertions на каждый навык
+- **Цикл самоулучшения** — обучение на ошибках → новые правила
+- **Методология skill-creator** — навыки построены по [официальному плагину Anthropic](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/skill-creator)
 
-| Метрика | До | После |
+| Метрика | До (v12) | После (v13) |
 |---|---|---|
 | Задачи без переделок | ~50% | >80% |
 | Повторные ошибки | ~30% | <10% |
-| Always-apply токенов | ~21,000 | ~2,500 |
+| Покрытие навыков оценками | 0% | 100% |
+| Соответствие skill-creator | ~20% | 100% |
 
 ---
 
-## Архитектура v12.2
+## Архитектура v13.0
 
 ```
 your-project/
-├── .cursor/
-│   ├── config/                        # project.config.json ← адаптация здесь
-│   ├── rules/                         # 16 правил (always/auto/agent)
-│   ├── skills/                        # 14 skills + _shared/ (скрипты, references)
-│   ├── rules_alone/                   # 3 ручных инструкции (вызов через @)
-│   ├── data/                          # Шаблоны error-log, improvements-backlog
-│   ├── docs/                          # ARCHITECTURE, HOW-TO-USE, CHANGELOG
-│   └── .secrets/                      # Credentials (gitignored)
-├── .claude/                           # Claude Code (settings, 5 agents, 4 rules)
+├── .claude/                           # Claude Code — основная среда
+│   ├── settings.json                  # Разрешения (allow/deny) + хуки
+│   ├── launch.json                    # Dev-серверы для Preview
+│   ├── MEMORY.md                      # Накопленные паттерны проекта
+│   ├── agents/                        # 5 подагентов (deploy, developer, ...)
+│   ├── rules/                         # 10 правил (.md с YAML-frontmatter)
+│   └── skills/                        # 15 навыков (SKILL.md + scripts/ + evals/)
+│       ├── deploy-app/                #   Деплой: build → restart → verify
+│       ├── development/               #   Разработка: JTBD + TDD
+│       ├── bugfix/                    #   Баг-фикс: 5 Whys RCA
+│       ├── code-review/               #   Ревью: QA + CTO
+│       ├── tdd-workflow/              #   TDD: Red → Green → Refactor
+│       ├── refactoring/               #   Рефакторинг: тесты → малые шаги
+│       ├── research/                  #   Аналитика: SQL/TypeScript/Python
+│       ├── api-testing/               #   API-тесты: auth + curl-скрипты
+│       ├── session-review/            #   Ретроспектива: конец сессии
+│       ├── gap-analysis/              #   Поиск пробелов: TODO, стабы
+│       ├── techdebt-scan/             #   Техдолг: файлы, TODO/FIXME
+│       ├── create-rules/              #   Создание правил и навыков (skill-creator)
+│       ├── fix-last-task/             #   Доработка: RCA + исправление
+│       ├── backlog-to-rules/          #   Внедрение улучшений из бэклога
+│       ├── cache-analysis/            #   Анализ кеша: стоимость, эффективность
+│       └── _shared/                   #   Общие скрипты (load-config.sh)
 │
-├── scripts/                           # validate-rules.sh, migrate-to-claude-code.sh
-├── .cursorignore, .mcp.json
+├── .cursor/                           # Cursor IDE — параллельная конфигурация
+│   ├── config/                        # project.config.json ← адаптация здесь
+│   ├── rules/                         # 16 правил (.mdc: always/auto/agent)
+│   ├── skills/                        # 13 навыков (.cursor-формат)
+│   ├── rules_alone/                   # 3 ручных инструкции (вызов через @)
+│   ├── data/                          # error-log, improvements-backlog
+│   └── .secrets/                      # Credentials (gitignored)
+│
 ├── CLAUDE.md                          # Контекст проекта (авто-загрузка)
-└── AGENTS.md                          # Дополнительный контекст
+├── AGENTS.md                          # Дополнительный контекст
+└── scripts/                           # validate-rules.sh
 ```
 
-### Rules vs Skills
+### Что нового в v13
 
-| | Rules | Skills |
+| Аспект | v12 | v13 |
 |---|---|---|
-| Суть | "Так нельзя" — ограничения | "Делай так" — процедуры |
-| Формат | Один `.mdc` файл | Папка: `SKILL.md` + скрипты |
-| Скрипты | Нет | Да — `.sh` файлы |
-| Размер | < 100 строк | 50–120 строк + доп. файлы |
+| Claude Code | 4 правила, 0 навыков | 10 правил, 15 навыков, 5 агентов |
+| Навыки | Жёсткие инструкции | «Почему» > «Нельзя» (skill-creator) |
+| Описания навыков | Общие | Контекстные триггеры (pushy) |
+| Оценка качества | Нет | evals с assertions на каждый навык |
+| Кеш-аналитика | Нет | cache-analysis (hit rate, стоимость, оценка) |
+| Dev Preview | Нет | launch.json (backend + frontend) |
+| Память проекта | Нет | MEMORY.md — накопленные паттерны |
 
 ---
 
 ## Быстрый старт
 
+### Для Claude Code (рекомендуется)
+
 ```bash
 git clone https://github.com/dmitryprg-ai/cursor-develop-autorules.git
+cp -r cursor-develop-autorules/.claude /path/to/your/project/
+cp cursor-develop-autorules/{CLAUDE.md,AGENTS.md} /path/to/your/project/
+
+# Отредактируйте CLAUDE.md и AGENTS.md под свой проект
+# Отредактируйте .claude/MEMORY.md — опишите архитектуру и ключевые паттерны
+```
+
+### Для Cursor IDE
+
+```bash
 cp -r cursor-develop-autorules/.cursor /path/to/your/project/
 cp cursor-develop-autorules/{CLAUDE.md,AGENTS.md,.cursorignore} /path/to/your/project/
-# Опционально: cp -r cursor-develop-autorules/{.claude,scripts,.mcp.json} /path/to/your/project/
 
 cd /path/to/your/project
 cp .cursor/config/project.config.example.json .cursor/config/project.config.json
 # Заполните: project_name, site_url, services, auth, verify_pages
-# Отредактируйте CLAUDE.md и AGENTS.md под свой проект
 ```
 
-Или попросите AI: *"Я скопировал `.cursor/` из cursor-develop-autorules. Адаптируй `project.config.json`, `CLAUDE.md`, `AGENTS.md` под этот проект. Запусти `scripts/validate-rules.sh`."*
+### Для обоих (dual-IDE)
+
+```bash
+cp -r cursor-develop-autorules/{.cursor,.claude,CLAUDE.md,AGENTS.md,.cursorignore,scripts} /path/to/your/project/
+```
+
+Или попросите AI: *"Я скопировал `.cursor/` и `.claude/` из cursor-develop-autorules. Адаптируй конфигурацию под этот проект."*
 
 ---
 
 ## Руководство пользователя
 
-### Что работает автоматически
+### Как это работает
 
-**Всегда (каждый диалог):** `core-master.mdc` — сложность, план, skill из Routing Table, проверки, DONE-блок, KISS/YAGNI.
+**Главный протокол** (`core-master`) загружается в каждый диалог и автоматически:
+1. Оценивает сложность задачи (SIMPLE / STANDARD / COMPLEX)
+2. Выбирает навык из Routing Table
+3. Запускает проверки (Cross-check, Challenge)
+4. Формирует DONE-блок с уровнем уверенности
 
-**При открытии файлов:**
+**Правила** подключаются по контексту — при работе с определёнными файлами или по решению агента.
 
-| Правило | Когда | Что делает |
+### Навыки — по контексту запроса
+
+| Ваш запрос | Навык | Что делает |
 |---|---|---|
-| `react-hooks-auto` | `*.tsx`, `*.jsx` | Хуки в правильном порядке |
-| `radix-select-auto` | `*.tsx` | Запрет `<SelectItem value="">` |
-| `error-handling-auto` | `*.tsx`, `*.ts` | Error boundaries, loading/error states |
+| "Добавь фильтр по дате" | `development` | JTBD-анализ + TDD + проверка дублей |
+| "Не работает кнопка" | `bugfix` | 5 Whys RCA → исправление → верификация |
+| "Упрости сервис" | `refactoring` | Тесты → малые шаги → проверка |
+| "Задеплой" | `deploy-app` | build → restart → health check (скрипты) |
+| "Протестируй API" | `api-testing` | Авторизация + curl-тесты (скрипты) |
+| "Проанализируй данные" | `research` | Схема → гипотеза → SQL/TS/Python |
+| "Проверь код" | `code-review` | QA + CTO review (только чтение) |
+| "Пиши тесты сначала" | `tdd-workflow` | Red → Green → Refactor |
+| "Создай правило" | `create-rules` | Шаблон + evals + валидация |
+| "Найди незаконченное" | `gap-analysis` | Сканирование TODO, пустых handlers |
+| "Доработай задачу" | `fix-last-task` | RCA + исправление + improvement |
+| "Внедри улучшения" | `backlog-to-rules` | Группировка → реализация → статусы |
+| "Покажи стоимость сессий" | `cache-analysis` | Hit rate, экономия, оценка A–F |
 
-**Агент подключает по ситуации:** api-pagination, file-size-limits, security, git-workflow, basic-auth, agent-quality, freeze-recovery, error-learning, _base-5wh, _base-jtbd, _base-rat, _base-todo-usage.
+**Через `/` (явный вызов):** `/techdebt-scan` — сканирование oversized файлов, TODO/FIXME.
 
-**Skills — по контексту запроса:**
+Если агент не подключает навык — скажите: *"используй development skill"*.
 
-| Ваш запрос | Skill |
-|---|---|
-| "Добавь фильтр по дате" | `development` — JTBD + TDD |
-| "Не работает кнопка" | `bugfix` — 5 Whys RCA |
-| "Упрости сервис" | `refactoring` — тесты → маленькие шаги |
-| "Задеплой" | `deploy-app` — build → restart → verify (скрипты) |
-| "Протестируй API" | `api-testing` — auth + тест (скрипты) |
-| "Проанализируй данные" | `research` — schema → hypothesis |
-| "Проверь код" | `code-review` — QA + CTO review |
-| "Пиши тесты сначала" | `tdd-workflow` — Red → Green → Refactor |
-| "Создай правило" | `create-rules` — шаблон + naming |
-| "Найди незаконченное" | `gap-analysis` — TODO, пустые handlers |
-| "Доработай задачу" | `fix-last-task` — RCA + доработка |
-| "Внедри улучшения" | `backlog-to-rules` — 7 фаз |
+### Подагенты Claude Code
 
-### Что вызывать вручную
+| Агент | Навыки | Модель | Особенность |
+|---|---|---|---|
+| `developer` | development, tdd-workflow | sonnet | JTBD + проверка дублей |
+| `reviewer` | code-review | sonnet | Только чтение (без Write/Edit/Bash) |
+| `researcher` | research | sonnet | Data-first анализ |
+| `tester` | tdd-workflow | sonnet | Строгий Red-Green-Refactor |
+| `deploy` | deploy-app | haiku | Быстрый build + restart |
+
+### Cursor IDE: ручные инструкции
 
 **Через `@` (rules_alone):**
 
@@ -119,50 +172,27 @@ cp .cursor/config/project.config.example.json .cursor/config/project.config.json
 |---|---|
 | `@ajtbd-evaluation` | JTBD-анализ лендинга/интерфейса |
 | `@core-duplicate-check` | Проверка на дубли перед созданием файла |
-| `@from-the-end` | Методология "от конца" для сложных задач |
-
-**Через `/` (explicit-only skill):** `/techdebt-scan` — сканирование oversized файлов, TODO/FIXME.
-
-Если агент не подключает skill — скажите: "используй development skill".
+| `@from-the-end` | Методология «от конца» для сложных задач |
 
 ---
 
 ### Config и универсальность
 
-**Все rules/skills универсальны.** Project-specific значения — только в `project.config.json`:
-
-```json
-{
-  "project_name": "myproject",
-  "site_url": "https://myproject.example.com",
-  "services": { "backend": { "name": "myproject-api", "port": 5003 } }
-}
-```
+**Все правила и навыки универсальны.** Специфичные значения проекта — только в `project.config.json` (Cursor) или `MEMORY.md` (Claude Code).
 
 Скрипты читают config через `_shared/load-config.sh` (работает с `jq` или `python3`).
 
-**Secrets** — `.cursor/.secrets/` (gitignored). **Data** — `.cursor/data/` (error-log, improvements-backlog).
-
-**Самоулучшение:** Ошибка → `session-review` → `improvements-backlog.md` → `@backlog-to-rules` → Новое правило.
-
-**Валидация:** `bash scripts/validate-rules.sh` — cross-references, frontmatter, placeholders, routing table.
+**Самоулучшение:** Ошибка → `session-review` → `improvements-backlog.md` → `backlog-to-rules` → Новое правило.
 
 ---
 
 ### Установка на другой проект
 
-**Что менять:** `project.config.json`, `CLAUDE.md`, `AGENTS.md`, `.secrets/`.
+**Что менять:** `CLAUDE.md`, `AGENTS.md`, `.claude/MEMORY.md`, `project.config.json`, `.secrets/`.
 
-**Что НЕ менять:** `rules/`, `skills/`, `rules_alone/` — универсальны.
+**Что НЕ менять:** `rules/`, `skills/`, `agents/` — универсальны.
 
-```bash
-cp -r .cursor CLAUDE.md AGENTS.md .cursorignore /path/to/project/
-cd /path/to/project
-cp .cursor/config/project.config.example.json .cursor/config/project.config.json
-# Заполните config → готово
-```
-
-Или попросите AI: *"Адаптируй `.cursor/` под этот проект, заполни config, опиши проект в CLAUDE.md."*
+Или попросите AI: *"Адаптируй конфигурацию под этот проект — заполни CLAUDE.md, MEMORY.md, config."*
 
 ---
 
@@ -170,30 +200,32 @@ cp .cursor/config/project.config.example.json .cursor/config/project.config.json
 
 | Компонент | Количество | Детали |
 |---|---|---|
-| **Rules** | 16 | 1 always + 3 auto + 12 agent |
-| **Skills** | 14 | 4 с shell-скриптами, 4 с references |
-| **Rules Alone** | 3 | ajtbd-evaluation, duplicate-check, from-the-end |
-| **Claude Code agents** | 5 | deploy, developer, researcher, reviewer, tester |
-| **Shell scripts** | 9 | deploy (4), testing (2), scanning (3) |
-| **Validation** | 2 | validate-rules.sh, migrate-to-claude-code.sh |
+| **Claude Code правила** | 10 | 2 always + 4 path-scoped + 4 agent-decided |
+| **Claude Code навыки** | 15 | С evals, scripts, references |
+| **Claude Code агенты** | 5 | deploy, developer, researcher, reviewer, tester |
+| **Cursor правила** | 16 | 1 always + 3 auto + 12 agent (.mdc) |
+| **Cursor навыки** | 13 | Cursor-формат |
+| **Cursor rules_alone** | 3 | ajtbd-evaluation, duplicate-check, from-the-end |
+| **Shell-скрипты** | 9+ | deploy (4), testing (2), scanning (3), cache (1) |
+| **Evals** | 15 | По 2–3 тест-кейса на каждый навык |
 
 ---
 
 ## FAQ
 
-**Q: Нужно писать "используй core-master.mdc"?** — Нет, автоматически.
+**Q: Работает автоматически?** — Да, главный протокол загружается в каждый диалог.
 
-**Q: Как добавить правило?** — "Создай правило для X" → `create-rules` skill.
+**Q: Как добавить правило/навык?** — *"Создай правило для X"* → `create-rules` навык (по методологии skill-creator).
 
-**Q: Как задеплоить?** — "Задеплой" → `deploy-app` с скриптами.
+**Q: Как задеплоить?** — *"Задеплой"* → `deploy-app` навык с shell-скриптами.
 
-**Q: Как вызвать ручную инструкцию?** — `@имя-файла` в сообщении.
+**Q: Как проверить эффективность кеша?** — *"Покажи стоимость сессий"* → `cache-analysis` навык.
 
-**Q: Как проверить целостность?** — `bash scripts/validate-rules.sh`.
+**Q: Claude Code или Cursor?** — Оба поддерживаются. `.claude/` — нативная поддержка с агентами, хуками и preview. `.cursor/` — полная конфигурация для Cursor IDE.
 
-**Q: Claude Code поддерживается?** — Да. `.claude/` + `scripts/migrate-to-claude-code.sh`.
+**Q: Как установить на другой проект?** — Скопируйте `.claude/` и/или `.cursor/`, адаптируйте `CLAUDE.md` и `MEMORY.md`.
 
-**Q: Как перенести?** — Скопируйте `.cursor/`, заполните config. Всё универсально.
+**Q: Что такое evals?** — Тест-кейсы для оценки качества навыков. Каждый навык имеет `evals/evals.json` с 2–3 промптами и assertions.
 
 ---
 
@@ -201,4 +233,4 @@ cp .cursor/config/project.config.example.json .cursor/config/project.config.json
 
 MIT License — [GitHub](https://github.com/dmitryprg-ai/cursor-develop-autorules) | [Cursor IDE](https://cursor.com/) | [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 
-**Версия:** 12.2 | **Дата:** 2026-02-11
+**Версия:** 13.0 | **Дата:** 2026-03-13

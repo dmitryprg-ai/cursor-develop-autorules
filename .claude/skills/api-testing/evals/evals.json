@@ -1,0 +1,27 @@
+{
+  "skill_name": "api-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Test the /api/customers endpoint with authentication",
+      "expected_output": "Get session first, then test endpoint with proper auth headers",
+      "assertions": [
+        "Obtains session via login endpoint first",
+        "Includes both Basic Auth and session cookie",
+        "Tests endpoint and shows response",
+        "Reports success or failure with status code"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm getting 401 Unauthorized on the deals API",
+      "expected_output": "Diagnose auth issue, check session, re-authenticate if needed",
+      "assertions": [
+        "Checks if session exists and is valid",
+        "Re-authenticates if session expired",
+        "Tests endpoint after fixing auth",
+        "Explains the two auth layers (Basic + Session)"
+      ]
+    }
+  ]
+}

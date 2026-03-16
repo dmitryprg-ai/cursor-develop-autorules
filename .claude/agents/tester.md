@@ -2,6 +2,8 @@
 name: tester
 description: Test-Driven Development agent. Writes failing tests first, then minimal code to pass. Strict Red-Green-Refactor cycle.
 tools: Read, Write, Bash, Grep, Glob
+skills:
+  - tdd-workflow
 model: sonnet
 maxTurns: 40
 ---

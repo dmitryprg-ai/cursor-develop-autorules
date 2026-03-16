@@ -14,13 +14,23 @@
       "Bash(git branch*)",
       "Bash(git checkout*)",
       "Bash(git stash*)",
+      "Bash(git push*)",
+      "Bash(git merge*)",
       "Bash(curl -s *)",
       "Bash(systemctl status *)",
       "Bash(psql -c *)",
       "Bash(jq *)",
       "Bash(wc -l *)",
       "Bash(ls *)",
-      "Bash(cat *)",
+      "Bash(mkdir *)",
+      "Bash(chmod *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(pip install claude-cache-analyzer*)",
+      "Bash(claude-cache-analyzer *)",
+      "Bash(python -m scripts.*)",
+      "Bash(find *)",
       "Read(src/**)",
       "Read(apps/**)",
       "Read(.cursor/**)",
@@ -29,7 +39,12 @@
       "Write(src/**/*.tsx)",
       "Write(apps/**/*.ts)",
       "Write(apps/**/*.tsx)",
-      "Write(apps/**/*.css)"
+      "Write(apps/**/*.css)",
+      "Write(.claude/rules/**)",
+      "Write(.claude/skills/**)",
+      "Write(.claude/agents/**)",
+      "Write(.claude/*.md)",
+      "Write(.claude/*.json)"
     ],
     "deny": [
       "Read(.env*)",
@@ -39,6 +54,9 @@
       "Bash(*DROP TABLE*)",
       "Bash(*DELETE FROM* WHERE 1*)",
       "Bash(*TRUNCATE*)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
       "Write(package-lock.json)",
       "Write(node_modules/**)",
       "Write(dist/**)",
@@ -49,29 +67,9 @@
   },
 
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Before writing this file, verify: (1) Will the file exceed 300 lines? If so, plan splitting first. (2) Does it follow Single Responsibility? (3) Are imports and types correct?"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "If this is a build command (npm run build), remember: BUILD WITHOUT RESTART = BROKEN SITE. Always restart the affected systemd service after build."
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
-        "matcher": "Write",
+        "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
@@ -80,5 +78,9 @@
         ]
       }
     ]
+  },
+
+  "env": {
+    "NODE_ENV": "development"
   }
 }

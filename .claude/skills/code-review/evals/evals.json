@@ -1,0 +1,27 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review the changes in the deals module before merging",
+      "expected_output": "Read-only review with QA checklist, issues found, improvements suggested",
+      "assertions": [
+        "Does not modify any files",
+        "Checks linter compliance",
+        "Verifies file size limits",
+        "Outputs structured review with issues and suggestions"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "This PR changes the API contract for customers endpoint, do a CTO review",
+      "expected_output": "CTO review with scope, risk assessment, alternatives, recommendation, rollback plan",
+      "assertions": [
+        "Includes risk assessment table",
+        "Lists alternative approaches",
+        "Provides rollback plan",
+        "Makes clear recommendation"
+      ]
+    }
+  ]
+}

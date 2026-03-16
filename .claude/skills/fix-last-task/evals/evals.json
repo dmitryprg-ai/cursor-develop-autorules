@@ -1,0 +1,29 @@
+{
+  "skill_name": "fix-last-task",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "You said you were done but the page still shows the old data",
+      "expected_output": "Analyze failure, run 5 Whys, fix, verify, record improvement",
+      "assertions": [
+        "Restores original request and compares expected vs actual",
+        "Runs challenge protocol (4 questions)",
+        "Applies root cause analysis",
+        "Records improvement to backlog",
+        "Reports confidence change"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The feature you just built crashes when input is empty",
+      "expected_output": "Analyze why edge case was missed, fix with test, verify",
+      "assertions": [
+        "Identifies the missed edge case",
+        "Analyzes why it was missed (root cause)",
+        "Adds test for the edge case",
+        "Verifies fix works for empty input",
+        "Records improvement to prevent recurrence"
+      ]
+    }
+  ]
+}

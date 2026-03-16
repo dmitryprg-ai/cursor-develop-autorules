@@ -1,0 +1,27 @@
+{
+  "skill_name": "refactoring",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "The deals service file is 500 lines, split it up",
+      "expected_output": "Tests first, then split by business domain, verify behavior unchanged",
+      "assertions": [
+        "Writes or verifies existing tests before splitting",
+        "Splits by business domain not technical layer",
+        "Runs tests after each split to verify behavior",
+        "No file exceeds size limits after refactoring"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Extract the validation logic from the routes file into a shared utility",
+      "expected_output": "Identify validation code, ensure tests exist, extract, verify",
+      "assertions": [
+        "Identifies all validation code to extract",
+        "Tests exist or are written before extraction",
+        "Creates shared utility with proper types",
+        "All callers updated to use shared utility"
+      ]
+    }
+  ]
+}

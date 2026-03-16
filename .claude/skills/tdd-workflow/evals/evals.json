@@ -1,0 +1,27 @@
+{
+  "skill_name": "tdd-workflow",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write tests for the customer validation service",
+      "expected_output": "Test cases table first, then failing tests, then minimal code to pass",
+      "assertions": [
+        "Creates test cases table BEFORE writing any code",
+        "Includes happy path, edge cases, and error cases",
+        "Tests fail initially (RED phase)",
+        "Code is minimal to make tests pass (GREEN phase)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add test coverage for the date filter API endpoint",
+      "expected_output": "Test planning with scenarios, tests written before implementation changes",
+      "assertions": [
+        "Plans test scenarios before coding",
+        "Covers edge cases like empty dates, invalid formats",
+        "Tests run and fail before any implementation changes",
+        "Refactoring only happens after all tests pass"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "skill_name": "cache-analysis",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How much did my last few sessions cost?",
+      "expected_output": "Run cache analyzer, show costs and efficiency metrics",
+      "assertions": [
+        "Runs claude-cache-analyzer command",
+        "Shows actual cost and savings",
+        "Reports cache hit rate and efficiency grade",
+        "Provides optimization tips if grade is below A"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "My token usage seems high, analyze the cache performance",
+      "expected_output": "Detailed cache analysis with optimization recommendations",
+      "assertions": [
+        "Analyzes recent sessions",
+        "Identifies cache efficiency score",
+        "Compares to expected baselines",
+        "Suggests specific optimizations if needed"
+      ]
+    }
+  ]
+}

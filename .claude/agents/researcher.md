@@ -2,6 +2,8 @@
 name: researcher
 description: Data analysis and investigation agent. Use for analyzing data, debugging with data, investigating patterns, or understanding system behavior.
 tools: Read, Bash, Grep, Glob
+skills:
+  - research
 model: sonnet
 maxTurns: 30
 ---

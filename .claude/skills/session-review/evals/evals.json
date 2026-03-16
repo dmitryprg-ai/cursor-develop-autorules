@@ -1,0 +1,27 @@
+{
+  "skill_name": "session-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Let's do a session review, we've been working for 3 hours",
+      "expected_output": "Full 5-section review with concrete findings and improvement proposal",
+      "assertions": [
+        "Fills all 5 review sections with specific details",
+        "Identifies at least one concrete improvement",
+        "Records improvement in backlog",
+        "Mentions when to run backlog-to-rules if needed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I made the same mistake three times today, we need to review this session",
+      "expected_output": "Review focused on repeated error, gap analysis, improvement recording",
+      "assertions": [
+        "Identifies the repeated error pattern",
+        "Analyzes why instructions didn't prevent it",
+        "Creates specific improvement proposal",
+        "Records to improvements-backlog.md"
+      ]
+    }
+  ]
+}

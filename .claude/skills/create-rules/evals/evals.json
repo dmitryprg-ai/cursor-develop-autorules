@@ -1,0 +1,29 @@
+{
+  "skill_name": "create-rules",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new rule for database query safety",
+      "expected_output": "Rule file with frontmatter, WHY section, code examples, validation",
+      "assertions": [
+        "Creates .md file with YAML frontmatter",
+        "Includes description with contextual triggers",
+        "Includes WHY section with real consequence",
+        "Provides code examples (good and bad)",
+        "Re-reads file to verify content"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Build a new skill for database migrations",
+      "expected_output": "SKILL.md with pushy description, workflow, references, evals",
+      "assertions": [
+        "Creates SKILL.md with valid frontmatter",
+        "Description includes contextual triggers",
+        "Body explains WHY for each instruction",
+        "Under 500 lines",
+        "Creates evals/evals.json with test cases"
+      ]
+    }
+  ]
+}

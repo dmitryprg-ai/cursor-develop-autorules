@@ -1,0 +1,27 @@
+{
+  "skill_name": "research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How many deals were created last month and what's the average amount?",
+      "expected_output": "SQL query with proper schema inspection, data profiling, clear findings",
+      "assertions": [
+        "Inspects schema before querying",
+        "Uses SELECT with LIMIT for safety",
+        "Presents findings with evidence",
+        "Includes count and average calculations"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Investigate why some customers have duplicate records",
+      "expected_output": "Profile data for duplicates, identify patterns, document findings",
+      "assertions": [
+        "Profiles data to find actual duplicates",
+        "Identifies duplication pattern (name, email, phone)",
+        "Quantifies the scope of the problem",
+        "Documents findings with specific examples"
+      ]
+    }
+  ]
+}
